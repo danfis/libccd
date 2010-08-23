@@ -6,15 +6,29 @@
 #include "compiler.h"
 
 
+#define GJK_VEC3(name, x, y, z) \
+    gjk_vec3_t name = { {x, y, z} }
+
+_gjk_inline double gjkVec3X(const gjk_vec3_t *v);
+_gjk_inline double gjkVec3Y(const gjk_vec3_t *v);
+_gjk_inline double gjkVec3Z(const gjk_vec3_t *v);
+
+_gjk_inline void gjkVec3Set3(gjk_vec3_t *v, double x, double y, double z);
+
 /**
  * v = w
  */
 _gjk_inline void gjkVec3Copy(gjk_vec3_t *v, const gjk_vec3_t *w);
 
 /**
- * Substracts coordinates of vector w from vector v.
+ * Substracts coordinates of vector w from vector v. v = v - w
  */
 _gjk_inline void gjkVec3Sub(gjk_vec3_t *v, const gjk_vec3_t *w);
+
+/**
+ * Adds coordinates of vector w to vector v. v = v + w
+ */
+_gjk_inline void gjkVec3Add(gjk_vec3_t *v, const gjk_vec3_t *w);
 
 /**
  * d = v - w
@@ -40,6 +54,28 @@ _gjk_inline void gjkVec3Cross(gjk_vec3_t *d, const gjk_vec3_t *a, const gjk_vec3
 
 
 /**** INLINES ****/
+_gjk_inline double gjkVec3X(const gjk_vec3_t *v)
+{
+    return v->v[0];
+}
+
+_gjk_inline double gjkVec3Y(const gjk_vec3_t *v)
+{
+    return v->v[1];
+}
+
+_gjk_inline double gjkVec3Z(const gjk_vec3_t *v)
+{
+    return v->v[2];
+}
+
+_gjk_inline void gjkVec3Set3(gjk_vec3_t *v, double x, double y, double z)
+{
+    v->v[0] = x;
+    v->v[1] = y;
+    v->v[2] = z;
+}
+
 _gjk_inline void gjkVec3Copy(gjk_vec3_t *v, const gjk_vec3_t *w)
 {
     *v = *w;
@@ -58,6 +94,13 @@ _gjk_inline void gjkVec3Sub2(gjk_vec3_t *d, const gjk_vec3_t *v, const gjk_vec3_
     d->v[2] = v->v[2] - w->v[2];
 }
 
+_gjk_inline void gjkVec3Add(gjk_vec3_t *v, const gjk_vec3_t *w)
+{
+    v->v[0] += w->v[0];
+    v->v[1] += w->v[1];
+    v->v[2] += w->v[2];
+}
+
 _gjk_inline void gjkVec3Scale(gjk_vec3_t *d, double k)
 {
     d->v[0] *= k;
@@ -72,7 +115,7 @@ _gjk_inline double gjkVec3Dot(const gjk_vec3_t *a, const gjk_vec3_t *b)
     dot  = a->v[0] * b->v[0];
     dot += a->v[1] * b->v[1];
     dot += a->v[2] * b->v[2];
-    return sqrt(dot);
+    return dot;
 }
 
 _gjk_inline void gjkVec3Cross(gjk_vec3_t *d, const gjk_vec3_t *a, const gjk_vec3_t *b)

@@ -11,9 +11,8 @@ typedef struct _gjk_vec3_t gjk_vec3_t;
  * Type of *support* function that takes pointer to 3D object and direction
  * and returns (via vec argument) furthest point from object in specified
  * direction.
- * Retruns 0 if any point was found, -1 otherwise.
  */
-typedef int (*gjk_support)(const void *obj, const gjk_vec3_t *dir,
+typedef void (*gjk_support)(const void *obj, const gjk_vec3_t *dir,
                            gjk_vec3_t *vec);
 
 /**
@@ -34,9 +33,14 @@ struct _gjk_t {
 };
 typedef struct _gjk_t gjk_t;
 
+/**
+ * Default first direction.
+ */
+void gjkFirstDirDefault(const void *o1, const void *o2, gjk_vec3_t *dir);
+
 #define GJK_INIT(gjk) \
     do { \
-        (gjk)->first_dir = NULL; \
+        (gjk)->first_dir = gjkFirstDirDefault; \
         (gjk)->support = NULL; \
         \
         (gjk)->max_iterations = (unsigned long)-1; \

@@ -1,0 +1,3 @@
+regressions/tmp.*
+*.o
+test

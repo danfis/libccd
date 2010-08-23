@@ -1,13 +1,13 @@
+#include <stdio.h>
 #include "gjk.h"
 #include "simplex.h"
 #include "vec3.h"
 
 /** Fills supp vector by support vector from Minkowski difference of obj1
- *  and obj2 in dir direction.
- *  Returns 0 if found, -1 otherwise. */
-static int support(const void *obj1, const void *obj2,
-                   const gjk_vec3_t *dir, gjk_t *gjk,
-                   gjk_vec3_t *supp);
+ *  and obj2 in dir direction. */
+static void support(const void *obj1, const void *obj2,
+                    const gjk_vec3_t *dir, gjk_t *gjk,
+                    gjk_vec3_t *supp);
 
 /** Returns true if simplex contains origin.
  *  This function also alteres simplex and dir according to further
@@ -22,6 +22,12 @@ _gjk_inline void tripleCross(const gjk_vec3_t *a, const gjk_vec3_t *b,
 /** Returns sign of value. */
 _gjk_inline int sign(double val);
 
+
+
+void gjkFirstDirDefault(const void *o1, const void *o2, gjk_vec3_t *dir)
+{
+    gjkVec3Set3(dir, 1., 0., 0.);
+}
 
 int gjkIntersect(const void *obj1, const void *obj2, gjk_t *gjk)
 {
@@ -49,6 +55,11 @@ int gjkIntersect(const void *obj1, const void *obj2, gjk_t *gjk)
         // obtain support point
         support(obj1, obj2, &dir, gjk, &last);
 
+
+        fprintf(stderr, "gjkIntersect last:[%lf %lf %lf], dir:[%lf %lf %lf]\n",
+                gjkVec3X(&last), gjkVec3Y(&last), gjkVec3Z(&last),
+                gjkVec3X(&dir), gjkVec3Y(&dir), gjkVec3Z(&dir));
+        fprintf(stderr, "gjkIntersect dot(last, dir): %lf\n", gjkVec3Dot(&last, &dir));
         // check if farthest point in Minkowski difference in direction dir
         // isn't somewhere before origin (the test on negative dot product)
         // - because if it is, objects are not intersecting at all.
@@ -70,23 +81,20 @@ int gjkIntersect(const void *obj1, const void *obj2, gjk_t *gjk)
     return 0;
 }
 
-static int support(const void *obj1, const void *obj2,
-                   const gjk_vec3_t *_dir, gjk_t *gjk,
-                   gjk_vec3_t *supp)
+static void support(const void *obj1, const void *obj2,
+                    const gjk_vec3_t *_dir, gjk_t *gjk,
+                    gjk_vec3_t *supp)
 {
     gjk_vec3_t a, b, dir;
 
     gjkVec3Copy(&dir, _dir);
 
-    if (gjk->support(obj1, &dir, &a) != 0)
-        return -1;
+    gjk->support(obj1, &dir, &a);
 
     gjkVec3Scale(&dir, -1.);
-    if (gjk->support(obj2, &dir, &b) != 0)
-        return -1;
+    gjk->support(obj2, &dir, &b);
 
     gjkVec3Sub2(supp, &a, &b);
-    return 0;
 }
 
 static void doSimplex2(gjk_simplex_t *simplex, gjk_vec3_t *dir)
@@ -104,6 +112,7 @@ static void doSimplex2(gjk_simplex_t *simplex, gjk_vec3_t *dir)
     gjkVec3Copy(&AO, A);
     gjkVec3Scale(&AO, -1.);
 
+    fprintf(stderr, "doSimplex2: %lf\n", gjkVec3Dot(&AB, &AO));
     // check if origin is in area where AB segment is
     if (gjkVec3Dot(&AB, &AO) < 0.){
         // origin is in outside are of A
@@ -227,6 +236,7 @@ static int doSimplex4(gjk_simplex_t *simplex, gjk_vec3_t *dir)
 
 static int doSimplex(gjk_simplex_t *simplex, gjk_vec3_t *dir)
 {
+    fprintf(stderr, "doSimplex: size: %d\n", gjkSimplexSize(simplex));
     if (gjkSimplexSize(simplex) == 2){
         // simplex contains segment only one segment
         doSimplex2(simplex, dir);

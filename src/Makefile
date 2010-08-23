@@ -1,7 +1,7 @@
 -include Makefile.include
 
 TARGETS = libgjk.a
-OBJS = gjk.o
+OBJS = gjk.o gjk_support.o
 
 all: $(TARGETS)
 
