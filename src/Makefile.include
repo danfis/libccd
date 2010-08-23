@@ -1,0 +1,83 @@
+CC   ?= gcc
+CXX  ?= g++
+MOC  ?= moc
+FLEX ?= flex
+DOXYGEN ?= doxygen
+DIA ?= dia
+CONVERT ?= convert
+M4 ?= m4
+
+SYSTEM = $(shell uname)
+
+SYSTEM_CXXFLAGS =
+SYSTEM_LDFLAGS =
+
+ifeq '$(SYSTEM)' 'FreeBSD'
+  AWK ?= gawk
+  SED ?= gsed
+  SYSTEM_CXXFLAGS = -Wno-long-long
+else
+  AWK ?= awk
+  SED ?= sed
+  SYSTEM_LDFLAGS = -lrt -pthread
+endif
+
+NOWALL ?= no
+NOPEDANTIC ?= no
+DEBUG ?= yes
+PROFIL ?= no
+
+ifeq '$(PROFIL)' 'yes'
+  DEBUG = yes
+endif
+
+ifeq '$(DEBUG)' 'yes'
+  CFLAGS = -g
+  CXXFLAGS = -g
+endif
+ifeq '$(PROFIL)' 'yes'
+  CFLAGS += -pg
+  CXXFLAGS += -pg
+endif
+
+ifneq '$(NOWALL)' 'yes'
+  CFLAGS += -Wall
+  CXXFLAGS += -Wall
+endif
+ifneq '$(NOPEDANTIC)' 'yes'
+  CFLAGS += -pedantic
+  CXXFLAGS += -pedantic
+endif
+
+CFLAGS += --std=gnu99
+CXXFLAGS += $(SYSTEM_CXXFLAGS)
+LDFLAGS += $(SYSTEM_LDFLAGS)
+
+CHECKTARGETS = 
+check-dep: $(CHECKTARGETS)
+
+showvars:
+	@echo "SYSTEM = "$(SYSTEM)
+	@echo ""
+	@echo "CC      = $(CC)"
+	@echo "CXX     = $(CXX)"
+	@echo "MOC     = $(MOC)"
+	@echo "FLEX    = $(FLEX)"
+	@echo "AWK     = $(AWK)"
+	@echo "SED     = $(SED)"
+	@echo "M4      = $(M4)"
+	@echo "DOXYGEN = $(DOXYGEN)"
+	@echo "SED     = $(SED)"
+	@echo "DIA     = $(DIA)"
+	@echo ""
+	@echo "DEBUG      = $(DEBUG)"
+	@echo "PROFIL     = $(PROFIL)"
+	@echo "NOWALL     = $(NOWALL)"
+	@echo "NOPEDANTIC = $(NOPEDANTIC)"
+	@echo ""
+	@echo "CFLAGS   = $(CFLAGS)"
+	@echo "CXXFLAGS = $(CXXFLAGS)"
+	@echo "LDFLAGS  = $(LDFLAGS)"
+
+.DEFAULT_GOAL := all
+.PHONY: showvars 
