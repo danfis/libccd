@@ -12,6 +12,7 @@ struct _gjk_vec3_t {
 };
 typedef struct _gjk_vec3_t gjk_vec3_t;
 
+
 #define GJK_PRINT_VEC3(vec, prefix) \
     fprintf(stderr, prefix "[%lf %lf %lf]\n", \
             gjkVec3X(vec), gjkVec3Y(vec), gjkVec3Z(vec))

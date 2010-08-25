@@ -17,11 +17,12 @@ TEST(boxboxAlignedX)
 {
     size_t i;
     gjk_t gjk;
-    gjk_box_t box1, box2;
+    GJK_BOX(box1);
+    GJK_BOX(box2);
     int res;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupportBox;
+    gjk.support = gjkSupport;
     //gjk.max_iterations = 20;
 
     box1.x = 1;
@@ -135,11 +136,12 @@ TEST(boxboxAlignedY)
 {
     size_t i;
     gjk_t gjk;
-    gjk_box_t box1, box2;
+    GJK_BOX(box1);
+    GJK_BOX(box2);
     int res;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupportBox;
+    gjk.support = gjkSupport;
 
     box1.x = 1;
     box1.y = 2;
@@ -175,11 +177,12 @@ TEST(boxboxAlignedZ)
 {
     size_t i;
     gjk_t gjk;
-    gjk_box_t box1, box2;
+    GJK_BOX(box1);
+    GJK_BOX(box2);
     int res;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupportBox;
+    gjk.support = gjkSupport;
 
     box1.x = 1;
     box1.y = 2;
@@ -216,13 +219,14 @@ TEST(boxboxRot)
 {
     size_t i;
     gjk_t gjk;
-    gjk_box_t box1, box2;
+    GJK_BOX(box1);
+    GJK_BOX(box2);
     int res;
     gjk_vec3_t axis;
     double angle;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupportBox;
+    gjk.support = gjkSupport;
 
     box1.x = 1;
     box1.y = 2;

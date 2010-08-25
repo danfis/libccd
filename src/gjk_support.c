@@ -3,24 +3,26 @@
 #include "vec3.h"
 #include "gjk_support.h"
 
-void gjkSupportBox(const void *_box, const gjk_vec3_t *dir,
-                   gjk_vec3_t *vec)
+void gjkSupport(const void *_obj, const gjk_vec3_t *_dir,
+                gjk_vec3_t *v)
 {
-    gjk_box_t *box = (gjk_box_t *)_box;
-    gjk_vec3_t d;
-    gjk_quat_t q;
+    gjk_obj_t *obj = (gjk_obj_t *)_obj;
+    gjk_vec3_t dir;
+    gjk_quat_t qinv;
 
-    gjkVec3Copy(&d, dir);
-    GJK_PRINT_VEC3(&d, "d");
-    gjkQuatInvert2(&q, &box->quat);
-    gjkQuatRotVec(&d, &q);
-    GJK_PRINT_VEC3(&d, "d");
+    gjkVec3Copy(&dir, _dir);
+    gjkQuatInvert2(&qinv, &obj->quat);
 
-    gjkVec3Set(vec, sign(gjkVec3X(&d)) * box->x * 0.5,
-                    sign(gjkVec3Y(&d)) * box->y * 0.5,
-                    sign(gjkVec3Z(&d)) * box->z * 0.5);
+    gjkQuatRotVec(&dir, &qinv);
 
-    // apply affine transformation
-    gjkQuatRotVec(vec, &box->quat);
-    gjkVec3Add(vec, &box->pos);
+    if (obj->type == GJK_OBJ_BOX){
+        gjk_box_t *box = (gjk_box_t *)obj;
+        gjkVec3Set(v, sign(gjkVec3X(&dir)) * box->x * 0.5,
+                      sign(gjkVec3Y(&dir)) * box->y * 0.5,
+                      sign(gjkVec3Z(&dir)) * box->z * 0.5);
+    }
+
+    // transform support vertex
+    gjkQuatRotVec(v, &obj->quat);
+    gjkVec3Add(v, &obj->pos);
 }
