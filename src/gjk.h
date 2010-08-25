@@ -1,10 +1,7 @@
 #ifndef __GJK_H__
 #define __GJK_H__
 
-struct _gjk_vec3_t {
-    double v[3];
-};
-typedef struct _gjk_vec3_t gjk_vec3_t;
+#include <gjk/vec3.h>
 
 
 /**

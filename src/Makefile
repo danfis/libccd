@@ -1,5 +1,7 @@
 -include Makefile.include
 
+CFLAGS += -I.
+
 TARGETS = libgjk.a
 OBJS = gjk.o gjk_support.o
 
