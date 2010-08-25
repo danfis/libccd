@@ -36,7 +36,7 @@ _gjk_inline void gjkSimplexInit(gjk_simplex_t *s)
 
 _gjk_inline int gjkSimplexSize(const gjk_simplex_t *s)
 {
-    return s->last;
+    return s->last + 1;
 }
 
 _gjk_inline const gjk_vec3_t *gjkSimplexLast(const gjk_simplex_t *s)

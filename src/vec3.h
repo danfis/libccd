@@ -13,6 +13,12 @@ _gjk_inline double gjkVec3X(const gjk_vec3_t *v);
 _gjk_inline double gjkVec3Y(const gjk_vec3_t *v);
 _gjk_inline double gjkVec3Z(const gjk_vec3_t *v);
 
+/**
+ * Returns squared length of vector.
+ */
+_gjk_inline double gjkVec3Len2(const gjk_vec3_t *v);
+
+
 _gjk_inline void gjkVec3Set3(gjk_vec3_t *v, double x, double y, double z);
 
 /**
@@ -67,6 +73,11 @@ _gjk_inline double gjkVec3Y(const gjk_vec3_t *v)
 _gjk_inline double gjkVec3Z(const gjk_vec3_t *v)
 {
     return v->v[2];
+}
+
+_gjk_inline double gjkVec3Len2(const gjk_vec3_t *v)
+{
+    return gjkVec3Dot(v, v);
 }
 
 _gjk_inline void gjkVec3Set3(gjk_vec3_t *v, double x, double y, double z)

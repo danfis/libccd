@@ -7,11 +7,15 @@ TEST(boxboxSetUp);
 TEST(boxboxTearDown);
 
 TEST(boxboxAlignedX);
+TEST(boxboxAlignedY);
+TEST(boxboxAlignedZ);
 
 TEST_SUITE(TSBoxBox) {
     TEST_ADD(boxboxSetUp),
 
     TEST_ADD(boxboxAlignedX),
+    TEST_ADD(boxboxAlignedY),
+    TEST_ADD(boxboxAlignedZ),
 
     TEST_ADD(boxboxTearDown),
     TEST_SUITE_CLOSURE
