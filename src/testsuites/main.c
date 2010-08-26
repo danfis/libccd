@@ -1,7 +1,9 @@
 #include "boxbox.h"
+#include "spheresphere.h"
 
 TEST_SUITES {
     TEST_SUITE_ADD(TSBoxBox),
+    TEST_SUITE_ADD(TSSphereSphere),
 
     TEST_SUITES_CLOSURE
 };

@@ -122,17 +122,20 @@ static int doSimplex2(gjk_simplex_t *simplex, gjk_vec3_t *dir)
     // check if origin doesn't lie on AB segment
     gjkVec3Cross(&tmp, &AB, &AO);
     if (isZero(gjkVec3Len2(&tmp)) && dot > 0.){
+        fprintf(stderr, " --> Lies on AB line\n");
         return 1;
     }
 
     // check if origin is in area where AB segment is
     if (dot < 0. || isZero(dot)){
         // origin is in outside are of A
+        fprintf(stderr, " --> outside A\n");
 
         gjkSimplexSet1(simplex, A);
         gjkVec3Copy(dir, &AO);
     }else{
         // origin is in area where AB segment is
+        fprintf(stderr, " --> in AB segment\n");
 
         // keep simplex untouched and set direction to
         // AB x AO x AB

@@ -7,7 +7,7 @@ LDFLAGS += -L./ -Lcu/ -lcu -lm -L../ -lgjk
 
 CHECK_REG=cu/check-regressions
 
-OBJS = boxbox.o
+OBJS = boxbox.o spheresphere.o
 
 
 all: test

@@ -8,6 +8,7 @@
 #include <gjk/quat.h>
 
 #define GJK_OBJ_BOX 1
+#define GJK_OBJ_SPHERE 2
 
 #define __GJK_OBJ__ \
     int type; \
@@ -15,9 +16,7 @@
     gjk_quat_t quat;
 
 struct _gjk_obj_t {
-    int type;
-    gjk_vec3_t pos; //!< Position in 3D space
-    gjk_quat_t quat; //!< Rotation
+    __GJK_OBJ__
 };
 typedef struct _gjk_obj_t gjk_obj_t;
 
@@ -27,6 +26,12 @@ struct _gjk_box_t {
 };
 typedef struct _gjk_box_t gjk_box_t;
 
+struct _gjk_sphere_t {
+    __GJK_OBJ__
+    double radius;
+};
+typedef struct _gjk_sphere_t gjk_sphere_t;
+
 
 #define GJK_BOX(name) \
     gjk_box_t name = { .type = GJK_OBJ_BOX, \
@@ -35,6 +40,12 @@ typedef struct _gjk_box_t gjk_box_t;
                        .x = 0., \
                        .y = 0., \
                        .z = 0. }
+
+#define GJK_SPHERE(name) \
+    gjk_sphere_t name = { .type = GJK_OBJ_SPHERE, \
+                          .pos  = { .v = { 0., 0., 0. } }, \
+                          .quat = { .q = { 0., 0., 0., 1. } }, \
+                          .radius = 0. }
 
 /**
  * Returns supporting vertex via v.
