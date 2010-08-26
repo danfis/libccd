@@ -1,9 +1,11 @@
 #include "boxbox.h"
 #include "spheresphere.h"
+#include "cylcyl.h"
 
 TEST_SUITES {
     TEST_SUITE_ADD(TSBoxBox),
     TEST_SUITE_ADD(TSSphereSphere),
+    TEST_SUITE_ADD(TSCylCyl),
 
     TEST_SUITES_CLOSURE
 };

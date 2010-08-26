@@ -9,6 +9,7 @@
 
 #define GJK_OBJ_BOX 1
 #define GJK_OBJ_SPHERE 2
+#define GJK_OBJ_CYL 3
 
 #define __GJK_OBJ__ \
     int type; \
@@ -32,6 +33,13 @@ struct _gjk_sphere_t {
 };
 typedef struct _gjk_sphere_t gjk_sphere_t;
 
+struct _gjk_cyl_t {
+    __GJK_OBJ__
+    double radius;
+    double height;
+};
+typedef struct _gjk_cyl_t gjk_cyl_t;
+
 
 #define GJK_BOX(name) \
     gjk_box_t name = { .type = GJK_OBJ_BOX, \
@@ -46,6 +54,13 @@ typedef struct _gjk_sphere_t gjk_sphere_t;
                           .pos  = { .v = { 0., 0., 0. } }, \
                           .quat = { .q = { 0., 0., 0., 1. } }, \
                           .radius = 0. }
+
+#define GJK_CYL(name) \
+    gjk_cyl_t name = { .type = GJK_OBJ_CYL, \
+                       .pos  = { .v = { 0., 0., 0. } }, \
+                       .quat = { .q = { 0., 0., 0., 1. } }, \
+                       .radius = 0., \
+                       .height = 0. }
 
 /**
  * Returns supporting vertex via v.

@@ -35,6 +35,21 @@ void gjkSupport(const void *_obj, const gjk_vec3_t *_dir,
         }else{
             gjkVec3Set(v, 0. ,0., 0.);
         }
+    }else if (obj->type == GJK_OBJ_CYL){
+        gjk_cyl_t *cyl = (gjk_cyl_t *)obj;
+        double zdist, rad;
+
+        zdist = dir.v[0] * dir.v[0] + dir.v[1] * dir.v[1];
+        zdist = sqrt(zdist);
+        if (isZero(zdist)){
+            gjkVec3Set(v, 0., 0., sign(gjkVec3Z(&dir)) * cyl->height * 0.5);
+        }else{
+            rad = cyl->radius / zdist;
+
+            gjkVec3Set(v, rad * gjkVec3X(&dir),
+                          rad * gjkVec3Y(&dir),
+                          sign(gjkVec3Z(&dir)) * cyl->height * 0.5);
+        }
     }
 
     // transform support vertex
