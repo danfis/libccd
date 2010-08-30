@@ -3,7 +3,8 @@
 
 double gjkVec3PointTriDist2(const gjk_vec3_t *P,
                             const gjk_vec3_t *A, const gjk_vec3_t *B,
-                            const gjk_vec3_t *C)
+                            const gjk_vec3_t *C,
+                            gjk_vec3_t *witness)
 {
     gjk_vec3_t E0, E1, D;
     double a, b, c, d, e, f, det, s, t;
@@ -32,6 +33,8 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
                 //fprintf(stderr, "region 4\n");
                 // distance is distance from point A
                 gjkVec3Sub2(&D, A, P);
+                if (witness)
+                    gjkVec3Copy(witness, A);
                 return gjkVec3Len2(&D);
             }else{
                 // region 3
@@ -73,12 +76,16 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
             //fprintf(stderr, "region 2\n");
             // distance is distance from point C
             gjkVec3Sub2(&D, C, P);
+            if (witness)
+                gjkVec3Copy(witness, C);
             return gjkVec3Len2(&D);
         }else if (t < 0.){
             // region 6
             //fprintf(stderr, "region 6\n");
             // distance is distance from point B
             gjkVec3Sub2(&D, B, P);
+            if (witness)
+                gjkVec3Copy(witness, B);
             return sqrt(gjkVec3Len2(&D));
         }else{
             // region 1
@@ -118,6 +125,15 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
         GJK_PRINT_VEC3(&T, "T");
     }
 #endif
+    if (witness){
+        gjkVec3Scale(&E0, s);
+        gjkVec3Scale(&E1, t);
+
+        gjkVec3Copy(witness, A);
+        gjkVec3Add(witness, &E0);
+        gjkVec3Add(witness, &E1);
+    }
+
     dist  = a * s * s;
     dist += 2. * b * s * t;
     dist += c * t * t;

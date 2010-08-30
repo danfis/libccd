@@ -35,6 +35,11 @@ _gjk_inline double gjkVec3Y(const gjk_vec3_t *v);
 _gjk_inline double gjkVec3Z(const gjk_vec3_t *v);
 
 /**
+ * Returns true if a and b equal.
+ */
+_gjk_inline int gjkVec3Eq(const gjk_vec3_t *a, gjk_vec3_t *b);
+
+/**
  * Returns squared length of vector.
  */
 _gjk_inline double gjkVec3Len2(const gjk_vec3_t *v);
@@ -86,10 +91,13 @@ _gjk_inline void gjkVec3Cross(gjk_vec3_t *d, const gjk_vec3_t *a, const gjk_vec3
 
 /**
  * Returns distance^2 of point P from triangle formed by triplet a, b, c.
+ * If witness vector is provided it is filled with coordinates of point
+ * from which was computed distance to point P.
  */
 double gjkVec3PointTriDist2(const gjk_vec3_t *P,
                             const gjk_vec3_t *a, const gjk_vec3_t *b,
-                            const gjk_vec3_t *c);
+                            const gjk_vec3_t *c,
+                            gjk_vec3_t *witness);
 
 
 /**** INLINES ****/
@@ -129,6 +137,13 @@ _gjk_inline double gjkVec3Y(const gjk_vec3_t *v)
 _gjk_inline double gjkVec3Z(const gjk_vec3_t *v)
 {
     return v->v[2];
+}
+
+_gjk_inline int gjkVec3Eq(const gjk_vec3_t *a, gjk_vec3_t *b)
+{
+    return gjkEq(gjkVec3X(a), gjkVec3X(b))
+            && gjkEq(gjkVec3Y(a), gjkVec3Y(b))
+            && gjkEq(gjkVec3Z(a), gjkVec3Z(b));
 }
 
 _gjk_inline double gjkVec3Len2(const gjk_vec3_t *v)

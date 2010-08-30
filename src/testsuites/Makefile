@@ -31,17 +31,11 @@ check: all
 
 check-valgrind: all
 	valgrind -q --leak-check=full --show-reachable=yes --trace-children=yes \
-             --suppressions=opengl.supp \
-             --suppressions=fglrx.supp \
-             --suppressions=gen.supp \
-             --gen-suppressions=all --log-file=out --error-limit=no \
+             --gen-suppressions=all --error-limit=no \
              ./test
 
 check-valgrind-gen-suppressions: all
 	valgrind -q --leak-check=full --show-reachable=yes --trace-children=yes \
-             --suppressions=opengl.supp \
-             --suppressions=fglrx.supp \
-             --suppressions=gen.supp \
              --gen-suppressions=all --log-file=out --error-limit=no \
              ./test
 
