@@ -3,7 +3,7 @@
 CFLAGS += -I.
 
 TARGETS = libgjk.a
-OBJS = gjk.o gjk_support.o
+OBJS = gjk.o gjk_support.o vec3.o
 
 all: $(TARGETS)
 
