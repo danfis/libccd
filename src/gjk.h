@@ -27,6 +27,7 @@ struct _gjk_t {
     gjk_support support;
 
     unsigned long max_iterations;
+    double epa_tolerance;
 };
 typedef struct _gjk_t gjk_t;
 
@@ -41,12 +42,23 @@ void gjkFirstDirDefault(const void *o1, const void *o2, gjk_vec3_t *dir);
         (gjk)->support = NULL; \
         \
         (gjk)->max_iterations = (unsigned long)-1; \
+        (gjk)->epa_tolerance = 0.0001; \
     } while(0)
 
 
 /**
  * Returns true if two given objects interest.
  */
-int gjkIntersect(const void *obj1, const void *obj2, gjk_t *gjk);
+int gjkIntersect(const void *obj1, const void *obj2, const gjk_t *gjk);
+
+/**
+ * This function computes separation vector of two objects. Separation
+ * vector is minimal translation of obj2 to get obj1 and obj2 speparated
+ * (without intersection).
+ * Returns 0 if obj1 and obj2 intersect and sep is filled with translation
+ * vector. If obj1 and obj2 don't intersect -1 is returned.
+ */
+int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
+                   gjk_vec3_t *sep);
 
 #endif /* __GJK_H__ */
