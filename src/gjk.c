@@ -693,7 +693,13 @@ int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
     if (size == 4){
         simplexToPolytope4(&simplex, &polytope);
     }else if (size == 3){
-        simplexToPolytope3(obj1, obj2, gjk, &simplex, &polytope);
+        if (simplexToPolytope3(obj1, obj2, gjk, &simplex, &polytope) != 0){
+            gjkPolytopeDestroy(&polytope);
+
+            // touch contact
+            gjkVec3Set(sep, 0., 0., 0.);
+            return 0;
+        }
     }else{ // size == 2
         if (simplexToPolytope2(obj1, obj2, gjk, &simplex, &polytope) != 0){
             gjkPolytopeDestroy(&polytope);
