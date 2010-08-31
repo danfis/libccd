@@ -189,6 +189,7 @@ static int doSimplex2(gjk_simplex_t *simplex, gjk_vec3_t *dir)
     gjkVec3Cross(&tmp, &AB, &AO);
     if (isZero(gjkVec3Len2(&tmp)) && dot > 0.){
         DBG2(" --> Lies on AB line");
+        DBG2("ENDS with only one segment");
         return 1;
     }
 
@@ -228,6 +229,7 @@ static int doSimplex3(gjk_simplex_t *simplex, gjk_vec3_t *dir)
     dist = gjkVec3PointTriDist2(gjk_vec3_origin, &A, &B, &C, NULL);
     DBG("dist: %lf", dist);
     if (isZero(dist)){
+        DBG2("ENDS with one triangle");
         return 1;
     }
 
@@ -449,49 +451,156 @@ static void simplexToPolytope4(const gjk_simplex_t *simplex, gjk_polytope_t *pt)
 }
 
 /** Transforms simplex to polytope, three vertices required */
-static void simplexToPolytope3(const gjk_simplex_t *simplex, gjk_polytope_t *pt)
+static int simplexToPolytope3(const void *obj1, const void *obj2,
+                              const gjk_t *gjk,
+                              const gjk_simplex_t *simplex, gjk_polytope_t *pt)
 {
     const gjk_vec3_t *a, *b, *c;
+    gjk_vec3_t ab, ac, dir, d, e;
     gjk_vec3_t witness;
     double dist;
 
-    // first get all three vertices from simplex
     a = gjkSimplexPoint(simplex, 0);
     b = gjkSimplexPoint(simplex, 1);
     c = gjkSimplexPoint(simplex, 2);
 
-    // get distances and witness point of single triangle
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, a, b, c, &witness);
-    gjkPolytopeAddTri(pt, a, b, c, dist, &witness);
+    // If only one triangle left from previous GJK run origin lies on this
+    // triangle. So it is necessary to expand triangle into two
+    // tetrahedrons connected with base (which is exactly abc triangle).
+
+    // get next support point in direction of normal of triangle
+    gjkVec3Sub2(&ab, b, a);
+    gjkVec3Sub2(&ac, c, a);
+    gjkVec3Cross(&dir, &ab, &ac);
+    support(obj1, obj2, &dir, gjk, &d);
+
+    // check if abc isn't already on edge
+    dist = gjkVec3PointTriDist2(&d, a, b, c, NULL);
+    if (isZero(dist))
+        return -1;
+
+    // and second one take in opposite direction
+    gjkVec3Scale(&dir, -1.);
+    support(obj1, obj2, &dir, gjk, &e);
+
+    // check if abc isn't already on edge
+    dist = gjkVec3PointTriDist2(&e, a, b, c, NULL);
+    if (isZero(dist))
+        return -1;
+
+    // form polyhedron and add it all to polytope
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, a, b, &d, &witness);
+    gjkPolytopeAddTri(pt, a, b, &d, dist, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, b, c, &d, &witness);
+    gjkPolytopeAddTri(pt, b, c, &d, dist, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, c, a, &d, &witness);
+    gjkPolytopeAddTri(pt, c, a, &d, dist, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, a, b, &e, &witness);
+    gjkPolytopeAddTri(pt, a, b, &e, dist, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, b, c, &e, &witness);
+    gjkPolytopeAddTri(pt, b, c, &e, dist, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, c, a, &e, &witness);
+    gjkPolytopeAddTri(pt, c, a, &e, dist, &witness);
+
+    return 0;
 }
 
 /** Transforms simplex to polytope, two vertices required */
 static int simplexToPolytope2(const void *obj1, const void *obj2,
                               const gjk_t *gjk,
-                              gjk_simplex_t *simplex, gjk_polytope_t *pt)
+                              const gjk_simplex_t *simplex, gjk_polytope_t *pt)
 {
     const gjk_vec3_t *a, *b;
-    gjk_vec3_t c, ab;
+    gjk_vec3_t ab, ac, dir, witness;
+    gjk_vec3_t supp[4];
     size_t i;
+    int found;
+    double dist;
 
     a = gjkSimplexPoint(simplex, 0);
     b = gjkSimplexPoint(simplex, 1);
 
-    gjkVec3Sub2(&ab, b, a);
+    // This situation is a bit tricky. If only one segment comes from
+    // previous run of GJK - it means that either this segment is on
+    // minkowski edge (and thus we have touch contact) or it it isn't and
+    // therefore segment is somewhere *inside* minkowski sum and it *must*
+    // be possible to fully enclose this segment with polyhedron formed by
+    // at least 8 triangle faces.
 
-    // We must somehow guess the third point of edge of minkowski sum other
-    // than a and b.
-    // Use points_on_sphere array of vectors for guess.
+    // get first support point (any)
+    found = 0;
     for (i = 0; i < points_on_sphere_len; i++){
-        support(obj1, obj2, &points_on_sphere[i], gjk, &c);
-        if (!gjkVec3Eq(a, &c) && !gjkVec3Eq(b, &c)){
-            gjkSimplexAdd(simplex, &c);
-            simplexToPolytope3(simplex, pt);
-            return 0;
+        support(obj1, obj2, &points_on_sphere[i], gjk, &supp[0]);
+        if (!gjkVec3Eq(a, &supp[0]) && !gjkVec3Eq(b, &supp[0])){
+            found = 1;
+            break;
         }
     }
+    if (!found)
+        return -1;
 
-    return -1;
+    // get second support point in opposite direction than supp[0]
+    gjkVec3Copy(&dir, &supp[0]);
+    gjkVec3Scale(&dir, -1.);
+    support(obj1, obj2, &dir, gjk, &supp[1]);
+    if (gjkVec3Eq(a, &supp[1]) || gjkVec3Eq(b, &supp[1]))
+        return -1;
+
+    // next will be in direction of normal of triangle a,supp[0],supp[1]
+    gjkVec3Sub2(&ab, &supp[0], a);
+    gjkVec3Sub2(&ac, &supp[1], a);
+    gjkVec3Cross(&dir, &ab, &ac);
+    support(obj1, obj2, &dir, gjk, &supp[2]);
+    if (gjkVec3Eq(a, &supp[2]) || gjkVec3Eq(b, &supp[2]))
+        return -1;
+
+    // and last one will be in opposite direction
+    gjkVec3Scale(&dir, -1.);
+    support(obj1, obj2, &dir, gjk, &supp[3]);
+    if (gjkVec3Eq(a, &supp[3]) || gjkVec3Eq(b, &supp[3]))
+        return -1;
+
+    DBG2("");
+    DBG_VEC3(&supp[0], "   0: ");
+    DBG_VEC3(&supp[1], "   1: ");
+    DBG_VEC3(&supp[2], "   2: ");
+    DBG_VEC3(&supp[3], "   3: ");
+
+    // form polyhedron and add it all to polytope
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[0], a, &supp[2], &witness);
+    DBG("dist: %lf", dist);
+    DBG_VEC3(&witness, "witness: ");
+    gjkPolytopeAddTri(pt, &supp[0], a, &supp[2], dist, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[0], b, &supp[2], &witness);
+    DBG("dist: %lf", dist);
+    gjkPolytopeAddTri(pt, &supp[0], b, &supp[2], dist, &witness);
+    DBG_VEC3(&witness, "witness: ");
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[0], a, &supp[3], &witness);
+    DBG("dist: %lf", dist);
+    DBG_VEC3(&witness, "witness: ");
+    gjkPolytopeAddTri(pt, &supp[0], a, &supp[3], dist, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[0], b, &supp[3], &witness);
+    DBG("dist: %lf", dist);
+    DBG_VEC3(&witness, "witness: ");
+    gjkPolytopeAddTri(pt, &supp[0], b, &supp[3], dist, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[1], a, &supp[2], &witness);
+    DBG("dist: %lf", dist);
+    DBG_VEC3(&witness, "witness: ");
+    gjkPolytopeAddTri(pt, &supp[1], a, &supp[2], dist, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[1], b, &supp[2], &witness);
+    DBG("dist: %lf", dist);
+    DBG_VEC3(&witness, "witness: ");
+    gjkPolytopeAddTri(pt, &supp[1], b, &supp[2], dist, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[1], a, &supp[3], &witness);
+    DBG("dist: %lf", dist);
+    DBG_VEC3(&witness, "witness: ");
+    gjkPolytopeAddTri(pt, &supp[1], a, &supp[3], dist, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[1], b, &supp[3], &witness);
+    DBG("dist: %lf", dist);
+    DBG_VEC3(&witness, "witness: ");
+    gjkPolytopeAddTri(pt, &supp[1], b, &supp[3], dist, &witness);
+
+    return 0;
 }
 
 /** Expands polytope's tri by new vertex v. Triangle tri is replaced by
@@ -532,9 +641,8 @@ static int nextSupport(const void *obj1, const void *obj2, const gjk_t *gjk,
                        gjk_vec3_t *out)
 {
     const gjk_vec3_t *a, *b, *c;
-    gjk_vec3_t supp, supp2; // support point
-    gjk_vec3_t ab, ac, dir; // direction of search of next support point
-    double dist, dist2;
+    gjk_vec3_t supp; // support point
+    double dist;
 
     // fetch triangles' vertices
     a = &tri->v[0];
@@ -543,39 +651,9 @@ static int nextSupport(const void *obj1, const void *obj2, const gjk_t *gjk,
 
     DBG2("");
     if (isZero(tri->dist)){
-        // in this cas origin lies on triangle, so possibilities are:
-        //  1) triangle is on minkowski sum edge and thus touch contact
-        //     is found
-        //  2) triangle can be expanded and best support point must be
-        //     chosen (on left or right side)
-
-        // store normal of triangle in dir vector
-        gjkVec3Sub2(&ab, a, b);
-        gjkVec3Sub2(&ac, a, c);
-        gjkVec3Cross(&dir, &ab, &ac);
-
-        // get first possible support point
-        support(obj1, obj2, &dir, gjk, &supp);
-        dist = gjkVec3PointTriDist2(&supp, a, b, c, NULL);
-        if (isZero(dist)){
-            // if triangle can't be expanded we have touch contact
-            return -1;
-        }
-
-        // get second possible support point
-        gjkVec3Scale(&dir, -1.);
-        support(obj1, obj2, &dir, gjk, &supp2);
-        dist2 = gjkVec3PointTriDist2(&supp2, a, b, c, NULL);
-        if (isZero(dist2)){
-            // situation as previous one
-            return -1;
-        }
-
-        // if we get here best of supp/supp2 point must be chosen
-        // lets choose the nearest one
-        if (dist2 < dist){
-            gjkVec3Copy(&supp, &supp2);
-        }
+        // touch contact
+        gjkVec3Copy(out, gjk_vec3_origin);
+        return -1;
     }else{
         DBG2(" != 0");
         support(obj1, obj2, &tri->witness, gjk, &supp);
@@ -615,11 +693,14 @@ int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
     if (size == 4){
         simplexToPolytope4(&simplex, &polytope);
     }else if (size == 3){
-        simplexToPolytope3(&simplex, &polytope);
+        simplexToPolytope3(obj1, obj2, gjk, &simplex, &polytope);
     }else{ // size == 2
         if (simplexToPolytope2(obj1, obj2, gjk, &simplex, &polytope) != 0){
             gjkPolytopeDestroy(&polytope);
-            return -1;
+
+            // touch contact
+            gjkVec3Set(sep, 0., 0., 0.);
+            return 0;
         }
     }
 
