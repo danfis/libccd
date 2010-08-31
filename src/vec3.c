@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include "vec3.h"
 
+static GJK_VEC3(__gjk_vec3_origin, 0., 0. ,0.);
+gjk_vec3_t *gjk_vec3_origin = &__gjk_vec3_origin;
+
+
 double gjkVec3PointTriDist2(const gjk_vec3_t *P,
                             const gjk_vec3_t *A, const gjk_vec3_t *B,
                             const gjk_vec3_t *C,
@@ -10,6 +14,14 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
     double a, b, c, d, e, f, det, s, t;
     double tmp0, tmp1;
     double dist;
+
+    /*
+    fprintf(stderr, "gjkVec3PointTriDist2():\n");
+    GJK_PRINT_VEC3(P, "    P: ");
+    GJK_PRINT_VEC3(A, "    A: ");
+    GJK_PRINT_VEC3(B, "    B: ");
+    GJK_PRINT_VEC3(C, "    C: ");
+    */
 
     // precompute all values
     gjkVec3Sub2(&E0, B, A);

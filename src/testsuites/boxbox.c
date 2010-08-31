@@ -289,3 +289,63 @@ TEST(boxboxRot)
     }
 
 }
+
+
+
+TEST(boxboxSeparate)
+{
+    gjk_t gjk;
+    GJK_BOX(box1);
+    GJK_BOX(box2);
+    int res;
+    gjk_vec3_t sep, expsep, axis;
+
+    fprintf(stderr, "\n\n\n---- boxboxSeparate ----\n\n\n");
+    box1.x = box1.y = box1.z = 1.;
+    box2.x = 0.5;
+    box2.y = 1.;
+    box2.z = 1.5;
+
+
+    GJK_INIT(&gjk);
+    gjk.support = gjkSupport;
+
+    gjkVec3Set(&box1.pos, -0.5, 0.5, 0.2);
+    res = gjkIntersect(&box1, &box2, &gjk);
+    assertTrue(res);
+
+    res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
+    assertTrue(res == 0);
+    gjkVec3Set(&expsep, -0.25, 0., 0.);
+    assertTrue(gjkVec3Eq(&sep, &expsep));
+
+    gjkVec3Add(&box1.pos, &sep);
+    res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
+    assertTrue(res == 0);
+    gjkVec3Set(&expsep, 0., 0., 0.);
+    assertTrue(gjkVec3Eq(&sep, &expsep));
+
+
+    gjkVec3Set(&box1.pos, -0.3, 0.5, 1.);
+    res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
+    assertTrue(res == 0);
+    gjkVec3Set(&expsep, 0., 0., 0.25);
+    assertTrue(gjkVec3Eq(&sep, &expsep));
+
+
+
+    box1.x = box1.y = box1.z = 1.;
+    box2.x = box2.y = box2.z = 1.;
+    gjkVec3Set(&axis, 0., 0., 1.);
+    gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    gjkVec3Set(&box1.pos, 0., 0., 0.);
+
+    GJK_PRINT_VEC3(&box1.pos, "box1.pos: ");
+    res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
+    assertTrue(res == 0);
+    gjkVec3Set(&expsep, 0., 0., 0.25);
+    assertTrue(gjkVec3Eq(&sep, &expsep));
+
+
+    GJK_PRINT_VEC3(&sep, "sep");
+}

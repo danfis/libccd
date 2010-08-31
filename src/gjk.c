@@ -3,6 +3,54 @@
 #include "vec3.h"
 #include "simplex.h"
 #include "polytope.h"
+#include "dbg.h"
+
+static gjk_vec3_t points_on_sphere[] = {
+	GJK_VEC3_STATIC( 0.000000, -0.000000, -1.000000),
+	GJK_VEC3_STATIC( 0.723608, -0.525725, -0.447219),
+	GJK_VEC3_STATIC(-0.276388, -0.850649, -0.447219),
+	GJK_VEC3_STATIC(-0.894426, -0.000000, -0.447216),
+	GJK_VEC3_STATIC(-0.276388,  0.850649, -0.447220),
+	GJK_VEC3_STATIC( 0.723608,  0.525725, -0.447219),
+	GJK_VEC3_STATIC( 0.276388, -0.850649,  0.447220),
+	GJK_VEC3_STATIC(-0.723608, -0.525725,  0.447219),
+	GJK_VEC3_STATIC(-0.723608,  0.525725,  0.447219),
+	GJK_VEC3_STATIC( 0.276388,  0.850649,  0.447219),
+	GJK_VEC3_STATIC( 0.894426,  0.000000,  0.447216),
+	GJK_VEC3_STATIC(-0.000000,  0.000000,  1.000000), 
+	GJK_VEC3_STATIC( 0.425323, -0.309011, -0.850654),
+	GJK_VEC3_STATIC(-0.162456, -0.499995, -0.850654),
+	GJK_VEC3_STATIC( 0.262869, -0.809012, -0.525738),
+	GJK_VEC3_STATIC( 0.425323,  0.309011, -0.850654),
+	GJK_VEC3_STATIC( 0.850648, -0.000000, -0.525736),
+	GJK_VEC3_STATIC(-0.525730, -0.000000, -0.850652),
+	GJK_VEC3_STATIC(-0.688190, -0.499997, -0.525736),
+	GJK_VEC3_STATIC(-0.162456,  0.499995, -0.850654),
+	GJK_VEC3_STATIC(-0.688190,  0.499997, -0.525736),
+	GJK_VEC3_STATIC( 0.262869,  0.809012, -0.525738),
+	GJK_VEC3_STATIC( 0.951058,  0.309013,  0.000000),
+	GJK_VEC3_STATIC( 0.951058, -0.309013,  0.000000),
+	GJK_VEC3_STATIC( 0.587786, -0.809017,  0.000000),
+	GJK_VEC3_STATIC( 0.000000, -1.000000,  0.000000),
+	GJK_VEC3_STATIC(-0.587786, -0.809017,  0.000000),
+	GJK_VEC3_STATIC(-0.951058, -0.309013, -0.000000),
+	GJK_VEC3_STATIC(-0.951058,  0.309013, -0.000000),
+	GJK_VEC3_STATIC(-0.587786,  0.809017, -0.000000),
+	GJK_VEC3_STATIC(-0.000000,  1.000000, -0.000000),
+	GJK_VEC3_STATIC( 0.587786,  0.809017, -0.000000),
+	GJK_VEC3_STATIC( 0.688190, -0.499997,  0.525736),
+	GJK_VEC3_STATIC(-0.262869, -0.809012,  0.525738),
+	GJK_VEC3_STATIC(-0.850648,  0.000000,  0.525736),
+	GJK_VEC3_STATIC(-0.262869,  0.809012,  0.525738),
+	GJK_VEC3_STATIC( 0.688190,  0.499997,  0.525736),
+	GJK_VEC3_STATIC( 0.525730,  0.000000,  0.850652),
+	GJK_VEC3_STATIC( 0.162456, -0.499995,  0.850654),
+	GJK_VEC3_STATIC(-0.425323, -0.309011,  0.850654),
+	GJK_VEC3_STATIC(-0.425323,  0.309011,  0.850654),
+	GJK_VEC3_STATIC( 0.162456,  0.499995,  0.850654)
+};
+static size_t points_on_sphere_len = sizeof(points_on_sphere) / sizeof(gjk_vec3_t);
+
 
 /** Fills supp vector by support vector from Minkowski difference of obj1
  *  and obj2 in dir direction. */
@@ -43,6 +91,7 @@ static int _gjkIntersect(const void *obj1, const void *obj2,
     unsigned long iterations;
     gjk_vec3_t dir; // direction vector
     gjk_vec3_t last; // last support point
+    int do_simplex_res;
 
     // initialize simplex struct
     gjkSimplexInit(simplex);
@@ -62,13 +111,14 @@ static int _gjkIntersect(const void *obj1, const void *obj2,
     for (iterations = 0UL; iterations < gjk->max_iterations; ++iterations) {
         // obtain support point
         support(obj1, obj2, &dir, gjk, &last);
-        GJK_PRINT_VEC3(&last, "Last:");
+
+        DBG_VEC3(&last, "Last: ");
 
 
         // check if farthest point in Minkowski difference in direction dir
         // isn't somewhere before origin (the test on negative dot product)
         // - because if it is, objects are not intersecting at all.
-        fprintf(stderr, "dot(last, dir): %lf\n", gjkVec3Dot(&last, &dir));
+        DBG("dot(last, dir): %lf", gjkVec3Dot(&last, &dir));
         if (gjkVec3Dot(&last, &dir) < 0.){
             return 0; // return false
         }
@@ -76,11 +126,16 @@ static int _gjkIntersect(const void *obj1, const void *obj2,
         // add last support vector to simplex
         gjkSimplexAdd(simplex, &last);
 
-        // if doSimplex returns true objects intersect, otherwise continue
-        // in algorithm
-        if (doSimplex(simplex, &dir)){
+        // if doSimplex returns 1 if objects intersect, -1 if objects don't
+        // intersect and 0 if algorithm should continue
+        do_simplex_res = doSimplex(simplex, &dir);
+        DBG("do_simplex_res: %d", do_simplex_res);
+        if (do_simplex_res == 1){
             return 1;
+        }else if (do_simplex_res == -1){
+            return 0;
         }
+        DBG2("...");
 
         if (isZero(gjkVec3Len2(&dir))){
             return 0;
@@ -125,81 +180,97 @@ static int doSimplex2(gjk_simplex_t *simplex, gjk_vec3_t *dir)
 
     // dot product AB . AO
     dot = gjkVec3Dot(&AB, &AO);
-    GJK_PRINT_VEC3(A, "doSimplex2(): A: ");
-    GJK_PRINT_VEC3(B, "doSimplex2(): B: ");
-    GJK_PRINT_VEC3(&AB, "doSimplex2(): AB: ");
-    GJK_PRINT_VEC3(&AO, "doSimplex2(): AO: ");
+    DBG_VEC3(A, "doSimplex2(): A: ");
+    DBG_VEC3(B, "doSimplex2(): B: ");
+    DBG_VEC3(&AB, "doSimplex2(): AB: ");
+    DBG_VEC3(&AO, "doSimplex2(): AO: ");
 
     // check if origin doesn't lie on AB segment
     gjkVec3Cross(&tmp, &AB, &AO);
     if (isZero(gjkVec3Len2(&tmp)) && dot > 0.){
-        fprintf(stderr, " --> Lies on AB line\n");
+        DBG2(" --> Lies on AB line");
         return 1;
     }
 
     // check if origin is in area where AB segment is
     if (dot < 0. || isZero(dot)){
         // origin is in outside are of A
-        fprintf(stderr, " --> outside A\n");
+        DBG2(" --> outside A");
 
         gjkSimplexSet1(simplex, A);
         gjkVec3Copy(dir, &AO);
     }else{
         // origin is in area where AB segment is
-        fprintf(stderr, " --> in AB segment\n");
+        DBG2(" --> in AB segment");
 
         // keep simplex untouched and set direction to
         // AB x AO x AB
         tripleCross(&AB, &AO, &AB, dir);
     }
-    GJK_PRINT_VEC3(dir, "doSimplex2(): dir: ");
+    DBG_VEC3(dir, "doSimplex2(): dir: ");
 
     return 0;
 }
 
 static int doSimplex3(gjk_simplex_t *simplex, gjk_vec3_t *dir)
 {
-    const gjk_vec3_t *A, *B, *C;
+    gjk_vec3_t A, B, C;
     gjk_vec3_t AO, AB, AC, ABC, tmp;
-    double dot;
+    double dot, dist;
 
     // get last added as A
-    A = gjkSimplexLast(simplex);
+    gjkVec3Copy(&A, gjkSimplexLast(simplex));
     // get the other points
-    B = gjkSimplexPoint(simplex, 1);
-    C = gjkSimplexPoint(simplex, 0);
+    gjkVec3Copy(&B, gjkSimplexPoint(simplex, 1));
+    gjkVec3Copy(&C, gjkSimplexPoint(simplex, 0));
+
+    // check touching contact
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &A, &B, &C, NULL);
+    DBG("dist: %lf", dist);
+    if (isZero(dist)){
+        return 1;
+    }
+
+    // check if triangle is really triangle (has area > 0)
+    // if not simplex can't be expanded and thus no itersection is found
+    if (gjkVec3Eq(&A, &B) || gjkVec3Eq(&A, &C)){
+        return -1;
+    }
 
     // compute AO vector
-    gjkVec3Copy(&AO, A);
+    gjkVec3Copy(&AO, &A);
     gjkVec3Scale(&AO, -1.);
 
     // compute AB and AC segments and ABC vector (perpendircular to triangle)
-    gjkVec3Sub2(&AB, B, A);
-    gjkVec3Sub2(&AC, C, A);
+    gjkVec3Sub2(&AB, &B, &A);
+    gjkVec3Sub2(&AC, &C, &A);
     gjkVec3Cross(&ABC, &AB, &AC);
 
-    GJK_PRINT_VEC3(A, "doSimplex3(): A: ");
-    GJK_PRINT_VEC3(B, "doSimplex3(): B: ");
-    GJK_PRINT_VEC3(C, "doSimplex3(): C: ");
-    GJK_PRINT_VEC3(&AB, "doSimplex3(): AB: ");
-    GJK_PRINT_VEC3(&AC, "doSimplex3(): AC: ");
-    GJK_PRINT_VEC3(&AO, "doSimplex3(): AO: ");
+    DBG_VEC3(&A, "doSimplex3(): A: ");
+    DBG_VEC3(&B, "doSimplex3(): B: ");
+    DBG_VEC3(&C, "doSimplex3(): C: ");
+    DBG_VEC3(&AB, "doSimplex3(): AB: ");
+    DBG_VEC3(&AC, "doSimplex3(): AC: ");
+    DBG_VEC3(&AO, "doSimplex3(): AO: ");
 
     gjkVec3Cross(&tmp, &ABC, &AC);
     dot = gjkVec3Dot(&tmp, &AO);
     if (dot > 0. || isZero(dot)){
         dot = gjkVec3Dot(&AC, &AO);
         if (dot > 0. || isZero(dot)){
-            gjkSimplexSet2(simplex, C, A);
+            DBG2("1");
+            gjkSimplexSet2(simplex, &C, &A);
             tripleCross(&AC, &AO, &AC, dir);
         }else{
 gjk_do_simplex3_45:
             dot = gjkVec3Dot(&AB, &AO);
             if (dot > 0. || isZero(dot)){
-                gjkSimplexSet2(simplex, B, A);
+                DBG2("2");
+                gjkSimplexSet2(simplex, &B, &A);
                 tripleCross(&AB, &AO, &AB, dir);
             }else{
-                gjkSimplexSet1(simplex, A);
+                DBG2("3");
+                gjkSimplexSet1(simplex, &A);
                 gjkVec3Copy(dir, &AO);
             }
         }
@@ -211,54 +282,81 @@ gjk_do_simplex3_45:
         }else{
             dot = gjkVec3Dot(&ABC, &AO);
             if (dot > 0. || isZero(dot)){
+                DBG2("4");
                 gjkVec3Copy(dir, &ABC);
             }else{
-                gjkSimplexSet3(simplex, B, C, A);
+                DBG2("5");
+                gjkSimplexSet3(simplex, &B, &C, &A);
                 gjkVec3Copy(dir, &ABC);
                 gjkVec3Scale(dir, -1.);
             }
         }
     }
-    GJK_PRINT_VEC3(dir, "doSimplex3(): dir: ");
+
+    DBG_VEC3(&A, "doSimplex3(): A: ");
+    DBG_VEC3(&B, "doSimplex3(): B: ");
+    DBG_VEC3(&C, "doSimplex3(): C: ");
+    DBG_VEC3(dir, "doSimplex3(): dir: ");
 
     return 0;
 }
 
 static int doSimplex4(gjk_simplex_t *simplex, gjk_vec3_t *dir)
 {
-    const gjk_vec3_t *A, *B, *C, *D;
+    gjk_vec3_t A, B, C, D;
     gjk_vec3_t AO, AB, AC, AD, ABC, ACD, ADB;
     int B_on_ACD, C_on_ADB, D_on_ABC;
     int AB_O, AC_O, AD_O;
+    double dist;
 
     // get last added as A
-    A = gjkSimplexLast(simplex);
+    gjkVec3Copy(&A, gjkSimplexLast(simplex));
     // get the other points
-    B = gjkSimplexPoint(simplex, 2);
-    C = gjkSimplexPoint(simplex, 1);
-    D = gjkSimplexPoint(simplex, 0);
-    fprintf(stderr, "  %ld\n", (long)A);
-    fprintf(stderr, "  %ld\n", (long)B);
-    fprintf(stderr, "  %ld\n", (long)C);
-    fprintf(stderr, "  %ld\n", (long)D);
-    GJK_PRINT_VEC3(A, "doSimplex3(): A: ");
-    GJK_PRINT_VEC3(B, "doSimplex3(): B: ");
-    GJK_PRINT_VEC3(C, "doSimplex3(): C: ");
-    GJK_PRINT_VEC3(D, "doSimplex3(): D: ");
+    gjkVec3Copy(&B, gjkSimplexPoint(simplex, 2));
+    gjkVec3Copy(&C, gjkSimplexPoint(simplex, 1));
+    gjkVec3Copy(&D, gjkSimplexPoint(simplex, 0));
+    DBG_VEC3(&A, "doSimplex4(): A: ");
+    DBG_VEC3(&B, "doSimplex4(): B: ");
+    DBG_VEC3(&C, "doSimplex4(): C: ");
+    DBG_VEC3(&D, "doSimplex4(): D: ");
+
+    // check if tetrahedron is really tetrahedron (has volume > 0)
+    // if it is not simplex can't be expanded and thus no intersection is
+    // found
+    dist = gjkVec3PointTriDist2(&A, &B, &C, &D, NULL);
+    DBG("dist4: %lf", dist);
+    if (isZero(dist)){
+        return -1;
+    }
+
+    // check if origin lies on some of tetrahedron's face - if so objects
+    // intersect
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &A, &B, &C, NULL);
+    DBG("--dist: %lf", dist);
+    if (isZero(dist))
+        return 1;
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &A, &C, &D, NULL);
+    DBG("--dist: %lf", dist);
+    if (isZero(dist))
+        return 1;
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &A, &B, &D, NULL);
+    DBG("--dist: %lf", dist);
+    if (isZero(dist))
+        return 1;
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &B, &C, &D, NULL);
+    DBG("--dist: %lf", dist);
+    if (isZero(dist))
+        return 1;
 
     // compute AO, AB, AC, AD segments and ABC, ACD, ADB normal vectors
-    gjkVec3Copy(&AO, A);
+    gjkVec3Copy(&AO, &A);
     gjkVec3Scale(&AO, -1.);
-    gjkVec3Sub2(&AB, B, A);
-    gjkVec3Sub2(&AC, C, A);
-    gjkVec3Sub2(&AD, D, A);
+    gjkVec3Sub2(&AB, &B, &A);
+    gjkVec3Sub2(&AC, &C, &A);
+    gjkVec3Sub2(&AD, &D, &A);
     gjkVec3Cross(&ABC, &AB, &AC);
     gjkVec3Cross(&ACD, &AC, &AD);
     gjkVec3Cross(&ADB, &AD, &AB);
-    GJK_PRINT_VEC3(A, "doSimplex3(): A: ");
-    GJK_PRINT_VEC3(B, "doSimplex3(): B: ");
-    GJK_PRINT_VEC3(C, "doSimplex3(): C: ");
-    GJK_PRINT_VEC3(D, "doSimplex3(): D: ");
 
     // side (positive or negative) of B, C, D relative to planes ACD, ADB
     // and ABC respectively
@@ -281,15 +379,15 @@ static int doSimplex4(gjk_simplex_t *simplex, gjk_vec3_t *dir)
         // B is farthest from the origin among all of the tetrahedron's
         // points, so remove it from the list and go on with the triangle
         // case
-        gjkSimplexSet3(simplex, D, C, A);
-        fprintf(stderr, "  !AB_O");
+        gjkSimplexSet3(simplex, &D, &C, &A);
+        DBG2("  !AB_O");
     }else if (!AC_O){
         // C is farthest
-        gjkSimplexSet3(simplex, B, D, A);
-        fprintf(stderr, "  !AC_O");
+        gjkSimplexSet3(simplex, &B, &D, &A);
+        DBG2("  !AC_O");
     }else{ // (!AD_O)
-        gjkSimplexSet3(simplex, C, B, A);
-        fprintf(stderr, "  !AD_O");
+        gjkSimplexSet3(simplex, &C, &B, &A);
+        DBG2("  !AD_O");
     }
 
     return doSimplex3(simplex, dir);
@@ -297,7 +395,7 @@ static int doSimplex4(gjk_simplex_t *simplex, gjk_vec3_t *dir)
 
 static int doSimplex(gjk_simplex_t *simplex, gjk_vec3_t *dir)
 {
-    fprintf(stderr, "doSimplex: size: %d\n", gjkSimplexSize(simplex));
+    DBG("doSimplex: size: %d", gjkSimplexSize(simplex));
     if (gjkSimplexSize(simplex) == 2){
         // simplex contains segment only one segment
         return doSimplex2(simplex, dir);
@@ -325,10 +423,9 @@ _gjk_inline void tripleCross(const gjk_vec3_t *a, const gjk_vec3_t *b,
 
 /** Transforms simplex to polytope. It is assumed that simplex has 4
  *  vertices! */
-static void simplexToPolytope(const gjk_simplex_t *simplex, gjk_polytope_t *pt)
+static void simplexToPolytope4(const gjk_simplex_t *simplex, gjk_polytope_t *pt)
 {
     const gjk_vec3_t *a, *b, *c, *d;
-    GJK_VEC3(origin, 0., 0., 0.);
     gjk_vec3_t witness;
     double dist;
 
@@ -340,15 +437,61 @@ static void simplexToPolytope(const gjk_simplex_t *simplex, gjk_polytope_t *pt)
 
     // get distances and witness points of all four triangles from origin
     // and add triangles to polytope
-    dist = gjkVec3PointTriDist2(&origin, a, b, c, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, a, b, c, &witness);
     gjkPolytopeAddTri(pt, a, b, c, dist, &witness);
-    dist = gjkVec3PointTriDist2(&origin, a, c, d, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, a, c, d, &witness);
     gjkPolytopeAddTri(pt, a, c, d, dist, &witness);
-    dist = gjkVec3PointTriDist2(&origin, a, b, d, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, a, b, d, &witness);
     gjkPolytopeAddTri(pt, a, b, d, dist, &witness);
-    dist = gjkVec3PointTriDist2(&origin, b, c, d, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, b, c, d, &witness);
     gjkPolytopeAddTri(pt, b, c, d, dist, &witness);
 
+}
+
+/** Transforms simplex to polytope, three vertices required */
+static void simplexToPolytope3(const gjk_simplex_t *simplex, gjk_polytope_t *pt)
+{
+    const gjk_vec3_t *a, *b, *c;
+    gjk_vec3_t witness;
+    double dist;
+
+    // first get all three vertices from simplex
+    a = gjkSimplexPoint(simplex, 0);
+    b = gjkSimplexPoint(simplex, 1);
+    c = gjkSimplexPoint(simplex, 2);
+
+    // get distances and witness point of single triangle
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, a, b, c, &witness);
+    gjkPolytopeAddTri(pt, a, b, c, dist, &witness);
+}
+
+/** Transforms simplex to polytope, two vertices required */
+static int simplexToPolytope2(const void *obj1, const void *obj2,
+                              const gjk_t *gjk,
+                              gjk_simplex_t *simplex, gjk_polytope_t *pt)
+{
+    const gjk_vec3_t *a, *b;
+    gjk_vec3_t c, ab;
+    size_t i;
+
+    a = gjkSimplexPoint(simplex, 0);
+    b = gjkSimplexPoint(simplex, 1);
+
+    gjkVec3Sub2(&ab, b, a);
+
+    // We must somehow guess the third point of edge of minkowski sum other
+    // than a and b.
+    // Use points_on_sphere array of vectors for guess.
+    for (i = 0; i < points_on_sphere_len; i++){
+        support(obj1, obj2, &points_on_sphere[i], gjk, &c);
+        if (!gjkVec3Eq(a, &c) && !gjkVec3Eq(b, &c)){
+            gjkSimplexAdd(simplex, &c);
+            simplexToPolytope3(simplex, pt);
+            return 0;
+        }
+    }
+
+    return -1;
 }
 
 /** Expands polytope's tri by new vertex v. Triangle tri is replaced by
@@ -356,7 +499,6 @@ static void simplexToPolytope(const gjk_simplex_t *simplex, gjk_polytope_t *pt)
 static void expandPolytope(gjk_polytope_t *pt, gjk_polytope_tri_t *tri,
                            const gjk_vec3_t *v)
 {
-    GJK_VEC3(origin, 0., 0., 0.);
     gjk_vec3_t a, b, c;
     gjk_vec3_t witness;
     double dist;
@@ -365,16 +507,90 @@ static void expandPolytope(gjk_polytope_t *pt, gjk_polytope_tri_t *tri,
     gjkVec3Copy(&b, &tri->v[1]);
     gjkVec3Copy(&c, &tri->v[2]);
 
+    DBG2("");
+    DBG_VEC3(&a, "   a: ");
+    DBG_VEC3(&b, "   b: ");
+    DBG_VEC3(&c, "   c: ");
+    DBG_VEC3(v, "   v: ");
+
     // obtain distances to origin and add these triangles to polytope
-    dist = gjkVec3PointTriDist2(&origin, &a, &b, v, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &a, &b, v, &witness);
     gjkPolytopeAddTri(pt, &a, &b, v, dist, &witness);
-    dist = gjkVec3PointTriDist2(&origin, &b, &c, v, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &b, &c, v, &witness);
     gjkPolytopeAddTri(pt, &b, &c, v, dist, &witness);
-    dist = gjkVec3PointTriDist2(&origin, &c, &a, v, &witness);
+    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &c, &a, v, &witness);
     gjkPolytopeAddTri(pt, &c, &a, v, dist, &witness);
 
     // delete original triangle tri from polytope
     gjkPolytopeDelTri(pt, tri);
+}
+
+/** Finds next support point (at stores it in out argument).
+ *  Returns 0 on success, -1 otherwise */
+static int nextSupport(const void *obj1, const void *obj2, const gjk_t *gjk,
+                       const gjk_polytope_tri_t *tri,
+                       gjk_vec3_t *out)
+{
+    const gjk_vec3_t *a, *b, *c;
+    gjk_vec3_t supp, supp2; // support point
+    gjk_vec3_t ab, ac, dir; // direction of search of next support point
+    double dist, dist2;
+
+    // fetch triangles' vertices
+    a = &tri->v[0];
+    b = &tri->v[1];
+    c = &tri->v[2];
+
+    DBG2("");
+    if (isZero(tri->dist)){
+        // in this cas origin lies on triangle, so possibilities are:
+        //  1) triangle is on minkowski sum edge and thus touch contact
+        //     is found
+        //  2) triangle can be expanded and best support point must be
+        //     chosen (on left or right side)
+
+        // store normal of triangle in dir vector
+        gjkVec3Sub2(&ab, a, b);
+        gjkVec3Sub2(&ac, a, c);
+        gjkVec3Cross(&dir, &ab, &ac);
+
+        // get first possible support point
+        support(obj1, obj2, &dir, gjk, &supp);
+        dist = gjkVec3PointTriDist2(&supp, a, b, c, NULL);
+        if (isZero(dist)){
+            // if triangle can't be expanded we have touch contact
+            return -1;
+        }
+
+        // get second possible support point
+        gjkVec3Scale(&dir, -1.);
+        support(obj1, obj2, &dir, gjk, &supp2);
+        dist2 = gjkVec3PointTriDist2(&supp2, a, b, c, NULL);
+        if (isZero(dist2)){
+            // situation as previous one
+            return -1;
+        }
+
+        // if we get here best of supp/supp2 point must be chosen
+        // lets choose the nearest one
+        if (dist2 < dist){
+            gjkVec3Copy(&supp, &supp2);
+        }
+    }else{
+        DBG2(" != 0");
+        support(obj1, obj2, &tri->witness, gjk, &supp);
+    }
+
+
+    // check if new point can significantly expand polytope
+    dist = gjkVec3PointTriDist2(&supp, a, b, c, NULL);
+    DBG("  dist: %lf", dist);
+    if (dist < gjk->epa_tolerance)
+        return -1;
+
+    gjkVec3Copy(out, &supp);
+    DBG_VEC3(&supp, "  supp: ");
+    return 0;
 }
 
 int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
@@ -384,8 +600,7 @@ int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
     gjk_polytope_t polytope;
     gjk_polytope_tri_t *nearest; // nearest triangle to origin
     gjk_vec3_t supp; // support point
-    double dist;
-    int ret;
+    int ret, size;
 
     // run GJK and obtain terminal simplex
     ret = _gjkIntersect(obj1, obj2, gjk, &simplex);
@@ -393,38 +608,43 @@ int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
         return -1;
 
 
-    // TODO: exchange this to some initialization of simplex
-    if (gjkSimplexSize(&simplex) != 4){
-        fprintf(stderr, "gjkSeparateEPA: Simplex.size < 4\n");
-        return -2;
-    }
-
-
     gjkPolytopeInit(&polytope);
 
     // transform simplex to polytope - simplex won't be used anymore
-    simplexToPolytope(&simplex, &polytope);
+    size = gjkSimplexSize(&simplex);
+    if (size == 4){
+        simplexToPolytope4(&simplex, &polytope);
+    }else if (size == 3){
+        simplexToPolytope3(&simplex, &polytope);
+    }else{ // size == 2
+        if (simplexToPolytope2(obj1, obj2, gjk, &simplex, &polytope) != 0){
+            gjkPolytopeDestroy(&polytope);
+            return -1;
+        }
+    }
 
     while (1){
         // get triangle nearest to origin
         nearest = gjkPolytopeNearest(&polytope);
 
-        // get next support point
-        support(obj1, obj2, &nearest->witness, gjk, &supp);
+        DBG2("nearest:");
+        DBG_VEC3(&nearest->v[0], "   0: ");
+        DBG_VEC3(&nearest->v[1], "   1: ");
+        DBG_VEC3(&nearest->v[2], "   2: ");
+        DBG("   dist: %lf", nearest->dist);
+        DBG_VEC3(&nearest->witness, "   w: ");
 
-        // check if new point can significantly expand polytope, if not
-        // break cycle
-        dist = gjkVec3PointTriDist2(&supp,
-                    &nearest->v[0], &nearest->v[1], &nearest->v[2], NULL);
-        if (dist < gjk->epa_tolerance)
+        // get next support point
+        if (nextSupport(obj1, obj2, gjk, nearest, &supp) != 0)
             break;
 
-        // expand nearest triangle using new point supp
+        // expand nearest triangle using new point - supp
         expandPolytope(&polytope, nearest, &supp);
     }
 
     // set separation vector
     gjkVec3Copy(sep, &nearest->witness);
+    gjkVec3Scale(sep, -1.);
 
     gjkPolytopeDestroy(&polytope);
 

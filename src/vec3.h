@@ -13,6 +13,11 @@ struct _gjk_vec3_t {
 typedef struct _gjk_vec3_t gjk_vec3_t;
 
 
+/**
+ * Holds origin (0,0,0) - this variable is meant to be read-only!
+ */
+extern gjk_vec3_t *gjk_vec3_origin;
+
 #define GJK_PRINT_VEC3(vec, prefix) \
     fprintf(stderr, prefix "[%lf %lf %lf]\n", \
             gjkVec3X(vec), gjkVec3Y(vec), gjkVec3Z(vec))
@@ -27,8 +32,11 @@ _gjk_inline int isZero(double val);
 _gjk_inline int gjkEq(double a, double b);
 
 
+#define GJK_VEC3_STATIC(x, y, z) \
+    { { (x), (y), (z) } }
+
 #define GJK_VEC3(name, x, y, z) \
-    gjk_vec3_t name = { {x, y, z} }
+    gjk_vec3_t name = GJK_VEC3_STATIC((x), (y), (z))
 
 _gjk_inline double gjkVec3X(const gjk_vec3_t *v);
 _gjk_inline double gjkVec3Y(const gjk_vec3_t *v);
@@ -37,7 +45,7 @@ _gjk_inline double gjkVec3Z(const gjk_vec3_t *v);
 /**
  * Returns true if a and b equal.
  */
-_gjk_inline int gjkVec3Eq(const gjk_vec3_t *a, gjk_vec3_t *b);
+_gjk_inline int gjkVec3Eq(const gjk_vec3_t *a, const gjk_vec3_t *b);
 
 /**
  * Returns squared length of vector.
@@ -139,7 +147,7 @@ _gjk_inline double gjkVec3Z(const gjk_vec3_t *v)
     return v->v[2];
 }
 
-_gjk_inline int gjkVec3Eq(const gjk_vec3_t *a, gjk_vec3_t *b)
+_gjk_inline int gjkVec3Eq(const gjk_vec3_t *a, const gjk_vec3_t *b)
 {
     return gjkEq(gjkVec3X(a), gjkVec3X(b))
             && gjkEq(gjkVec3Y(a), gjkVec3Y(b))
