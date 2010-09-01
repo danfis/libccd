@@ -1,8 +1,79 @@
 #include <stdio.h>
 #include "vec3.h"
+#include "dbg.h"
 
 static GJK_VEC3(__gjk_vec3_origin, 0., 0. ,0.);
 gjk_vec3_t *gjk_vec3_origin = &__gjk_vec3_origin;
+
+
+double gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
+                                const gjk_vec3_t *x0, const gjk_vec3_t *b,
+                                gjk_vec3_t *witness)
+{
+    // The computation comes from solving equation of segment:
+    //      S(t) = x0 + t.d
+    //          where - x0 is initial point of segment
+    //                - d is direction of segment from x0 (|d| > 0)
+    //                - t belongs to <0, 1> interval
+    // 
+    // Than, distance from a segment to some point P can be expressed:
+    //      D(t) = |x0 + t.d - P|^2
+    //          which is distance from any point on segment. Minimization
+    //          of this function brings distance from P to segment.
+    // Minimization of D(t) leads to simple quadratic equation that's
+    // solving is straightforward.
+    //
+    // Bonus of this method is witness point for free.
+
+    double dist, t;
+    gjk_vec3_t d, a;
+
+    // direction of segment
+    gjkVec3Sub2(&d, b, x0);
+
+    // precompute vector from P to x0
+    gjkVec3Sub2(&a, x0, P);
+
+    t  = -1. * gjkVec3Dot(&a, &d);
+    t /= gjkVec3Len2(&d);
+
+    DBG_VEC3(x0, "x0:");
+    DBG_VEC3(b, "b:");
+    DBG_VEC3(P, "P:");
+    DBG_VEC3(&a, "a:");
+    DBG_VEC3(&d, "d:");
+    DBG("t: %lf", t);
+    DBG("   %lf", gjkVec3Dot(&a, &d));
+    DBG("   %lf", gjkVec3Len2(&d));
+
+    if (t < 0. || isZero(t)){
+        dist = gjkVec3Dist2(x0, P);
+        if (witness)
+            gjkVec3Copy(witness, x0);
+    }else if (t > 1. || gjkEq(t, 1.)){
+        dist = gjkVec3Dist2(b, P);
+        if (witness)
+            gjkVec3Copy(witness, b);
+    }else{
+        if (witness){
+            gjkVec3Copy(witness, &d);
+            gjkVec3Scale(witness, t);
+            gjkVec3Add(witness, x0);
+            dist = gjkVec3Dist2(witness, P);
+        }else{
+            // recycling variables
+            gjkVec3Scale(&d, t);
+            gjkVec3Add(&d, &a);
+            dist = gjkVec3Len2(&d);
+        }
+    }
+
+    DBG("dist: %lf", dist);
+    if (witness){
+        DBG_VEC3(witness, "witness: ");
+    }
+    return dist;
+}
 
 
 double gjkVec3PointTriDist2(const gjk_vec3_t *P,

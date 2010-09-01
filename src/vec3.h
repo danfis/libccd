@@ -98,6 +98,15 @@ _gjk_inline void gjkVec3Cross(gjk_vec3_t *d, const gjk_vec3_t *a, const gjk_vec3
 
 
 /**
+ * Returns distance^2 of point P to segment ab.
+ * If witness is non-NULL it is filled with coordinates of point from which
+ * was computaed distance to point P.
+ */
+double gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
+                                const gjk_vec3_t *a, const gjk_vec3_t *b,
+                                gjk_vec3_t *witness);
+
+/**
  * Returns distance^2 of point P from triangle formed by triplet a, b, c.
  * If witness vector is provided it is filled with coordinates of point
  * from which was computed distance to point P.
