@@ -68,6 +68,9 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
                             const gjk_vec3_t *C,
                             gjk_vec3_t *witness)
 {
+    // TODO: Either explain solution or reference paper it comes from
+    //       (mainly because of the regions)
+
     gjk_vec3_t E0, E1, D;
     double a, b, c, d, e, f, det, s, t;
     double tmp0, tmp1;

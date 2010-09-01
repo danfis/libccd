@@ -5,6 +5,10 @@
 #include "polytope.h"
 #include "dbg.h"
 
+// TODO: move declarations of all static functions on top
+// TODO: check that code doesn't lack of explanation
+// TODO: add references to papers
+
 /** samples points on unit sphere (taken from bullet source) */
 static gjk_vec3_t points_on_sphere[] = {
 	GJK_VEC3_STATIC( 0.000000, -0.000000, -1.000000),
@@ -426,39 +430,39 @@ _gjk_inline void tripleCross(const gjk_vec3_t *a, const gjk_vec3_t *b,
 
 /** Transforms simplex to polytope. It is assumed that simplex has 4
  *  vertices! */
-static void simplexToPolytope4(const gjk_simplex_t *simplex, gjk_polytope_t *pt)
+static void simplexToPolytope4(const gjk_simplex_t *simplex, gjk_pt_t *pt)
 {
-    const gjk_vec3_t *a, *b, *c, *d;
-    gjk_vec3_t witness;
-    double dist;
+    // simply create tetrahedron
+    gjk_pt_vertex_t *v[4];
+    gjk_pt_edge_t *e[6];
+    size_t i;
 
-    // first get all four vertices from simplex
-    a = gjkSimplexPoint(simplex, 0);
-    b = gjkSimplexPoint(simplex, 1);
-    c = gjkSimplexPoint(simplex, 2);
-    d = gjkSimplexPoint(simplex, 3);
+    for (i = 0; i < 4; i++){
+        v[i] = gjkPtAddVertex(pt, gjkSimplexPoint(simplex, i));
+    }
+    
+    e[0] = gjkPtAddEdge(pt, v[0], v[1]);
+    e[1] = gjkPtAddEdge(pt, v[1], v[2]);
+    e[2] = gjkPtAddEdge(pt, v[2], v[0]);
+    e[3] = gjkPtAddEdge(pt, v[3], v[0]);
+    e[4] = gjkPtAddEdge(pt, v[3], v[1]);
+    e[5] = gjkPtAddEdge(pt, v[3], v[2]);
 
-    // get distances and witness points of all four triangles from origin
-    // and add triangles to polytope
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, a, b, c, &witness);
-    gjkPolytopeAddTri(pt, a, b, c, dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, a, c, d, &witness);
-    gjkPolytopeAddTri(pt, a, c, d, dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, a, b, d, &witness);
-    gjkPolytopeAddTri(pt, a, b, d, dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, b, c, d, &witness);
-    gjkPolytopeAddTri(pt, b, c, d, dist, &witness);
-
+    gjkPtAddFace(pt, e[0], e[1], e[2]);
+    gjkPtAddFace(pt, e[3], e[4], e[0]);
+    gjkPtAddFace(pt, e[4], e[5], e[1]);
+    gjkPtAddFace(pt, e[5], e[3], e[2]);
 }
 
 /** Transforms simplex to polytope, three vertices required */
 static int simplexToPolytope3(const void *obj1, const void *obj2,
                               const gjk_t *gjk,
-                              const gjk_simplex_t *simplex, gjk_polytope_t *pt)
+                              const gjk_simplex_t *simplex, gjk_pt_t *pt)
 {
     const gjk_vec3_t *a, *b, *c;
-    gjk_vec3_t ab, ac, dir, d, e;
-    gjk_vec3_t witness;
+    gjk_vec3_t ab, ac, dir, d, d2;
+    gjk_pt_vertex_t *v[5];
+    gjk_pt_edge_t *e[9];
     double dist;
 
     a = gjkSimplexPoint(simplex, 0);
@@ -482,26 +486,39 @@ static int simplexToPolytope3(const void *obj1, const void *obj2,
 
     // and second one take in opposite direction
     gjkVec3Scale(&dir, -1.);
-    support(obj1, obj2, &dir, gjk, &e);
+    support(obj1, obj2, &dir, gjk, &d2);
 
     // check if abc isn't already on edge
-    dist = gjkVec3PointTriDist2(&e, a, b, c, NULL);
+    dist = gjkVec3PointTriDist2(&d2, a, b, c, NULL);
     if (isZero(dist))
         return -1;
 
-    // form polyhedron and add it all to polytope
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, a, b, &d, &witness);
-    gjkPolytopeAddTri(pt, a, b, &d, dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, b, c, &d, &witness);
-    gjkPolytopeAddTri(pt, b, c, &d, dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, c, a, &d, &witness);
-    gjkPolytopeAddTri(pt, c, a, &d, dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, a, b, &e, &witness);
-    gjkPolytopeAddTri(pt, a, b, &e, dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, b, c, &e, &witness);
-    gjkPolytopeAddTri(pt, b, c, &e, dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, c, a, &e, &witness);
-    gjkPolytopeAddTri(pt, c, a, &e, dist, &witness);
+    // form polyhedron
+    v[0] = gjkPtAddVertex(pt, a);
+    v[1] = gjkPtAddVertex(pt, b);
+    v[2] = gjkPtAddVertex(pt, c);
+    v[3] = gjkPtAddVertex(pt, &d);
+    v[4] = gjkPtAddVertex(pt, &d2);
+
+    e[0] = gjkPtAddEdge(pt, v[0], v[1]);
+    e[1] = gjkPtAddEdge(pt, v[1], v[2]);
+    e[2] = gjkPtAddEdge(pt, v[2], v[0]);
+
+    e[3] = gjkPtAddEdge(pt, v[3], v[0]);
+    e[4] = gjkPtAddEdge(pt, v[3], v[1]);
+    e[5] = gjkPtAddEdge(pt, v[3], v[2]);
+
+    e[6] = gjkPtAddEdge(pt, v[4], v[0]);
+    e[7] = gjkPtAddEdge(pt, v[4], v[1]);
+    e[8] = gjkPtAddEdge(pt, v[4], v[2]);
+
+    gjkPtAddFace(pt, e[3], e[4], e[0]);
+    gjkPtAddFace(pt, e[4], e[5], e[1]);
+    gjkPtAddFace(pt, e[5], e[3], e[2]);
+
+    gjkPtAddFace(pt, e[6], e[7], e[0]);
+    gjkPtAddFace(pt, e[7], e[8], e[1]);
+    gjkPtAddFace(pt, e[8], e[6], e[2]);
 
     return 0;
 }
@@ -509,14 +526,15 @@ static int simplexToPolytope3(const void *obj1, const void *obj2,
 /** Transforms simplex to polytope, two vertices required */
 static int simplexToPolytope2(const void *obj1, const void *obj2,
                               const gjk_t *gjk,
-                              const gjk_simplex_t *simplex, gjk_polytope_t *pt)
+                              const gjk_simplex_t *simplex, gjk_pt_t *pt)
 {
     const gjk_vec3_t *a, *b;
-    gjk_vec3_t ab, ac, dir, witness;
+    gjk_vec3_t ab, ac, dir;
     gjk_vec3_t supp[4];
+    gjk_pt_vertex_t *v[6];
+    gjk_pt_edge_t *e[12];
     size_t i;
     int found;
-    double dist;
 
     a = gjkSimplexPoint(simplex, 0);
     b = gjkSimplexPoint(simplex, 1);
@@ -567,108 +585,194 @@ static int simplexToPolytope2(const void *obj1, const void *obj2,
     DBG_VEC3(&supp[2], "   2: ");
     DBG_VEC3(&supp[3], "   3: ");
 
-    // form polyhedron and add it all to polytope
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[0], a, &supp[2], &witness);
-    DBG("dist: %lf", dist);
-    DBG_VEC3(&witness, "witness: ");
-    gjkPolytopeAddTri(pt, &supp[0], a, &supp[2], dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[0], b, &supp[2], &witness);
-    DBG("dist: %lf", dist);
-    gjkPolytopeAddTri(pt, &supp[0], b, &supp[2], dist, &witness);
-    DBG_VEC3(&witness, "witness: ");
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[0], a, &supp[3], &witness);
-    DBG("dist: %lf", dist);
-    DBG_VEC3(&witness, "witness: ");
-    gjkPolytopeAddTri(pt, &supp[0], a, &supp[3], dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[0], b, &supp[3], &witness);
-    DBG("dist: %lf", dist);
-    DBG_VEC3(&witness, "witness: ");
-    gjkPolytopeAddTri(pt, &supp[0], b, &supp[3], dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[1], a, &supp[2], &witness);
-    DBG("dist: %lf", dist);
-    DBG_VEC3(&witness, "witness: ");
-    gjkPolytopeAddTri(pt, &supp[1], a, &supp[2], dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[1], b, &supp[2], &witness);
-    DBG("dist: %lf", dist);
-    DBG_VEC3(&witness, "witness: ");
-    gjkPolytopeAddTri(pt, &supp[1], b, &supp[2], dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[1], a, &supp[3], &witness);
-    DBG("dist: %lf", dist);
-    DBG_VEC3(&witness, "witness: ");
-    gjkPolytopeAddTri(pt, &supp[1], a, &supp[3], dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &supp[1], b, &supp[3], &witness);
-    DBG("dist: %lf", dist);
-    DBG_VEC3(&witness, "witness: ");
-    gjkPolytopeAddTri(pt, &supp[1], b, &supp[3], dist, &witness);
+    // form polyhedron
+    v[0] = gjkPtAddVertex(pt, a);
+    v[1] = gjkPtAddVertex(pt, &supp[0]);
+    v[2] = gjkPtAddVertex(pt, b);
+    v[3] = gjkPtAddVertex(pt, &supp[1]);
+    v[4] = gjkPtAddVertex(pt, &supp[2]);
+    v[5] = gjkPtAddVertex(pt, &supp[3]);
+
+    e[0] = gjkPtAddEdge(pt, v[0], v[1]);
+    e[1] = gjkPtAddEdge(pt, v[1], v[2]);
+    e[2] = gjkPtAddEdge(pt, v[2], v[3]);
+    e[3] = gjkPtAddEdge(pt, v[3], v[0]);
+
+    e[4] = gjkPtAddEdge(pt, v[4], v[0]);
+    e[5] = gjkPtAddEdge(pt, v[4], v[1]);
+    e[6] = gjkPtAddEdge(pt, v[4], v[2]);
+    e[7] = gjkPtAddEdge(pt, v[4], v[3]);
+
+    e[8]  = gjkPtAddEdge(pt, v[5], v[0]);
+    e[9]  = gjkPtAddEdge(pt, v[5], v[1]);
+    e[10] = gjkPtAddEdge(pt, v[5], v[2]);
+    e[11] = gjkPtAddEdge(pt, v[5], v[3]);
+
+    gjkPtAddFace(pt, e[4], e[5], e[0]);
+    gjkPtAddFace(pt, e[5], e[6], e[1]);
+    gjkPtAddFace(pt, e[6], e[7], e[2]);
+    gjkPtAddFace(pt, e[7], e[4], e[3]);
+
+    gjkPtAddFace(pt, e[8],  e[9],  e[0]);
+    gjkPtAddFace(pt, e[9],  e[10], e[1]);
+    gjkPtAddFace(pt, e[10], e[11], e[2]);
+    gjkPtAddFace(pt, e[11], e[8],  e[3]);
 
     return 0;
 }
 
 /** Expands polytope's tri by new vertex v. Triangle tri is replaced by
  *  three triangles each with one vertex in v. */
-static void expandPolytope(gjk_polytope_t *pt, gjk_polytope_tri_t *tri,
-                           const gjk_vec3_t *v)
+static void expandPolytope(gjk_pt_t *pt, gjk_pt_el_t *el,
+                           const gjk_vec3_t *newv)
 {
-    gjk_vec3_t a, b, c;
-    gjk_vec3_t witness;
-    double dist;
+    gjk_pt_vertex_t *v[5];
+    gjk_pt_edge_t *e[8];
+    gjk_pt_face_t *f[2];
 
-    gjkVec3Copy(&a, &tri->v[0]);
-    gjkVec3Copy(&b, &tri->v[1]);
-    gjkVec3Copy(&c, &tri->v[2]);
 
-    DBG2("");
-    DBG_VEC3(&a, "   a: ");
-    DBG_VEC3(&b, "   b: ");
-    DBG_VEC3(&c, "   c: ");
-    DBG_VEC3(v, "   v: ");
+    // element can be either segment or triangle
+    if (el->type == GJK_PT_EDGE){
+        gjkPtEdgeVertices((const gjk_pt_edge_t *)el, &v[0], &v[2]);
 
-    // obtain distances to origin and add these triangles to polytope
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &a, &b, v, &witness);
-    gjkPolytopeAddTri(pt, &a, &b, v, dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &b, &c, v, &witness);
-    gjkPolytopeAddTri(pt, &b, &c, v, dist, &witness);
-    dist = gjkVec3PointTriDist2(gjk_vec3_origin, &c, &a, v, &witness);
-    gjkPolytopeAddTri(pt, &c, &a, v, dist, &witness);
+        gjkPtEdgeFaces((gjk_pt_edge_t *)el, &f[0], &f[1]);
 
-    // delete original triangle tri from polytope
-    gjkPolytopeDelTri(pt, tri);
+        // TODO: explain this mess!
+        if (f[0]){
+            gjkPtFaceEdges(f[0], &e[0], &e[1], &e[2]);
+            if (e[0] == (gjk_pt_edge_t *)el){
+                e[0] = e[2];
+            }else if (e[1] == (gjk_pt_edge_t *)el){
+                e[1] = e[2];
+            }
+            gjkPtEdgeVertices(e[0], &v[1], &v[3]);
+            if (v[1] != v[0] && v[3] != v[0]){
+                e[2] = e[0];
+                e[0] = e[1];
+                e[1] = e[2];
+                if (v[1] != v[2])
+                    v[1] = v[3];
+            }else{
+                if (v[1] != v[0])
+                    v[1] = v[3];
+            }
+
+            if (f[1]){
+                gjkPtFaceEdges(f[1], &e[2], &e[3], &e[4]);
+                if (e[2] == (gjk_pt_edge_t *)el){
+                    e[2] = e[4];
+                }else if (e[3] == (gjk_pt_edge_t *)el){
+                    e[3] = e[4];
+                }
+                gjkPtEdgeVertices(e[2], &v[3], &v[4]);
+                if (v[3] != v[2] && v[4] != v[2]){
+                    e[4] = e[2];
+                    e[2] = e[3];
+                    e[3] = e[4];
+                    if (v[3] == v[0])
+                        v[3] = v[4];
+                }else{
+                    if (v[3] == v[2])
+                        v[3] = v[4];
+                }
+            }
+
+
+            v[4] = gjkPtAddVertex(pt, newv);
+
+            gjkPtDelFace(pt, f[0]);
+            if (f[1])
+                gjkPtDelFace(pt, f[1]);
+            gjkPtDelEdge(pt, (gjk_pt_edge_t *)el);
+
+            e[4] = gjkPtAddEdge(pt, v[4], v[2]);
+            e[5] = gjkPtAddEdge(pt, v[4], v[0]);
+            e[6] = gjkPtAddEdge(pt, v[4], v[1]);
+            if (f[2])
+                e[7] = gjkPtAddEdge(pt, v[4], v[3]);
+
+            gjkPtAddFace(pt, e[1], e[4], e[6]);
+            gjkPtAddFace(pt, e[0], e[6], e[5]);
+            if (f[2]){
+                gjkPtAddFace(pt, e[3], e[5], e[7]);
+                gjkPtAddFace(pt, e[4], e[7], e[2]);
+            }
+        }
+    }else{ // el->type == GJK_PT_FACE
+        // replace triangle be tetrahedron withoout base (base would be the
+        // triangle that will be removed)
+
+        // get triplet of surrounding edges and vertices of triangle face
+        gjkPtFaceEdges((const gjk_pt_face_t *)el, &e[0], &e[1], &e[2]);
+        gjkPtEdgeVertices(e[0], &v[0], &v[1]);
+        gjkPtEdgeVertices(e[1], &v[2], &v[3]);
+
+        // form e0,1,2 in correct order
+        // TODO: explain this (what is correct order?)
+        if (v[2] != v[1] && v[3] != v[1]){
+            // swap e[1] and e[2] 
+            e[3] = e[1];
+            e[1] = e[2];
+            e[2] = e[3];
+        }
+
+        // set v[2] to the third vertex of triangle
+        // TODO: explain
+        if (v[3] != v[0] && v[3] != v[1])
+            v[2] = v[3];
+
+        // remove triangle face
+        gjkPtDelFace(pt, (gjk_pt_face_t *)el);
+
+        // expand triangle to tetrahedron
+        v[3] = gjkPtAddVertex(pt, newv);
+        e[3] = gjkPtAddEdge(pt, v[3], v[0]);
+        e[4] = gjkPtAddEdge(pt, v[3], v[1]);
+        e[5] = gjkPtAddEdge(pt, v[3], v[2]);
+
+        gjkPtAddFace(pt, e[3], e[4], e[0]);
+        gjkPtAddFace(pt, e[4], e[5], e[1]);
+        gjkPtAddFace(pt, e[5], e[3], e[2]);
+    }
 }
 
 /** Finds next support point (at stores it in out argument).
  *  Returns 0 on success, -1 otherwise */
 static int nextSupport(const void *obj1, const void *obj2, const gjk_t *gjk,
-                       const gjk_polytope_tri_t *tri,
+                       const gjk_pt_el_t *el,
                        gjk_vec3_t *out)
 {
-    const gjk_vec3_t *a, *b, *c;
-    gjk_vec3_t supp; // support point
+    gjk_vec3_t *a, *b, *c;
     double dist;
 
-    // fetch triangles' vertices
-    a = &tri->v[0];
-    b = &tri->v[1];
-    c = &tri->v[2];
-
-    DBG2("");
-    if (isZero(tri->dist)){
-        // touch contact
-        gjkVec3Copy(out, gjk_vec3_origin);
+    if (el->type == GJK_PT_VERTEX)
         return -1;
-    }else{
-        DBG2(" != 0");
-        support(obj1, obj2, &tri->witness, gjk, &supp);
+
+    // touch contact
+    if (isZero(el->dist))
+        return -1;
+
+    DBG2(" != 0");
+    support(obj1, obj2, &el->witness, gjk, out);
+
+    if (el->type == GJK_PT_EDGE){
+        // fetch end points of edge
+        gjkPtEdgeVec3((gjk_pt_edge_t *)el, &a, &b);
+
+        // get distance from segment
+        dist = gjkVec3PointSegmentDist2(out, a, b, NULL);
+    }else{ // el->type == GJK_PT_FACE
+        // fetch vertices of triangle face
+        gjkPtFaceVec3((gjk_pt_face_t *)el, &a, &b, &c);
+
+        // check if new point can significantly expand polytope
+        dist = gjkVec3PointTriDist2(out, a, b, c, NULL);
     }
 
-
-    // check if new point can significantly expand polytope
-    dist = gjkVec3PointTriDist2(&supp, a, b, c, NULL);
     DBG("  dist: %lf", dist);
     if (dist < gjk->epa_tolerance)
         return -1;
 
-    gjkVec3Copy(out, &supp);
-    DBG_VEC3(&supp, "  supp: ");
     return 0;
 }
 
@@ -676,8 +780,8 @@ int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
                    gjk_vec3_t *sep)
 {
     gjk_simplex_t simplex;
-    gjk_polytope_t polytope;
-    gjk_polytope_tri_t *nearest; // nearest triangle to origin
+    gjk_pt_t polytope;
+    gjk_pt_el_t *nearest;
     gjk_vec3_t supp; // support point
     int ret, size;
 
@@ -687,7 +791,7 @@ int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
         return -1;
 
 
-    gjkPolytopeInit(&polytope);
+    gjkPtInit(&polytope);
 
     // transform simplex to polytope - simplex won't be used anymore
     size = gjkSimplexSize(&simplex);
@@ -695,7 +799,7 @@ int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
         simplexToPolytope4(&simplex, &polytope);
     }else if (size == 3){
         if (simplexToPolytope3(obj1, obj2, gjk, &simplex, &polytope) != 0){
-            gjkPolytopeDestroy(&polytope);
+            gjkPtDestroy(&polytope);
 
             // touch contact
             gjkVec3Set(sep, 0., 0., 0.);
@@ -703,7 +807,7 @@ int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
         }
     }else{ // size == 2
         if (simplexToPolytope2(obj1, obj2, gjk, &simplex, &polytope) != 0){
-            gjkPolytopeDestroy(&polytope);
+            gjkPtDestroy(&polytope);
 
             // touch contact
             gjkVec3Set(sep, 0., 0., 0.);
@@ -713,14 +817,16 @@ int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
 
     while (1){
         // get triangle nearest to origin
-        nearest = gjkPolytopeNearest(&polytope);
+        nearest = gjkPtNearest(&polytope);
 
+        /*
         DBG2("nearest:");
         DBG_VEC3(&nearest->v[0], "   0: ");
         DBG_VEC3(&nearest->v[1], "   1: ");
         DBG_VEC3(&nearest->v[2], "   2: ");
         DBG("   dist: %lf", nearest->dist);
         DBG_VEC3(&nearest->witness, "   w: ");
+        */
 
         // get next support point
         if (nextSupport(obj1, obj2, gjk, nearest, &supp) != 0)
@@ -734,7 +840,7 @@ int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
     gjkVec3Copy(sep, &nearest->witness);
     gjkVec3Scale(sep, -1.);
 
-    gjkPolytopeDestroy(&polytope);
+    gjkPtDestroy(&polytope);
 
     return 0;
 }

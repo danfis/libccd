@@ -234,8 +234,6 @@ TEST(ptNearest)
     gjk_pt_edge_t *e[6];
     gjk_pt_face_t *f[4];
     gjk_pt_el_t *nearest;
-    int res;
-    size_t i;
 
     DBG2("------");
 

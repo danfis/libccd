@@ -14,7 +14,7 @@
 #define __GJK_PT_EL \
     int type;           /*! type of element */ \
     double dist;        /*! distance from origin */ \
-    gjk_vec3_t witness; /*! witness point of projection */ \
+    gjk_vec3_t witness; /*! witness point of projection of origin */ \
     gjk_list_t list;    /*! list of elements of same type */
 
 /**
@@ -77,6 +77,33 @@ typedef struct _gjk_pt_t gjk_pt_t;
 
 void gjkPtInit(gjk_pt_t *pt);
 void gjkPtDestroy(gjk_pt_t *pt);
+
+/**
+ * Returns vertices surrounding given triangle face.
+ */
+_gjk_inline void gjkPtFaceVec3(const gjk_pt_face_t *face,
+                               gjk_vec3_t **a,
+                               gjk_vec3_t **b,
+                               gjk_vec3_t **c);
+_gjk_inline void gjkPtFaceVertices(const gjk_pt_face_t *face,
+                                   gjk_pt_vertex_t **a,
+                                   gjk_pt_vertex_t **b,
+                                   gjk_pt_vertex_t **c);
+_gjk_inline void gjkPtFaceEdges(const gjk_pt_face_t *f,
+                                gjk_pt_edge_t **a,
+                                gjk_pt_edge_t **b,
+                                gjk_pt_edge_t **c);
+
+_gjk_inline void gjkPtEdgeVec3(const gjk_pt_edge_t *e,
+                               gjk_vec3_t **a,
+                               gjk_vec3_t **b);
+_gjk_inline void gjkPtEdgeVertices(const gjk_pt_edge_t *e,
+                                   gjk_pt_vertex_t **a,
+                                   gjk_pt_vertex_t **b);
+_gjk_inline void gjkPtEdgeFaces(const gjk_pt_edge_t *e,
+                                gjk_pt_face_t **f1,
+                                gjk_pt_face_t **f2);
+
 
 /**
  * Adds vertex to polytope and returns pointer to newly created vertex.
@@ -179,128 +206,70 @@ _gjk_inline int gjkPtDelFace(gjk_pt_t *pt, gjk_pt_face_t *f)
     return 0;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-struct _gjk_polytope_tri_t {
-    gjk_vec3_t v[3];
-    double dist;
-    gjk_vec3_t witness;
-
-    struct _gjk_polytope_tri_t *next, *prev;
-};
-typedef struct _gjk_polytope_tri_t gjk_polytope_tri_t;
-
-
-struct _gjk_polytope_t {
-    gjk_polytope_tri_t *head;
-};
-typedef struct _gjk_polytope_t gjk_polytope_t;
-
-
-_gjk_inline void gjkPolytopeInit(gjk_polytope_t *pt);
-_gjk_inline void gjkPolytopeDestroy(gjk_polytope_t *pt);
-
-
-_gjk_inline gjk_polytope_tri_t *gjkPolytopeAddTri(gjk_polytope_t *pt,
-                                    const gjk_vec3_t *a, const gjk_vec3_t *b,
-                                    const gjk_vec3_t *c,
-                                    double dist, const gjk_vec3_t *witness);
-
-_gjk_inline void gjkPolytopeDelTri(gjk_polytope_t *pt, gjk_polytope_tri_t *tri);
-
-
-/**
- * Get nearest triangle from polytope.
- */
-_gjk_inline gjk_polytope_tri_t *gjkPolytopeNearest(gjk_polytope_t *pt);
-
-
-/**** INLINES ****/
-_gjk_inline void gjkPolytopeInit(gjk_polytope_t *pt)
+_gjk_inline void gjkPtFaceVec3(const gjk_pt_face_t *face,
+                               gjk_vec3_t **a,
+                               gjk_vec3_t **b,
+                               gjk_vec3_t **c)
 {
-    pt->head = NULL;
-}
+    *a = &face->edge[0]->vertex[0]->v;
+    *b = &face->edge[0]->vertex[1]->v;
 
-_gjk_inline void gjkPolytopeDestroy(gjk_polytope_t *pt)
-{
-    gjk_polytope_tri_t *cur, *next;
-
-    cur = pt->head;
-    while (cur){
-        next = cur->next;
-        free(cur);
-        cur = next;
-    }
-    pt->head = NULL;
-}
-
-_gjk_inline gjk_polytope_tri_t *gjkPolytopeAddTri(gjk_polytope_t *pt,
-                                    const gjk_vec3_t *a, const gjk_vec3_t *b,
-                                    const gjk_vec3_t *c,
-                                    double dist, const gjk_vec3_t *witness)
-{
-    gjk_polytope_tri_t *tri;
-
-    tri = (gjk_polytope_tri_t *)malloc(sizeof(gjk_polytope_tri_t));
-
-    // copy vertices
-    gjkVec3Copy(&tri->v[0], a);
-    gjkVec3Copy(&tri->v[1], b);
-    gjkVec3Copy(&tri->v[2], c);
-
-    // set distance and witness point
-    tri->dist = dist;
-    gjkVec3Copy(&tri->witness, witness);
-
-    // connect it to list
-    tri->next = pt->head;
-    if (pt->head)
-        pt->head->prev = tri;
-    tri->prev = NULL;
-    pt->head = tri;
-
-    return tri;
-}
-
-_gjk_inline void gjkPolytopeDelTri(gjk_polytope_t *pt, gjk_polytope_tri_t *tri)
-{
-    if (tri == pt->head){
-        pt->head = tri->next;
-        if (pt->head)
-            pt->head->prev = NULL;
-        free(tri);
+    if (face->edge[1]->vertex[0] != face->edge[0]->vertex[0]
+            && face->edge[1]->vertex[0] != face->edge[0]->vertex[1]){
+        *c = &face->edge[1]->vertex[0]->v;
     }else{
-        tri->prev->next = tri->next;
-        if (tri->next)
-            tri->next->prev = tri->prev;
-        free(tri);
+        *c = &face->edge[1]->vertex[1]->v;
     }
 }
 
-_gjk_inline gjk_polytope_tri_t *gjkPolytopeNearest(gjk_polytope_t *pt)
+_gjk_inline void gjkPtFaceVertices(const gjk_pt_face_t *face,
+                                   gjk_pt_vertex_t **a,
+                                   gjk_pt_vertex_t **b,
+                                   gjk_pt_vertex_t **c)
 {
-    gjk_polytope_tri_t *cur, *best;
+    *a = face->edge[0]->vertex[0];
+    *b = face->edge[0]->vertex[1];
 
-    best = cur = pt->head;
-
-    if (cur)
-        cur = cur->next;
-    while (cur){
-        if (cur->dist < best->dist)
-            best = cur;
-        cur = cur->next;
+    if (face->edge[1]->vertex[0] != face->edge[0]->vertex[0]
+            && face->edge[1]->vertex[0] != face->edge[0]->vertex[1]){
+        *c = face->edge[1]->vertex[0];
+    }else{
+        *c = face->edge[1]->vertex[1];
     }
+}
 
-    return best;
+_gjk_inline void gjkPtFaceEdges(const gjk_pt_face_t *f,
+                                gjk_pt_edge_t **a,
+                                gjk_pt_edge_t **b,
+                                gjk_pt_edge_t **c)
+{
+    *a = f->edge[0];
+    *b = f->edge[1];
+    *c = f->edge[2];
+}
+
+_gjk_inline void gjkPtEdgeVec3(const gjk_pt_edge_t *e,
+                               gjk_vec3_t **a,
+                               gjk_vec3_t **b)
+{
+    *a = &e->vertex[0]->v;
+    *b = &e->vertex[1]->v;
+}
+
+_gjk_inline void gjkPtEdgeVertices(const gjk_pt_edge_t *e,
+                                   gjk_pt_vertex_t **a,
+                                   gjk_pt_vertex_t **b)
+{
+    *a = e->vertex[0];
+    *b = e->vertex[1];
+}
+
+_gjk_inline void gjkPtEdgeFaces(const gjk_pt_edge_t *e,
+                                gjk_pt_face_t **f1,
+                                gjk_pt_face_t **f2)
+{
+    *f1 = e->faces[0];
+    *f2 = e->faces[1];
 }
 
 #endif /* __GJK_POLYTOPE_H__ */
