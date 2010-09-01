@@ -5,6 +5,7 @@
 #include "polytope.h"
 #include "dbg.h"
 
+/** samples points on unit sphere (taken from bullet source) */
 static gjk_vec3_t points_on_sphere[] = {
 	GJK_VEC3_STATIC( 0.000000, -0.000000, -1.000000),
 	GJK_VEC3_STATIC( 0.723608, -0.525725, -0.447219),

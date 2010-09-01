@@ -37,15 +37,6 @@ double gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
     t  = -1. * gjkVec3Dot(&a, &d);
     t /= gjkVec3Len2(&d);
 
-    DBG_VEC3(x0, "x0:");
-    DBG_VEC3(b, "b:");
-    DBG_VEC3(P, "P:");
-    DBG_VEC3(&a, "a:");
-    DBG_VEC3(&d, "d:");
-    DBG("t: %lf", t);
-    DBG("   %lf", gjkVec3Dot(&a, &d));
-    DBG("   %lf", gjkVec3Len2(&d));
-
     if (t < 0. || isZero(t)){
         dist = gjkVec3Dist2(x0, P);
         if (witness)
@@ -68,10 +59,6 @@ double gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
         }
     }
 
-    DBG("dist: %lf", dist);
-    if (witness){
-        DBG_VEC3(witness, "witness: ");
-    }
     return dist;
 }
 

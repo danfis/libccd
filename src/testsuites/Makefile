@@ -6,8 +6,9 @@ CFLAGS += -I./ -I../ -Icu/
 LDFLAGS += -L./ -Lcu/ -lcu -lm -L../ -lgjk
 
 CHECK_REG=cu/check-regressions
+CHECK_TS ?=
 
-OBJS = vec3.o boxbox.o spheresphere.o cylcyl.o
+OBJS = vec3.o polytope.o boxbox.o spheresphere.o cylcyl.o
 
 
 all: test
@@ -23,7 +24,7 @@ test: cu $(OBJS) main.c
 check: all
 	@echo ""
 	@echo "----------------------------------------";
-	./test
+	./test $(CHECK_TS)
 	@echo "----------------------------------------";
 	@echo "Checking regressions:";
 	./$(CHECK_REG) regressions
@@ -31,13 +32,13 @@ check: all
 
 check-valgrind: all
 	valgrind -q --leak-check=full --show-reachable=yes --trace-children=yes \
-             --gen-suppressions=all --error-limit=no \
-             ./test
+             --error-limit=no \
+             ./test $(CHECK_TS)
 
 check-valgrind-gen-suppressions: all
 	valgrind -q --leak-check=full --show-reachable=yes --trace-children=yes \
              --gen-suppressions=all --log-file=out --error-limit=no \
-             ./test
+             ./test $(CHECK_TS)
 
 cu:
 	$(MAKE) -C cu/

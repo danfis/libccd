@@ -1,6 +1,12 @@
 #ifndef _GJK_COMPILER_H_
 #define _GJK_COMPILER_H_
 
+
+#define gjk_offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+
+#define gjk_container_of(ptr, type, member) \
+    (type *)( (char *)ptr - gjk_offsetof(type, member))
+
 /**
  * Using this macros you can specify is it's likely or unlikely that branch
  * will be used.
