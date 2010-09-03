@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <float.h>
 #include "polytope.h"
 
@@ -189,3 +190,44 @@ gjk_pt_el_t *gjkPtNearest(gjk_pt_t *pt)
     return nearest;
 }
 
+
+void gjkPtDumpSVT(gjk_pt_t *pt, const char *fn)
+{
+    gjk_pt_vertex_t *v, *a, *b, *c;
+    gjk_pt_edge_t *e;
+    gjk_pt_face_t *f;
+    FILE *fout;
+    size_t i;
+
+    fout = fopen(fn, "a");
+    if (fout == NULL)
+        return;
+
+    fprintf(fout, "-----\n");
+
+    fprintf(fout, "Points:\n");
+    i = 0;
+    gjkListForEachEntry(&pt->vertices, v, list){
+        v->id = i++;
+        fprintf(fout, "%lf %lf %lf\n",
+                gjkVec3X(&v->v), gjkVec3Y(&v->v), gjkVec3Z(&v->v));
+    }
+
+    fprintf(fout, "Edges:\n");
+    gjkListForEachEntry(&pt->edges, e, list){
+        fprintf(fout, "%d %d\n", e->vertex[0]->id, e->vertex[1]->id);
+    }
+
+    fprintf(fout, "Faces:\n");
+    gjkListForEachEntry(&pt->faces, f, list){
+        a = f->edge[0]->vertex[0];
+        b = f->edge[0]->vertex[1];
+        c = f->edge[1]->vertex[0];
+        if (c == a || c == b){
+            c = f->edge[1]->vertex[1];
+        }
+        fprintf(fout, "%d %d %d\n", a->id, b->id, c->id);
+    }
+
+    fclose(fout);
+}

@@ -35,6 +35,7 @@ struct _gjk_pt_face_t;
 struct _gjk_pt_vertex_t {
     __GJK_PT_EL
 
+    int id;
     gjk_vec3_t v;
     gjk_list_t edges; //!< List of edges
 };
@@ -144,6 +145,8 @@ void gjkPtRecomputeDistances(gjk_pt_t *pt);
  */
 gjk_pt_el_t *gjkPtNearest(gjk_pt_t *pt);
 
+
+void gjkPtDumpSVT(gjk_pt_t *pt, const char *fn);
 
 
 /**** INLINES ****/

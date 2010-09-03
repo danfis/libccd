@@ -688,12 +688,12 @@ static void expandPolytope(gjk_pt_t *pt, gjk_pt_el_t *el,
             e[4] = gjkPtAddEdge(pt, v[4], v[2]);
             e[5] = gjkPtAddEdge(pt, v[4], v[0]);
             e[6] = gjkPtAddEdge(pt, v[4], v[1]);
-            if (f[2])
+            if (f[1])
                 e[7] = gjkPtAddEdge(pt, v[4], v[3]);
 
             gjkPtAddFace(pt, e[1], e[4], e[6]);
             gjkPtAddFace(pt, e[0], e[6], e[5]);
-            if (f[2]){
+            if (f[1]){
                 gjkPtAddFace(pt, e[3], e[5], e[7]);
                 gjkPtAddFace(pt, e[4], e[7], e[2]);
             }
@@ -834,6 +834,7 @@ int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
 
         // expand nearest triangle using new point - supp
         expandPolytope(&polytope, nearest, &supp);
+        gjkPtDumpSVT(&polytope, "pt.svt");
     }
 
     // set separation vector
