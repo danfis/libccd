@@ -16,7 +16,6 @@ TEST(boxboxTearDown)
 
 TEST(boxboxAlignedX)
 {
-    /*
     size_t i;
     gjk_t gjk;
     GJK_BOX(box1);
@@ -39,26 +38,10 @@ TEST(boxboxAlignedX)
     gjkQuatSet(&box1.quat, 0., 0., 0., 1.);
     gjkQuatSet(&box2.quat, 0., 0., 0., 1.);
     for (i = 0; i < 100; i++){
-        fprintf(stderr, "box1.pos: [%lf, %lf %lf]\n",
-                gjkVec3X(&box1.pos),
-                gjkVec3Y(&box1.pos),
-                gjkVec3Z(&box1.pos));
-        printf("%d:\n", i);
-        printf("  box1.pos: [%lf, %lf %lf]\n",
-                gjkVec3X(&box1.pos),
-                gjkVec3Y(&box1.pos),
-                gjkVec3Z(&box1.pos));
-
         res = gjkIntersect(&box1, &box2, &gjk);
-        //printf("%d\n", res);
-
-        printf("  %d\n", res);
-        fprintf(stderr, "  %d\n", res);
         if (i < 35 || i > 65){
-            printf("  false - %d\n", res == 0);
             assertFalse(res);
         }else if (i != 35 && i != 65){
-            printf("  true - %d\n", res == 1);
             assertTrue(res);
         }
 
@@ -78,13 +61,7 @@ TEST(boxboxAlignedX)
     gjkQuatSet(&box1.quat, 0., 0., 0., 1.);
     gjkQuatSet(&box2.quat, 0., 0., 0., 1.);
     for (i = 0; i < 100; i++){
-        fprintf(stderr, "box1.pos: [%lf, %lf %lf]\n",
-                gjkVec3X(&box1.pos),
-                gjkVec3Y(&box1.pos),
-                gjkVec3Z(&box1.pos));
-
         res = gjkIntersect(&box1, &box2, &gjk);
-        //printf("%d\n", res);
 
         if (i < 35 || i > 65){
             assertFalse(res);
@@ -108,36 +85,20 @@ TEST(boxboxAlignedX)
     gjkQuatSet(&box1.quat, 0., 0., 0., 1.);
     gjkQuatSet(&box2.quat, 0., 0., 0., 1.);
     for (i = 0; i < 100; i++){
-        fprintf(stderr, "box1.pos: [%lf, %lf %lf]\n",
-                gjkVec3X(&box1.pos),
-                gjkVec3Y(&box1.pos),
-                gjkVec3Z(&box1.pos));
-        printf("%d:\n", i);
-        printf("  box1.pos: [%lf, %lf %lf]\n",
-                gjkVec3X(&box1.pos),
-                gjkVec3Y(&box1.pos),
-                gjkVec3Z(&box1.pos));
-
         res = gjkIntersect(&box1, &box2, &gjk);
-        //printf("%d\n", res);
 
-        printf("  %d\n", res);
         if (i < 35 || i > 65){
-            printf("  false - %d\n", res == 0);
             assertFalse(res);
         }else if (i != 35 && i != 65){
-            printf("  true - %d\n", res == 1);
             assertTrue(res);
         }
 
         box1.pos.v[0] += 0.1;
     }
-    */
 }
 
 TEST(boxboxAlignedY)
 {
-    /*
     size_t i;
     gjk_t gjk;
     GJK_BOX(box1);
@@ -159,13 +120,7 @@ TEST(boxboxAlignedY)
     gjkQuatSet(&box1.quat, 0., 0., 0., 1.);
     gjkQuatSet(&box2.quat, 0., 0., 0., 1.);
     for (i = 0; i < 100; i++){
-        fprintf(stderr, "box1.pos: [%lf, %lf %lf]\n",
-                gjkVec3X(&box1.pos),
-                gjkVec3Y(&box1.pos),
-                gjkVec3Z(&box1.pos));
-
         res = gjkIntersect(&box1, &box2, &gjk);
-        //printf("%d\n", res);
 
         if (i < 35 || i > 65){
             assertFalse(res);
@@ -175,12 +130,10 @@ TEST(boxboxAlignedY)
 
         box1.pos.v[1] += 0.1;
     }
-    */
 }
 
 TEST(boxboxAlignedZ)
 {
-    /*
     size_t i;
     gjk_t gjk;
     GJK_BOX(box1);
@@ -202,13 +155,7 @@ TEST(boxboxAlignedZ)
     gjkQuatSet(&box1.quat, 0., 0., 0., 1.);
     gjkQuatSet(&box2.quat, 0., 0., 0., 1.);
     for (i = 0; i < 100; i++){
-        fprintf(stderr, "box1.pos: [%lf, %lf %lf]\n",
-                gjkVec3X(&box1.pos),
-                gjkVec3Y(&box1.pos),
-                gjkVec3Z(&box1.pos));
-
         res = gjkIntersect(&box1, &box2, &gjk);
-        //printf("%d\n", res);
 
         if (i < 35 || i > 65){
             assertFalse(res);
@@ -218,13 +165,11 @@ TEST(boxboxAlignedZ)
 
         box1.pos.v[2] += 0.1;
     }
-    */
 }
 
 
 TEST(boxboxRot)
 {
-    /*
     size_t i;
     gjk_t gjk;
     GJK_BOX(box1);
@@ -250,14 +195,7 @@ TEST(boxboxRot)
     gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
 
     for (i = 0; i < 100; i++){
-        fprintf(stderr, "%d:\n", i);
-        fprintf(stderr, "box1.pos: [%lf, %lf %lf]\n",
-                gjkVec3X(&box1.pos),
-                gjkVec3Y(&box1.pos),
-                gjkVec3Z(&box1.pos));
-
         res = gjkIntersect(&box1, &box2, &gjk);
-        fprintf(stderr, "  %d\n", res);
 
         if (i < 33 || i > 67){
             assertFalse(res);
@@ -284,7 +222,6 @@ TEST(boxboxRot)
     angle = 0.;
     for (i = 0; i < 30; i++){
         res = gjkIntersect(&box1, &box2, &gjk);
-        printf("%d - %d - %lf\n", i, res, angle);
 
         if (i != 0 && i != 10 && i != 20){
             assertTrue(res);
@@ -295,11 +232,25 @@ TEST(boxboxRot)
         angle += M_PI / 20.;
         gjkQuatSetAngleAxis(&box1.quat, angle, &axis);
     }
-    */
 
 }
 
 
+
+static void pConf(gjk_box_t *box1, gjk_box_t *box2, const gjk_vec3_t *v)
+{
+    fprintf(stdout, "box1.pos: [%lf %lf %lf]\n",
+            gjkVec3X(&box1->pos), gjkVec3Y(&box1->pos), gjkVec3Z(&box1->pos));
+    fprintf(stdout, "box1->quat: [%lf %lf %lf %lf]\n",
+            box1->quat.q[0], box1->quat.q[1], box1->quat.q[2], box1->quat.q[3]);
+    fprintf(stdout, "box2->pos: [%lf %lf %lf]\n",
+            gjkVec3X(&box2->pos), gjkVec3Y(&box2->pos), gjkVec3Z(&box2->pos));
+    fprintf(stdout, "box2->quat: [%lf %lf %lf %lf]\n",
+            box2->quat.q[0], box2->quat.q[1], box2->quat.q[2], box2->quat.q[3]);
+    fprintf(stdout, "sep: [%lf %lf %lf]\n",
+            gjkVec3X(v), gjkVec3Y(v), gjkVec3Z(v));
+    fprintf(stdout, "\n");
+}
 
 TEST(boxboxSeparate)
 {
@@ -307,9 +258,11 @@ TEST(boxboxSeparate)
     GJK_BOX(box1);
     GJK_BOX(box2);
     int res;
-    gjk_vec3_t sep, expsep, axis;
+    gjk_vec3_t sep, expsep, expsep2, axis;
 
     fprintf(stderr, "\n\n\n---- boxboxSeparate ----\n\n\n");
+    fprintf(stdout, "\n\n\n---- boxboxSeparate ----\n\n\n");
+
     box1.x = box1.y = box1.z = 1.;
     box2.x = 0.5;
     box2.y = 1.;
@@ -319,7 +272,6 @@ TEST(boxboxSeparate)
     GJK_INIT(&gjk);
     gjk.support = gjkSupport;
 
-    /*
     gjkVec3Set(&box1.pos, -0.5, 0.5, 0.2);
     res = gjkIntersect(&box1, &box2, &gjk);
     assertTrue(res);
@@ -341,22 +293,40 @@ TEST(boxboxSeparate)
     assertTrue(res == 0);
     gjkVec3Set(&expsep, 0., 0., 0.25);
     assertTrue(gjkVec3Eq(&sep, &expsep));
-    */
 
 
 
     box1.x = box1.y = box1.z = 1.;
     box2.x = box2.y = box2.z = 1.;
-    gjkVec3Set(&axis, 0., 1., 0.);
+    gjkVec3Set(&axis, 0., 0., 1.);
     gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
     gjkVec3Set(&box1.pos, 0., 0., 0.);
 
-    DBG_VEC3(&box1.pos, "box1.pos: ");
     res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
     assertTrue(res == 0);
-    gjkVec3Set(&expsep, 0., 0., 0.25);
-    assertTrue(gjkVec3Eq(&sep, &expsep));
+    gjkVec3Set(&expsep, 0., 0., 1.);
+    gjkVec3Set(&expsep2, 0., 0., -1.);
+    assertTrue(gjkVec3Eq(&sep, &expsep) || gjkVec3Eq(&sep, &expsep2));
 
 
-    DBG_VEC3(&sep, "sep");
+
+    box1.x = box1.y = box1.z = 1.;
+    gjkVec3Set(&axis, 0., 0., 1.);
+    gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    gjkVec3Set(&box1.pos, -0.5, 0., 0.);
+
+    res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
+    assertTrue(res == 0);
+    pConf(&box1, &box2, &sep);
+
+
+
+    box1.x = box1.y = box1.z = 1.;
+    gjkVec3Set(&axis, 0., 1., 1.);
+    gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    gjkVec3Set(&box1.pos, -0.5, 0.1, 0.4);
+
+    res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
+    assertTrue(res == 0);
+    pConf(&box1, &box2, &sep);
 }
