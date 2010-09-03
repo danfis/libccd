@@ -1,3 +1,25 @@
+/***
+ * libgjk
+ * ---------------------------------
+ * Copyright (c)2010 Daniel Fiser <danfis@danfis.cz>
+ *
+ *
+ *  This file is part of libgjk.
+ *
+ *  libgjk is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as
+ *  published by the Free Software Foundation; either version 3 of
+ *  the License, or (at your option) any later version.
+ *
+ *  libgjk is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <stdio.h>
 #include "vec3.h"
 #include "dbg.h"
@@ -37,7 +59,7 @@ double gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
     t  = -1. * gjkVec3Dot(&a, &d);
     t /= gjkVec3Len2(&d);
 
-    if (t < 0. || isZero(t)){
+    if (t < 0. || gjkIsZero(t)){
         dist = gjkVec3Dist2(x0, P);
         if (witness)
             gjkVec3Copy(witness, x0);
@@ -68,21 +90,12 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
                             const gjk_vec3_t *C,
                             gjk_vec3_t *witness)
 {
-    // TODO: Either explain solution or reference paper it comes from
-    //       (mainly because of the regions)
+    // See David Eberly's paper Distance Between Point and Triangle in 3D
 
     gjk_vec3_t E0, E1, D;
     double a, b, c, d, e, f, det, s, t;
     double tmp0, tmp1;
     double dist;
-
-    /*
-    fprintf(stderr, "gjkVec3PointTriDist2():\n");
-    GJK_PRINT_VEC3(P, "    P: ");
-    GJK_PRINT_VEC3(A, "    A: ");
-    GJK_PRINT_VEC3(B, "    B: ");
-    GJK_PRINT_VEC3(C, "    C: ");
-    */
 
     // precompute all values
     gjkVec3Sub2(&E0, B, A);
@@ -103,7 +116,6 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
         if (s < 0.){
             if (t < 0.){
                 // region 4
-                //fprintf(stderr, "region 4\n");
                 // distance is distance from point A
                 gjkVec3Sub2(&D, A, P);
                 if (witness)
@@ -111,9 +123,8 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
                 return gjkVec3Len2(&D);
             }else{
                 // region 3
-                //fprintf(stderr, "region 3\n");
                 s = 0.;
-                if (e > 0. || isZero(e)){
+                if (e > 0. || gjkIsZero(e)){
                     t = 0.;
                 }else{
                     if (-e > c || gjkEq(-e, c)){
@@ -125,9 +136,8 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
             }
         }else if (t < 0.){
             // region 5
-            //fprintf(stderr, "region 5\n");
             t = 0.;
-            if (d > 0. || isZero(d)){
+            if (d > 0. || gjkIsZero(d)){
                 s = 0.;
             }else{
                 if (-d > a || gjkEq(-d, a)){
@@ -138,7 +148,6 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
             }
         }else{
             // region 0
-            //fprintf(stderr, "region 0\n");
             tmp0 = 1. / det;
             s *= tmp0;
             t *= tmp0;
@@ -146,7 +155,6 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
     }else{
         if (s < 0.){
             // region 2
-            //fprintf(stderr, "region 2\n");
             // distance is distance from point C
             gjkVec3Sub2(&D, C, P);
             if (witness)
@@ -154,7 +162,6 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
             return gjkVec3Len2(&D);
         }else if (t < 0.){
             // region 6
-            //fprintf(stderr, "region 6\n");
             // distance is distance from point B
             gjkVec3Sub2(&D, B, P);
             if (witness)
@@ -162,7 +169,6 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
             return sqrt(gjkVec3Len2(&D));
         }else{
             // region 1
-            //fprintf(stderr, "region 1\n");
             tmp0 = c + e - b - d;
 
             if (tmp0 < 0.){
@@ -180,24 +186,6 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
         }
     }
 
-#if 0
-    {
-        fprintf(stderr, "s: %lf, t: %lf\n", s, t);
-        GJK_PRINT_VEC3(A, "A");
-        GJK_PRINT_VEC3(A, "B");
-        GJK_PRINT_VEC3(A, "C");
-        GJK_PRINT_VEC3(P, "P");
-        gjk_vec3_t T, aa, bb;
-        gjkVec3Copy(&aa, &E0);
-        gjkVec3Scale(&aa, s);
-        gjkVec3Copy(&bb, &E1);
-        gjkVec3Scale(&bb, t);
-        gjkVec3Copy(&T, A);
-        gjkVec3Add(&T, &aa);
-        gjkVec3Add(&T, &bb);
-        GJK_PRINT_VEC3(&T, "T");
-    }
-#endif
     if (witness){
         gjkVec3Scale(&E0, s);
         gjkVec3Scale(&E1, t);

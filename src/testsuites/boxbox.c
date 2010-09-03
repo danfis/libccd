@@ -4,6 +4,7 @@
 #include "../gjk.h"
 #include "../gjk_support.h"
 #include "../vec3.h"
+#include "../dbg.h"
 
 TEST(boxboxSetUp)
 {
@@ -346,16 +347,16 @@ TEST(boxboxSeparate)
 
     box1.x = box1.y = box1.z = 1.;
     box2.x = box2.y = box2.z = 1.;
-    gjkVec3Set(&axis, 0., 0., 1.);
+    gjkVec3Set(&axis, 0., 1., 0.);
     gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
     gjkVec3Set(&box1.pos, 0., 0., 0.);
 
-    GJK_PRINT_VEC3(&box1.pos, "box1.pos: ");
+    DBG_VEC3(&box1.pos, "box1.pos: ");
     res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
     assertTrue(res == 0);
     gjkVec3Set(&expsep, 0., 0., 0.25);
     assertTrue(gjkVec3Eq(&sep, &expsep));
 
 
-    GJK_PRINT_VEC3(&sep, "sep");
+    DBG_VEC3(&sep, "sep");
 }
