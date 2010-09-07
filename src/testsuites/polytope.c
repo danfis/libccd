@@ -1,4 +1,4 @@
-#undef NDEBUG
+//#undef NDEBUG
 #include <cu/cu.h>
 #include "../polytope.h"
 #include "../dbg.h"
@@ -31,19 +31,19 @@ TEST(ptCreate1)
     gjkPtInit(&pt);
 
     gjkVec3Set(&u, -1., -1., 0.);
-    v[0] = gjkPtAddVertex(&pt, &u);
-    assertTrue(gjkVec3Eq(&u, &v[0]->v));
+    v[0] = gjkPtAddVertexCoords(&pt, -1., -1., 0.);
+    assertTrue(gjkVec3Eq(&u, &v[0]->v.v));
 
     gjkVec3Set(&u, 1., 0., 0.);
-    v[1] = gjkPtAddVertex(&pt, &u);
-    assertTrue(gjkVec3Eq(&u, &v[1]->v));
+    v[1] = gjkPtAddVertexCoords(&pt, 1., 0., 0.);
+    assertTrue(gjkVec3Eq(&u, &v[1]->v.v));
 
     gjkVec3Set(&u, 0., 0., 1.);
-    v[2] = gjkPtAddVertex(&pt, &u);
-    assertTrue(gjkVec3Eq(&u, &v[2]->v));
+    v[2] = gjkPtAddVertexCoords(&pt, 0., 0., 1.);
+    assertTrue(gjkVec3Eq(&u, &v[2]->v.v));
 
     for (i = 0; i < 3; i++){
-        assertTrue(gjkEq(v[i]->dist, gjkVec3Len2(&v[i]->v)));
+        assertTrue(gjkEq(v[i]->dist, gjkVec3Len2(&v[i]->v.v)));
     }
 
 
@@ -80,12 +80,9 @@ TEST(ptCreate1)
         assertTrue(res == 0);
     }
 
-    gjkVec3Set(&u, -1., -1., 0.);
-    v[0] = gjkPtAddVertex(&pt, &u);
-    gjkVec3Set(&u, 1., 0., 0.);
-    v[1] = gjkPtAddVertex(&pt, &u);
-    gjkVec3Set(&u, 0., 0., 1.);
-    v[2] = gjkPtAddVertex(&pt, &u);
+    v[0] = gjkPtAddVertexCoords(&pt, -1., -1., 0.);
+    v[1] = gjkPtAddVertexCoords(&pt, 1., 0., 0.);
+    v[2] = gjkPtAddVertexCoords(&pt, 0., 0., 1.);
 
     e[0] = gjkPtAddEdge(&pt, v[0], v[1]);
     e[1] = gjkPtAddEdge(&pt, v[1], v[2]);
@@ -111,23 +108,23 @@ TEST(ptCreate2)
     gjkPtInit(&pt);
 
     gjkVec3Set(&u, -1., -1., 0.);
-    v[0] = gjkPtAddVertex(&pt, &u);
-    assertTrue(gjkVec3Eq(&u, &v[0]->v));
+    v[0] = gjkPtAddVertexCoords(&pt, -1., -1., 0.);
+    assertTrue(gjkVec3Eq(&u, &v[0]->v.v));
 
     gjkVec3Set(&u, 1., 0., 0.);
-    v[1] = gjkPtAddVertex(&pt, &u);
-    assertTrue(gjkVec3Eq(&u, &v[1]->v));
+    v[1] = gjkPtAddVertexCoords(&pt, 1., 0., 0.);
+    assertTrue(gjkVec3Eq(&u, &v[1]->v.v));
 
     gjkVec3Set(&u, 0., 0., 1.);
-    v[2] = gjkPtAddVertex(&pt, &u);
-    assertTrue(gjkVec3Eq(&u, &v[2]->v));
+    v[2] = gjkPtAddVertexCoords(&pt, 0., 0., 1.);
+    assertTrue(gjkVec3Eq(&u, &v[2]->v.v));
 
     gjkVec3Set(&u, 0., 1., 0.);
-    v[3] = gjkPtAddVertex(&pt, &u);
-    assertTrue(gjkVec3Eq(&u, &v[3]->v));
+    v[3] = gjkPtAddVertexCoords(&pt, 0., 1., 0.);
+    assertTrue(gjkVec3Eq(&u, &v[3]->v.v));
 
     for (i = 0; i < 4; i++){
-        assertTrue(gjkEq(v[i]->dist, gjkVec3Len2(&v[i]->v)));
+        assertTrue(gjkEq(v[i]->dist, gjkVec3Len2(&v[i]->v.v)));
     }
     for (i = 0; i < 4; i++){
         DBG("v[%d]->dist: %lf", i, v[i]->dist);
@@ -203,14 +200,10 @@ TEST(ptCreate2)
     assertTrue(gjkPtDelVertex(&pt, v[3]) == 0);
 
 
-    gjkVec3Set(&u, -1., -1., 0.);
-    v[0] = gjkPtAddVertex(&pt, &u);
-    gjkVec3Set(&u, 1., 0., 0.);
-    v[1] = gjkPtAddVertex(&pt, &u);
-    gjkVec3Set(&u, 0., 0., 1.);
-    v[2] = gjkPtAddVertex(&pt, &u);
-    gjkVec3Set(&u, 0., 1., 0.);
-    v[3] = gjkPtAddVertex(&pt, &u);
+    v[0] = gjkPtAddVertexCoords(&pt, -1., -1., 0.);
+    v[1] = gjkPtAddVertexCoords(&pt, 1., 0., 0.);
+    v[2] = gjkPtAddVertexCoords(&pt, 0., 0., 1.);
+    v[3] = gjkPtAddVertexCoords(&pt, 0., 1., 0.);
 
     e[0] = gjkPtAddEdge(&pt, v[0], v[1]);
     e[1] = gjkPtAddEdge(&pt, v[1], v[2]);

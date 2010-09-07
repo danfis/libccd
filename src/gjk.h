@@ -31,23 +31,23 @@
  * and returns (via vec argument) furthest point from object in specified
  * direction.
  */
-typedef void (*gjk_support)(const void *obj, const gjk_vec3_t *dir,
-                           gjk_vec3_t *vec);
+typedef void (*gjk_support_fn)(const void *obj, const gjk_vec3_t *dir,
+                               gjk_vec3_t *vec);
 
 /**
  * Returns (via dir argument) first direction vector that will be used in
  * initialization of algorithm.
  */
-typedef void (*gjk_first_dir)(const void *obj1, const void *obj2,
-                              gjk_vec3_t *dir);
+typedef void (*gjk_first_dir_fn)(const void *obj1, const void *obj2,
+                                 gjk_vec3_t *dir);
 
 /**
  * Main structure of GJK algorithm.
  */
 struct _gjk_t {
-    gjk_first_dir first_dir; //!< Returns initial direction where first
-                             //   support point will be searched
-    gjk_support support; //!< Function that returns support point of object
+    gjk_first_dir_fn first_dir; //!< Returns initial direction where first
+                                //   support point will be searched
+    gjk_support_fn support; //!< Function that returns support point of object
 
     unsigned long max_iterations; //!< Maximal number of iterations
     double epa_tolerance;

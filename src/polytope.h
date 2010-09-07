@@ -24,7 +24,7 @@
 #define __GJK_POLYTOPE_H__
 
 #include <stdlib.h>
-#include <gjk/vec3.h>
+#include <gjk/support.h>
 #include <gjk/list.h>
 #include <gjk/alloc.h>
 
@@ -58,7 +58,7 @@ struct _gjk_pt_vertex_t {
     __GJK_PT_EL
 
     int id;
-    gjk_vec3_t v;
+    gjk_support_t v;
     gjk_list_t edges; //!< List of edges
 };
 typedef struct _gjk_pt_vertex_t gjk_pt_vertex_t;
@@ -131,7 +131,7 @@ _gjk_inline void gjkPtEdgeFaces(const gjk_pt_edge_t *e,
 /**
  * Adds vertex to polytope and returns pointer to newly created vertex.
  */
-gjk_pt_vertex_t *gjkPtAddVertex(gjk_pt_t *pt, const gjk_vec3_t *v);
+gjk_pt_vertex_t *gjkPtAddVertex(gjk_pt_t *pt, const gjk_support_t *v);
 _gjk_inline gjk_pt_vertex_t *gjkPtAddVertexCoords(gjk_pt_t *pt,
                                                   double x, double y, double z);
 
@@ -175,8 +175,9 @@ void gjkPtDumpSVT(gjk_pt_t *pt, const char *fn);
 _gjk_inline gjk_pt_vertex_t *gjkPtAddVertexCoords(gjk_pt_t *pt,
                                                   double x, double y, double z)
 {
-    GJK_VEC3(v, x, y, z);
-    return gjkPtAddVertex(pt, &v);
+    gjk_support_t s;
+    gjkVec3Set(&s.v, x, y, z);
+    return gjkPtAddVertex(pt, &s);
 }
 
 _gjk_inline int gjkPtDelVertex(gjk_pt_t *pt, gjk_pt_vertex_t *v)
@@ -236,14 +237,14 @@ _gjk_inline void gjkPtFaceVec3(const gjk_pt_face_t *face,
                                gjk_vec3_t **b,
                                gjk_vec3_t **c)
 {
-    *a = &face->edge[0]->vertex[0]->v;
-    *b = &face->edge[0]->vertex[1]->v;
+    *a = &face->edge[0]->vertex[0]->v.v;
+    *b = &face->edge[0]->vertex[1]->v.v;
 
     if (face->edge[1]->vertex[0] != face->edge[0]->vertex[0]
             && face->edge[1]->vertex[0] != face->edge[0]->vertex[1]){
-        *c = &face->edge[1]->vertex[0]->v;
+        *c = &face->edge[1]->vertex[0]->v.v;
     }else{
-        *c = &face->edge[1]->vertex[1]->v;
+        *c = &face->edge[1]->vertex[1]->v.v;
     }
 }
 
@@ -277,8 +278,8 @@ _gjk_inline void gjkPtEdgeVec3(const gjk_pt_edge_t *e,
                                gjk_vec3_t **a,
                                gjk_vec3_t **b)
 {
-    *a = &e->vertex[0]->v;
-    *b = &e->vertex[1]->v;
+    *a = &e->vertex[0]->v.v;
+    *b = &e->vertex[1]->v.v;
 }
 
 _gjk_inline void gjkPtEdgeVertices(const gjk_pt_edge_t *e,

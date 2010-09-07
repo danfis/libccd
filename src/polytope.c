@@ -55,16 +55,16 @@ void gjkPtDestroy(gjk_pt_t *pt)
 }
 
 
-gjk_pt_vertex_t *gjkPtAddVertex(gjk_pt_t *pt, const gjk_vec3_t *v)
+gjk_pt_vertex_t *gjkPtAddVertex(gjk_pt_t *pt, const gjk_support_t *v)
 {
     gjk_pt_vertex_t *vert;
 
     vert = GJK_ALLOC(gjk_pt_vertex_t);
     vert->type = GJK_PT_VERTEX;
-    gjkVec3Copy(&vert->v, v);
+    gjkSupportCopy(&vert->v, v);
 
-    vert->dist = gjkVec3Len2(&vert->v);
-    gjkVec3Copy(&vert->witness, &vert->v);
+    vert->dist = gjkVec3Len2(&vert->v.v);
+    gjkVec3Copy(&vert->witness, &vert->v.v);
 
     gjkListInit(&vert->edges);
 
@@ -86,8 +86,8 @@ gjk_pt_edge_t *gjkPtAddEdge(gjk_pt_t *pt, gjk_pt_vertex_t *v1,
     edge->vertex[1] = v2;
     edge->faces[0] = edge->faces[1] = NULL;
 
-    a = &edge->vertex[0]->v;
-    b = &edge->vertex[1]->v;
+    a = &edge->vertex[0]->v.v;
+    b = &edge->vertex[1]->v.v;
     edge->dist = gjkVec3PointSegmentDist2(gjk_vec3_origin, a, b, &edge->witness);
 
     gjkListAppend(&edge->vertex[0]->edges, &edge->vertex_list[0]);
@@ -114,14 +114,14 @@ gjk_pt_face_t *gjkPtAddFace(gjk_pt_t *pt, gjk_pt_edge_t *e1,
     face->edge[2] = e3;
 
     // obtain triplet of vertices
-    a = &face->edge[0]->vertex[0]->v;
-    b = &face->edge[0]->vertex[1]->v;
+    a = &face->edge[0]->vertex[0]->v.v;
+    b = &face->edge[0]->vertex[1]->v.v;
     e = face->edge[1];
     if (e->vertex[0] != face->edge[0]->vertex[0]
             && e->vertex[0] != face->edge[0]->vertex[1]){
-        c = &e->vertex[0]->v;
+        c = &e->vertex[0]->v.v;
     }else{
-        c = &e->vertex[1]->v;
+        c = &e->vertex[1]->v.v;
     }
     face->dist = gjkVec3PointTriDist2(gjk_vec3_origin, a, b, c, &face->witness);
 
@@ -149,28 +149,28 @@ void gjkPtRecomputeDistances(gjk_pt_t *pt)
     double dist;
 
     gjkListForEachEntry(&pt->vertices, v, list){
-        dist = gjkVec3Len2(&v->v);
+        dist = gjkVec3Len2(&v->v.v);
         v->dist = dist;
-        gjkVec3Copy(&v->witness, &v->v);
+        gjkVec3Copy(&v->witness, &v->v.v);
     }
 
     gjkListForEachEntry(&pt->edges, e, list){
-        a = &e->vertex[0]->v;
-        b = &e->vertex[1]->v;
+        a = &e->vertex[0]->v.v;
+        b = &e->vertex[1]->v.v;
         dist = gjkVec3PointSegmentDist2(gjk_vec3_origin, a, b, &e->witness);
         e->dist = dist;
     }
 
     gjkListForEachEntry(&pt->faces, f, list){
         // obtain triplet of vertices
-        a = &f->edge[0]->vertex[0]->v;
-        b = &f->edge[0]->vertex[1]->v;
+        a = &f->edge[0]->vertex[0]->v.v;
+        b = &f->edge[0]->vertex[1]->v.v;
         e = f->edge[1];
         if (e->vertex[0] != f->edge[0]->vertex[0]
                 && e->vertex[0] != f->edge[0]->vertex[1]){
-            c = &e->vertex[0]->v;
+            c = &e->vertex[0]->v.v;
         }else{
-            c = &e->vertex[1]->v;
+            c = &e->vertex[1]->v.v;
         }
 
         dist = gjkVec3PointTriDist2(gjk_vec3_origin, a, b, c, &f->witness);
@@ -230,7 +230,7 @@ void gjkPtDumpSVT(gjk_pt_t *pt, const char *fn)
     gjkListForEachEntry(&pt->vertices, v, list){
         v->id = i++;
         fprintf(fout, "%lf %lf %lf\n",
-                gjkVec3X(&v->v), gjkVec3Y(&v->v), gjkVec3Z(&v->v));
+                gjkVec3X(&v->v.v), gjkVec3Y(&v->v.v), gjkVec3Z(&v->v.v));
     }
 
     fprintf(fout, "Edges:\n");
