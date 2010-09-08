@@ -75,11 +75,17 @@ static gjk_vec3_t points_on_sphere[] = {
 static size_t points_on_sphere_len = sizeof(points_on_sphere) / sizeof(gjk_vec3_t);
 
 
-/** Tests objects for intersection - this is common function for
- * gjkIntersect() and gjkSeparateEPA() */
-static int _gjkIntersect(const void *obj1, const void *obj2,
-                         const gjk_t *gjk, gjk_simplex_t *simplex);
+/** Performs GJK algorithm. Returns 0 if intersection was found and simplex
+ *  is filled with resulting polytope. */
+static int __gjkGJK(const void *obj1, const void *obj2,
+                    const gjk_t *gjk, gjk_simplex_t *simplex);
 
+/** Performs GJK+EPA algorithm. Returns 0 if intersection was found and
+ *  pt is filled with resulting polytope and nearest with pointer to
+ *  nearest element (vertex, edge, face) of polytope to origin. */
+static int __gjkGJKEPA(const void *obj1, const void *obj2,
+                       const gjk_t *gjk,
+                       gjk_pt_t *pt, gjk_pt_el_t **nearest);
 
 
 /** Returns true if simplex contains origin.
@@ -102,12 +108,14 @@ static void simplexToPolytope4(const gjk_simplex_t *simplex, gjk_pt_t *pt);
 /** Transforms simplex to polytope, three vertices required */
 static int simplexToPolytope3(const void *obj1, const void *obj2,
                               const gjk_t *gjk,
-                              const gjk_simplex_t *simplex, gjk_pt_t *pt);
+                              const gjk_simplex_t *simplex,
+                              gjk_pt_t *pt, gjk_pt_el_t **nearest);
 
 /** Transforms simplex to polytope, two vertices required */
 static int simplexToPolytope2(const void *obj1, const void *obj2,
                               const gjk_t *gjk,
-                              const gjk_simplex_t *simplex, gjk_pt_t *pt);
+                              const gjk_simplex_t *simplex,
+                              gjk_pt_t *pt, gjk_pt_el_t **nearest);
 
 /** Expands polytope using new vertex v. */
 static void expandPolytope(gjk_pt_t *pt, gjk_pt_el_t *el,
@@ -129,74 +137,40 @@ void gjkFirstDirDefault(const void *o1, const void *o2, gjk_vec3_t *dir)
 int gjkIntersect(const void *obj1, const void *obj2, const gjk_t *gjk)
 {
     gjk_simplex_t simplex;
-    return _gjkIntersect(obj1, obj2, gjk, &simplex);
+    return __gjkGJK(obj1, obj2, gjk, &simplex) == 0;
 }
 
 int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
                    gjk_vec3_t *sep)
 {
-    gjk_simplex_t simplex;
     gjk_pt_t polytope;
     gjk_pt_el_t *nearest;
-    gjk_support_t supp; // support point
-    int ret, size;
-
-    // run GJK and obtain terminal simplex
-    ret = _gjkIntersect(obj1, obj2, gjk, &simplex);
-    if (!ret)
-        return -1;
-
+    int ret;
 
     gjkPtInit(&polytope);
 
-    // transform simplex to polytope - simplex won't be used anymore
-    size = gjkSimplexSize(&simplex);
-    if (size == 4){
-        simplexToPolytope4(&simplex, &polytope);
-    }else if (size == 3){
-        if (simplexToPolytope3(obj1, obj2, gjk, &simplex, &polytope) != 0){
-            gjkPtDestroy(&polytope);
-
-            // touch contact
-            gjkVec3Set(sep, 0., 0., 0.);
-            return 0;
-        }
-    }else{ // size == 2
-        if (simplexToPolytope2(obj1, obj2, gjk, &simplex, &polytope) != 0){
-            gjkPtDestroy(&polytope);
-
-            // touch contact
-            gjkVec3Set(sep, 0., 0., 0.);
-            return 0;
-        }
-    }
-
-    while (1){
-        // get triangle nearest to origin
-        nearest = gjkPtNearest(&polytope);
-
-        // get next support point
-        if (nextSupport(obj1, obj2, gjk, nearest, &supp) != 0)
-            break;
-
-        // expand nearest triangle using new point - supp
-        expandPolytope(&polytope, nearest, &supp);
-    }
+    // run GJK and obtain terminal simplex
+    ret = __gjkGJKEPA(obj1, obj2, gjk, &polytope, &nearest);
 
     // set separation vector
     gjkVec3Copy(sep, &nearest->witness);
-    gjkVec3Scale(sep, -1.);
 
     gjkPtDestroy(&polytope);
 
+    return ret;
+}
+
+int gjkPenetrationEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
+                      double *depth, gjk_vec3_t *dir, gjk_vec3_t *pos)
+{
     return 0;
 }
 
 
 
 
-static int _gjkIntersect(const void *obj1, const void *obj2,
-                         const gjk_t *gjk, gjk_simplex_t *simplex)
+static int __gjkGJK(const void *obj1, const void *obj2,
+                    const gjk_t *gjk, gjk_simplex_t *simplex)
 {
     unsigned long iterations;
     gjk_vec3_t dir; // direction vector
@@ -226,7 +200,7 @@ static int _gjkIntersect(const void *obj1, const void *obj2,
         // isn't somewhere before origin (the test on negative dot product)
         // - because if it is, objects are not intersecting at all.
         if (gjkVec3Dot(&last.v, &dir) < 0.){
-            return 0; // return false
+            return -1; // intersection not found
         }
 
         // add last support vector to simplex
@@ -236,19 +210,62 @@ static int _gjkIntersect(const void *obj1, const void *obj2,
         // intersect and 0 if algorithm should continue
         do_simplex_res = doSimplex(simplex, &dir);
         if (do_simplex_res == 1){
-            return 1;
+            return 0; // intersection found
         }else if (do_simplex_res == -1){
-            return 0;
+            return -1; // intersection not found
         }
 
         if (gjkIsZero(gjkVec3Len2(&dir))){
-            return 0;
+            return -1; // intersection not found
         }
     }
 
     // intersection wasn't found
+    return -1;
+}
+
+static int __gjkGJKEPA(const void *obj1, const void *obj2,
+                       const gjk_t *gjk,
+                       gjk_pt_t *polytope, gjk_pt_el_t **nearest)
+{
+    gjk_simplex_t simplex;
+    gjk_support_t supp; // support point
+    int ret, size;
+
+    // run GJK and obtain terminal simplex
+    ret = __gjkGJK(obj1, obj2, gjk, &simplex);
+    if (ret != 0)
+        return -1;
+
+    // transform simplex to polytope - simplex won't be used anymore
+    size = gjkSimplexSize(&simplex);
+    if (size == 4){
+        simplexToPolytope4(&simplex, polytope);
+    }else if (size == 3){
+        if (simplexToPolytope3(obj1, obj2, gjk, &simplex, polytope, nearest) != 0){
+            return 0; // touch contact
+        }
+    }else{ // size == 2
+        if (simplexToPolytope2(obj1, obj2, gjk, &simplex, polytope, nearest) != 0){
+            return 0; // touch contact
+        }
+    }
+
+    while (1){
+        // get triangle nearest to origin
+        *nearest = gjkPtNearest(polytope);
+
+        // get next support point
+        if (nextSupport(obj1, obj2, gjk, *nearest, &supp) != 0)
+            break;
+
+        // expand nearest triangle using new point - supp
+        expandPolytope(polytope, *nearest, &supp);
+    }
+
     return 0;
 }
+
 
 
 static int doSimplex2(gjk_simplex_t *simplex, gjk_vec3_t *dir)
@@ -518,14 +535,17 @@ static void simplexToPolytope4(const gjk_simplex_t *simplex, gjk_pt_t *pt)
 /** Transforms simplex to polytope, three vertices required */
 static int simplexToPolytope3(const void *obj1, const void *obj2,
                               const gjk_t *gjk,
-                              const gjk_simplex_t *simplex, gjk_pt_t *pt)
+                              const gjk_simplex_t *simplex,
+                              gjk_pt_t *pt, gjk_pt_el_t **nearest)
 {
     const gjk_support_t *a, *b, *c;
     gjk_support_t d, d2;
     gjk_vec3_t ab, ac, dir;
     gjk_pt_vertex_t *v[5];
     gjk_pt_edge_t *e[9];
-    double dist;
+    double dist, dist2;
+
+    *nearest = NULL;
 
     a = gjkSimplexPoint(simplex, 0);
     b = gjkSimplexPoint(simplex, 1);
@@ -540,20 +560,26 @@ static int simplexToPolytope3(const void *obj1, const void *obj2,
     gjkVec3Sub2(&ac, &c->v, &a->v);
     gjkVec3Cross(&dir, &ab, &ac);
     __gjkSupport(obj1, obj2, &dir, gjk, &d);
-
-    // check if abc isn't already on edge
     dist = gjkVec3PointTriDist2(&d.v, &a->v, &b->v, &c->v, NULL);
-    if (gjkIsZero(dist))
-        return -1;
 
     // and second one take in opposite direction
     gjkVec3Scale(&dir, -1.);
     __gjkSupport(obj1, obj2, &dir, gjk, &d2);
+    dist2 = gjkVec3PointTriDist2(&d2.v, &a->v, &b->v, &c->v, NULL);
 
-    // check if abc isn't already on edge
-    dist = gjkVec3PointTriDist2(&d2.v, &a->v, &b->v, &c->v, NULL);
-    if (gjkIsZero(dist))
+    // check if face isn't already on edge of minkowski sum and thus we
+    // have touching contact
+    if (gjkIsZero(dist) || gjkIsZero(dist2)){
+        v[0] = gjkPtAddVertex(pt, a);
+        v[1] = gjkPtAddVertex(pt, b);
+        v[2] = gjkPtAddVertex(pt, c);
+        e[0] = gjkPtAddEdge(pt, v[0], v[1]);
+        e[1] = gjkPtAddEdge(pt, v[1], v[2]);
+        e[2] = gjkPtAddEdge(pt, v[2], v[0]);
+        *nearest = (gjk_pt_el_t *)gjkPtAddFace(pt, e[0], e[1], e[2]);
+
         return -1;
+    }
 
     // form polyhedron
     v[0] = gjkPtAddVertex(pt, a);
@@ -588,7 +614,8 @@ static int simplexToPolytope3(const void *obj1, const void *obj2,
 /** Transforms simplex to polytope, two vertices required */
 static int simplexToPolytope2(const void *obj1, const void *obj2,
                               const gjk_t *gjk,
-                              const gjk_simplex_t *simplex, gjk_pt_t *pt)
+                              const gjk_simplex_t *simplex,
+                              gjk_pt_t *pt, gjk_pt_el_t **nearest)
 {
     const gjk_support_t *a, *b;
     gjk_vec3_t ab, ac, dir;
@@ -618,14 +645,14 @@ static int simplexToPolytope2(const void *obj1, const void *obj2,
         }
     }
     if (!found)
-        return -1;
+        goto simplexToPolytope2_touching_contact;
 
     // get second support point in opposite direction than supp[0]
     gjkVec3Copy(&dir, &supp[0].v);
     gjkVec3Scale(&dir, -1.);
     __gjkSupport(obj1, obj2, &dir, gjk, &supp[1]);
     if (gjkVec3Eq(&a->v, &supp[1].v) || gjkVec3Eq(&b->v, &supp[1].v))
-        return -1;
+        goto simplexToPolytope2_touching_contact;
 
     // next will be in direction of normal of triangle a,supp[0],supp[1]
     gjkVec3Sub2(&ab, &supp[0].v, &a->v);
@@ -633,14 +660,22 @@ static int simplexToPolytope2(const void *obj1, const void *obj2,
     gjkVec3Cross(&dir, &ab, &ac);
     __gjkSupport(obj1, obj2, &dir, gjk, &supp[2]);
     if (gjkVec3Eq(&a->v, &supp[2].v) || gjkVec3Eq(&b->v, &supp[2].v))
-        return -1;
+        goto simplexToPolytope2_touching_contact;
 
     // and last one will be in opposite direction
     gjkVec3Scale(&dir, -1.);
     __gjkSupport(obj1, obj2, &dir, gjk, &supp[3]);
     if (gjkVec3Eq(&a->v, &supp[3].v) || gjkVec3Eq(&b->v, &supp[3].v))
-        return -1;
+        goto simplexToPolytope2_touching_contact;
 
+    goto simplexToPolytope2_not_touching_contact;
+simplexToPolytope2_touching_contact:
+    v[0] = gjkPtAddVertex(pt, a);
+    v[1] = gjkPtAddVertex(pt, b);
+    *nearest = (gjk_pt_el_t *)gjkPtAddEdge(pt, v[0], v[1]);
+    return -1;
+
+simplexToPolytope2_not_touching_contact:
     // form polyhedron
     v[0] = gjkPtAddVertex(pt, a);
     v[1] = gjkPtAddVertex(pt, &supp[0]);

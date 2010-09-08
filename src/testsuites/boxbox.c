@@ -278,9 +278,10 @@ TEST(boxboxSeparate)
 
     res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
     assertTrue(res == 0);
-    gjkVec3Set(&expsep, -0.25, 0., 0.);
+    gjkVec3Set(&expsep, 0.25, 0., 0.);
     assertTrue(gjkVec3Eq(&sep, &expsep));
 
+    gjkVec3Scale(&sep, -1.);
     gjkVec3Add(&box1.pos, &sep);
     res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
     assertTrue(res == 0);
@@ -291,7 +292,7 @@ TEST(boxboxSeparate)
     gjkVec3Set(&box1.pos, -0.3, 0.5, 1.);
     res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
     assertTrue(res == 0);
-    gjkVec3Set(&expsep, 0., 0., 0.25);
+    gjkVec3Set(&expsep, 0., 0., -0.25);
     assertTrue(gjkVec3Eq(&sep, &expsep));
 
 

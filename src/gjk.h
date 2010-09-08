@@ -84,4 +84,20 @@ int gjkIntersect(const void *obj1, const void *obj2, const gjk_t *gjk);
 int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
                    gjk_vec3_t *sep);
 
+/**
+ * Computes penetration of obj2 into obj1.
+ * Depth of penetration, direction and position is returned. It means that
+ * if obj2 is translated by distance depth in direction dir objects will
+ * have touching contact, pos should be position in global coordinates
+ * where force should take a place.
+ *
+ * GJK+EPA algorithm is used.
+ *
+ * Returns 0 if obj1 and obj2 intersect and depth, dir and pos are filled
+ * if given non-NULL pointers.
+ * If obj1 and obj2 don't intersect -1 is returned.
+ */
+int gjkPenetrationEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
+                      double *depth, gjk_vec3_t *dir, gjk_vec3_t *pos);
+
 #endif /* __GJK_H__ */
