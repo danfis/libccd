@@ -13,6 +13,7 @@ TEST(boxboxAlignedZ);
 TEST(boxboxRot);
 
 TEST(boxboxSeparate);
+TEST(boxboxPenetration);
 
 TEST_SUITE(TSBoxBox) {
     TEST_ADD(boxboxSetUp),
@@ -22,6 +23,7 @@ TEST_SUITE(TSBoxBox) {
     TEST_ADD(boxboxAlignedZ),
     TEST_ADD(boxboxRot),
     TEST_ADD(boxboxSeparate),
+    TEST_ADD(boxboxPenetration),
 
     TEST_ADD(boxboxTearDown),
     TEST_SUITE_CLOSURE

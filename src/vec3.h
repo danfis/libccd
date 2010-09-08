@@ -101,6 +101,11 @@ _gjk_inline void gjkVec3Sub2(gjk_vec3_t *d, const gjk_vec3_t *v, const gjk_vec3_
  */
 _gjk_inline void gjkVec3Scale(gjk_vec3_t *d, double k);
 
+/**
+ * Normalizes given vector to unit length.
+ */
+_gjk_inline void gjkVec3Normalize(gjk_vec3_t *d);
+
 
 /**
  * Dot product of two vectors.
@@ -228,6 +233,12 @@ _gjk_inline void gjkVec3Scale(gjk_vec3_t *d, double k)
     d->v[0] *= k;
     d->v[1] *= k;
     d->v[2] *= k;
+}
+
+_gjk_inline void gjkVec3Normalize(gjk_vec3_t *d)
+{
+    double k = 1. / sqrt(gjkVec3Len2(d));
+    gjkVec3Scale(d, k);
 }
 
 _gjk_inline double gjkVec3Dot(const gjk_vec3_t *a, const gjk_vec3_t *b)

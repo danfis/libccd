@@ -6,6 +6,74 @@
 #include "../vec3.h"
 #include "../dbg.h"
 
+static void svtBox(gjk_box_t *b, const char *color, FILE *out)
+{
+    gjk_vec3_t v[8];
+    size_t i;
+
+    gjkVec3Set(&v[0], b->x * 0.5, b->y * 0.5, b->z * 0.5);
+    gjkVec3Set(&v[1], b->x * 0.5, b->y * -0.5, b->z * 0.5);
+    gjkVec3Set(&v[2], b->x * 0.5, b->y * 0.5, b->z * -0.5);
+    gjkVec3Set(&v[3], b->x * 0.5, b->y * -0.5, b->z * -0.5);
+    gjkVec3Set(&v[4], b->x * -0.5, b->y * 0.5, b->z * 0.5);
+    gjkVec3Set(&v[5], b->x * -0.5, b->y * -0.5, b->z * 0.5);
+    gjkVec3Set(&v[6], b->x * -0.5, b->y * 0.5, b->z * -0.5);
+    gjkVec3Set(&v[7], b->x * -0.5, b->y * -0.5, b->z * -0.5);
+
+    for (i = 0; i < 8; i++){
+        gjkQuatRotVec(&v[i], &b->quat);
+        gjkVec3Add(&v[i], &b->pos);
+    }
+
+    fprintf(out, "-----\n");
+    fprintf(out, "Face color: %s\n", color);
+    fprintf(out, "Edge color: %s\n", color);
+    fprintf(out, "Point color: %s\n", color);
+    fprintf(out, "Points:\n");
+    for (i = 0; i < 8; i++){
+        fprintf(out, "%lf %lf %lf\n", gjkVec3X(&v[i]), gjkVec3Y(&v[i]), gjkVec3Z(&v[i]));
+    }
+
+    fprintf(out, "Edges:\n");
+    fprintf(out, "0 1\n 0 2\n2 3\n3 1\n1 2\n6 2\n1 7\n1 5\n");
+    fprintf(out, "5 0\n0 4\n4 2\n6 4\n6 5\n5 7\n6 7\n7 2\n7 3\n4 5\n");
+
+    fprintf(out, "Faces:\n");
+    fprintf(out, "0 2 1\n1 2 3\n6 2 4\n4 2 0\n4 0 5\n5 0 1\n");
+    fprintf(out, "5 1 7\n7 1 3\n6 4 5\n6 5 7\n2 6 7\n2 7 3\n");
+    fprintf(out, "-----\n");
+}
+
+static void svtBoxes(gjk_box_t *b1, gjk_box_t *b2, FILE *out)
+{
+    svtBox(b1, "0.9 0.1 0.1", out);
+    svtBox(b2, "0.1 0.9 0.1", out);
+}
+
+static void svtBoxesPenetr(gjk_box_t *b1, gjk_box_t *b2,
+                           double depth, gjk_vec3_t *dir, gjk_vec3_t *pos,
+                           const char *name,
+                           FILE *out)
+{
+    gjk_vec3_t sep;
+
+    gjkVec3Copy(&sep, dir);
+    gjkVec3Scale(&sep, depth);
+    gjkVec3Add(&sep, pos);
+
+    fprintf(out, "------\n");
+    fprintf(out, "Name: %s\n", name);
+    fprintf(out, "Point color: 0.1 0.1 0.9\n");
+    fprintf(out, "Points:\n%lf %lf %lf\n", gjkVec3X(pos), gjkVec3Y(pos), gjkVec3Z(pos));
+    fprintf(out, "------\n");
+    fprintf(out, "Point color: 0.1 0.9 0.9\n");
+    fprintf(out, "Edge color: 0.1 0.9 0.9\n");
+    fprintf(out, "Points:\n%lf %lf %lf\n", gjkVec3X(pos), gjkVec3Y(pos), gjkVec3Z(pos));
+    fprintf(out, "%lf %lf %lf\n", gjkVec3X(&sep), gjkVec3Y(&sep), gjkVec3Z(&sep));
+    fprintf(out, "Edges: 0 1\n");
+    svtBoxes(b1, b2, out);
+}
+
 TEST(boxboxSetUp)
 {
 }
@@ -239,17 +307,17 @@ TEST(boxboxRot)
 
 static void pConf(gjk_box_t *box1, gjk_box_t *box2, const gjk_vec3_t *v)
 {
-    fprintf(stdout, "box1.pos: [%lf %lf %lf]\n",
+    fprintf(stdout, "# box1.pos: [%lf %lf %lf]\n",
             gjkVec3X(&box1->pos), gjkVec3Y(&box1->pos), gjkVec3Z(&box1->pos));
-    fprintf(stdout, "box1->quat: [%lf %lf %lf %lf]\n",
+    fprintf(stdout, "# box1->quat: [%lf %lf %lf %lf]\n",
             box1->quat.q[0], box1->quat.q[1], box1->quat.q[2], box1->quat.q[3]);
-    fprintf(stdout, "box2->pos: [%lf %lf %lf]\n",
+    fprintf(stdout, "# box2->pos: [%lf %lf %lf]\n",
             gjkVec3X(&box2->pos), gjkVec3Y(&box2->pos), gjkVec3Z(&box2->pos));
-    fprintf(stdout, "box2->quat: [%lf %lf %lf %lf]\n",
+    fprintf(stdout, "# box2->quat: [%lf %lf %lf %lf]\n",
             box2->quat.q[0], box2->quat.q[1], box2->quat.q[2], box2->quat.q[3]);
-    fprintf(stdout, "sep: [%lf %lf %lf]\n",
+    fprintf(stdout, "# sep: [%lf %lf %lf]\n",
             gjkVec3X(v), gjkVec3Y(v), gjkVec3Z(v));
-    fprintf(stdout, "\n");
+    fprintf(stdout, "#\n");
 }
 
 TEST(boxboxSeparate)
@@ -261,7 +329,6 @@ TEST(boxboxSeparate)
     gjk_vec3_t sep, expsep, expsep2, axis;
 
     fprintf(stderr, "\n\n\n---- boxboxSeparate ----\n\n\n");
-    fprintf(stdout, "\n\n\n---- boxboxSeparate ----\n\n\n");
 
     box1.x = box1.y = box1.z = 1.;
     box2.x = 0.5;
@@ -330,4 +397,114 @@ TEST(boxboxSeparate)
     res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
     assertTrue(res == 0);
     pConf(&box1, &box2, &sep);
+}
+
+
+TEST(boxboxPenetration)
+{
+    gjk_t gjk;
+    GJK_BOX(box1);
+    GJK_BOX(box2);
+    int res;
+    gjk_vec3_t sep, expsep, expsep2, axis;
+    double depth;
+    gjk_vec3_t dir, pos;
+
+    fprintf(stderr, "\n\n\n---- boxboxPenetration ----\n\n\n");
+
+    box1.x = box1.y = box1.z = 1.;
+    box2.x = 0.5;
+    box2.y = 1.;
+    box2.z = 1.5;
+
+
+    GJK_INIT(&gjk);
+    gjk.support = gjkSupport;
+
+    /*
+    res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
+    DBG("depth: %lf", depth);
+    DBG_VEC3(&dir, "dir:   ");
+    DBG_VEC3(&pos, "pos:   ");
+    assertTrue(res == 0);
+    gjkVec3Set(&expsep, 0.25, 0., 0.);
+    assertTrue(gjkVec3Eq(&sep, &expsep));
+    */
+
+    //svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 1", stdout);
+
+    /*
+    gjkVec3Scale(&sep, -1.);
+    gjkVec3Add(&box1.pos, &sep);
+    res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
+    assertTrue(res == 0);
+    gjkVec3Set(&expsep, 0., 0., 0.);
+    assertTrue(gjkVec3Eq(&sep, &expsep));
+
+
+    gjkVec3Set(&box1.pos, -0.3, 0.5, 1.);
+    res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
+    assertTrue(res == 0);
+    gjkVec3Set(&expsep, 0., 0., -0.25);
+    assertTrue(gjkVec3Eq(&sep, &expsep));
+    */
+
+
+
+    /*
+    box1.x = box1.y = box1.z = 1.;
+    box2.x = box2.y = box2.z = 1.;
+    gjkVec3Set(&axis, 0., 0., 1.);
+    gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    gjkVec3Set(&box1.pos, 0., 0., 0.);
+
+    res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
+    assertTrue(res == 0);
+    gjkVec3Set(&expsep, 0., 0., 1.);
+    gjkVec3Set(&expsep2, 0., 0., -1.);
+    assertTrue(gjkVec3Eq(&sep, &expsep) || gjkVec3Eq(&sep, &expsep2));
+
+    svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 2", stdout);
+    */
+
+
+    /*
+    box1.x = box1.y = box1.z = 1.;
+    box2.x = box2.y = box2.z = 1.;
+    gjkVec3Set(&axis, 0., 0., 1.);
+    gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    gjkVec3Set(&box1.pos, -0.5, 0., 0.);
+
+    res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
+    assertTrue(res == 0);
+    svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 3", stdout);
+    */
+
+    box1.x = box1.y = box1.z = 1.;
+    box2.x = box2.y = box2.z = 1.;
+    gjkVec3Set(&axis, 0., 0., 1.);
+    gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    gjkVec3Set(&box1.pos, -0.5, 0.5, 0.);
+
+    res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
+    assertTrue(res == 0);
+
+    svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 3", stdout);
+
+    gjkVec3Scale(&dir, depth);
+    gjkVec3Add(&box2.pos, &dir);
+    svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 3", stdout);
+
+
+
+    /*
+    box1.x = box1.y = box1.z = 1.;
+    gjkVec3Set(&axis, 0., 1., 1.);
+    gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    gjkVec3Set(&box1.pos, -0.5, 0.1, 0.4);
+
+    res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
+    assertTrue(res == 0);
+    pConf(&box1, &box2, &sep);
+    */
 }
