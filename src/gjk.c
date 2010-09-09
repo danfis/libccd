@@ -309,6 +309,29 @@ static void penetrationPos(const gjk_pt_el_t *nearest, gjk_vec3_t *pos)
 }
 
 
+static FILE *fEPA;
+
+static void penEPAPos(const gjk_pt_t *pt, const gjk_pt_el_t *nearest,
+                      gjk_vec3_t *pos)
+{
+    double len;
+    gjk_pt_vertex_t *v;
+
+
+    // position is computed as centroid of all vertices in polytope
+
+    len = 0.;
+    gjkVec3Set(pos, 0., 0., 0.);
+
+    gjkListForEachEntry(&pt->vertices, v, list){
+        gjkVec3Add(pos, &v->v.v2);
+        gjkVec3Add(pos, &v->v.v1);
+        len += 2.;
+    }
+
+    gjkVec3Scale(pos, 1./len);
+}
+
 int gjkPenetrationEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
                       double *depth, gjk_vec3_t *dir, gjk_vec3_t *pos)
 {
@@ -317,6 +340,8 @@ int gjkPenetrationEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
     int ret;
 
     gjkPtInit(&polytope);
+
+    fEPA = fopen("epa.svt", "w");
 
     ret = __gjkGJKEPA(obj1, obj2, gjk, &polytope, &nearest);
 
@@ -330,10 +355,12 @@ int gjkPenetrationEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
         gjkVec3Normalize(dir);
 
         // compute position
-        penetrationPos(nearest, pos);
+        penEPAPos(&polytope, nearest, pos);
     }
 
     gjkPtDestroy(&polytope);
+
+    fclose(fEPA);
 
     return ret;
 }
@@ -411,20 +438,26 @@ static int __gjkGJKEPA(const void *obj1, const void *obj2,
     if (ret != 0)
         return -1;
 
+    fprintf(fEPA, "\nPoints:\n0 0 0\n----\n");
+
     // transform simplex to polytope - simplex won't be used anymore
     size = gjkSimplexSize(&simplex);
     if (size == 4){
+        fprintf(fEPA, "#simplex4");
         simplexToPolytope4(&simplex, polytope);
     }else if (size == 3){
+        fprintf(fEPA, "#simplex3");
         if (simplexToPolytope3(obj1, obj2, gjk, &simplex, polytope, nearest) != 0){
             return 0; // touch contact
         }
     }else{ // size == 2
+        fprintf(fEPA, "#simplex2");
         if (simplexToPolytope2(obj1, obj2, gjk, &simplex, polytope, nearest) != 0){
             return 0; // touch contact
         }
     }
 
+    gjkPtDumpSVT2(polytope, fEPA);
     while (1){
         // get triangle nearest to origin
         *nearest = gjkPtNearest(polytope);
@@ -435,6 +468,36 @@ static int __gjkGJKEPA(const void *obj1, const void *obj2,
 
         // expand nearest triangle using new point - supp
         expandPolytope(polytope, *nearest, &supp);
+
+        gjkPtDumpSVT2(polytope, fEPA);
+    }
+    gjkPtDumpSVT2(polytope, fEPA);
+
+    if ((*nearest)->type == GJK_PT_VERTEX){
+        gjk_pt_vertex_t *v = (gjk_pt_vertex_t *)*nearest;
+        fprintf(fEPA, "\n---\nName: res\n");
+        fprintf(fEPA, "\nPoints:\n%lf %lf %lf\n---\n",
+                gjkVec3X(&v->v.v), gjkVec3Y(&v->v.v), gjkVec3Z(&v->v.v));
+    }else if ((*nearest)->type == GJK_PT_EDGE){
+        gjk_pt_edge_t *e = (gjk_pt_edge_t *)*nearest;
+        gjk_pt_vertex_t *v1, *v2;
+        gjkPtEdgeVertices(e, &v1, &v2);
+        fprintf(fEPA, "\n---\nName: res\n");
+        fprintf(fEPA, "\nPoints:\n%lf %lf %lf\n%lf %lf %lf\n",
+                gjkVec3X(&v1->v.v), gjkVec3Y(&v1->v.v), gjkVec3Z(&v1->v.v),
+                gjkVec3X(&v2->v.v), gjkVec3Y(&v2->v.v), gjkVec3Z(&v2->v.v));
+        fprintf(fEPA, "Edges: 0 1\n---\n");
+    }else if ((*nearest)->type == GJK_PT_FACE){
+        gjk_pt_face_t *f = (gjk_pt_face_t *)*nearest;
+        gjk_pt_vertex_t *v1, *v2, *v3;
+        gjkPtFaceVertices(f, &v1, &v2, &v3);
+        fprintf(fEPA, "\n---\nName: res\n");
+        fprintf(fEPA, "\nPoints:\n%lf %lf %lf\n%lf %lf %lf\n%lf %lf %lf\n",
+                gjkVec3X(&v1->v.v), gjkVec3Y(&v1->v.v), gjkVec3Z(&v1->v.v),
+                gjkVec3X(&v2->v.v), gjkVec3Y(&v2->v.v), gjkVec3Z(&v2->v.v),
+                gjkVec3X(&v3->v.v), gjkVec3Y(&v3->v.v), gjkVec3Z(&v3->v.v));
+        fprintf(fEPA, "Edges: 0 1\n1 2\n2 0\n");
+        fprintf(fEPA, "Faces: 0 1 2\n---\n");
     }
 
     return 0;
@@ -741,6 +804,18 @@ static int simplexToPolytope3(const void *obj1, const void *obj2,
     __gjkSupport(obj1, obj2, &dir, gjk, &d2);
     dist2 = gjkVec3PointTriDist2(&d2.v, &a->v, &b->v, &c->v, NULL);
 
+    fprintf(fEPA, "\nPoints:\n");
+    fprintf(fEPA, "%lf %lf %lf\n",
+            gjkVec3X(&a->v), gjkVec3Y(&a->v), gjkVec3Z(&a->v));
+    fprintf(fEPA, "%lf %lf %lf\n",
+            gjkVec3X(&b->v), gjkVec3Y(&b->v), gjkVec3Z(&b->v));
+    fprintf(fEPA, "%lf %lf %lf\n",
+            gjkVec3X(&c->v), gjkVec3Y(&c->v), gjkVec3Z(&c->v));
+    fprintf(fEPA, "Edges: 0 1\n1 2\n2 0\n");
+    fprintf(fEPA, "Faces: 0 1 2\n----\n");
+
+    fprintf(fEPA, "# dist: %lf, dist2: %lf\n", dist, dist2);
+
     // check if face isn't already on edge of minkowski sum and thus we
     // have touching contact
     if (gjkIsZero(dist) || gjkIsZero(dist2)){
@@ -912,6 +987,7 @@ static void expandPolytope(gjk_pt_t *pt, gjk_pt_el_t *el,
 
         gjkPtEdgeFaces((gjk_pt_edge_t *)el, &f[0], &f[1]);
 
+        DBG("%ld %ld", (long)f[0], (long)f[1]);
         if (f[0]){
             gjkPtFaceEdges(f[0], &e[0], &e[1], &e[2]);
             if (e[0] == (gjk_pt_edge_t *)el){
@@ -924,10 +1000,10 @@ static void expandPolytope(gjk_pt_t *pt, gjk_pt_el_t *el,
                 e[2] = e[0];
                 e[0] = e[1];
                 e[1] = e[2];
-                if (v[1] != v[2])
+                if (v[1] == v[2])
                     v[1] = v[3];
             }else{
-                if (v[1] != v[0])
+                if (v[1] == v[0])
                     v[1] = v[3];
             }
 
@@ -955,9 +1031,10 @@ static void expandPolytope(gjk_pt_t *pt, gjk_pt_el_t *el,
             v[4] = gjkPtAddVertex(pt, newv);
 
             gjkPtDelFace(pt, f[0]);
-            if (f[1])
+            if (f[1]){
                 gjkPtDelFace(pt, f[1]);
-            gjkPtDelEdge(pt, (gjk_pt_edge_t *)el);
+                gjkPtDelEdge(pt, (gjk_pt_edge_t *)el);
+            }
 
             e[4] = gjkPtAddEdge(pt, v[4], v[2]);
             e[5] = gjkPtAddEdge(pt, v[4], v[0]);
@@ -970,6 +1047,8 @@ static void expandPolytope(gjk_pt_t *pt, gjk_pt_el_t *el,
             if (f[1]){
                 gjkPtAddFace(pt, e[3], e[5], e[7]);
                 gjkPtAddFace(pt, e[4], e[7], e[2]);
+            }else{
+                gjkPtAddFace(pt, e[4], e[5], (gjk_pt_edge_t *)el);
             }
         }
     }else{ // el->type == GJK_PT_FACE
@@ -1023,7 +1102,11 @@ static int nextSupport(const void *obj1, const void *obj2, const gjk_t *gjk,
     if (gjkIsZero(el->dist))
         return -1;
 
+    DBG2("");
+    DBG_VEC3(&el->witness, "  witness: ");
+    DBG("  el->dist: %lf", el->dist);
     __gjkSupport(obj1, obj2, &el->witness, gjk, out);
+    DBG_VEC3(&out->v, "  support: ");
 
     if (el->type == GJK_PT_EDGE){
         // fetch end points of edge
@@ -1031,12 +1114,21 @@ static int nextSupport(const void *obj1, const void *obj2, const gjk_t *gjk,
 
         // get distance from segment
         dist = gjkVec3PointSegmentDist2(&out->v, a, b, NULL);
+        DBG2("Edge:");
+        DBG("  dist: %lf", dist);
+        DBG_VEC3(a, "  a: ");
+        DBG_VEC3(b, "  b: ");
     }else{ // el->type == GJK_PT_FACE
         // fetch vertices of triangle face
         gjkPtFaceVec3((gjk_pt_face_t *)el, &a, &b, &c);
 
         // check if new point can significantly expand polytope
         dist = gjkVec3PointTriDist2(&out->v, a, b, c, NULL);
+        DBG2("Face:");
+        DBG("  dist: %lf", dist);
+        DBG_VEC3(a, "  a: ");
+        DBG_VEC3(b, "  b: ");
+        DBG_VEC3(c, "  c: ");
     }
 
     if (dist < gjk->epa_tolerance)

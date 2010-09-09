@@ -27,6 +27,7 @@
 #include <gjk/support.h>
 #include <gjk/list.h>
 #include <gjk/alloc.h>
+#include <gjk/dbg.h>// TODO: remove this!
 
 #define GJK_PT_VERTEX 1
 #define GJK_PT_EDGE   2
@@ -169,6 +170,7 @@ gjk_pt_el_t *gjkPtNearest(gjk_pt_t *pt);
 
 
 void gjkPtDumpSVT(gjk_pt_t *pt, const char *fn);
+void gjkPtDumpSVT2(gjk_pt_t *pt, FILE *);
 
 
 /**** INLINES ****/

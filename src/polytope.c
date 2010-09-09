@@ -186,24 +186,24 @@ gjk_pt_el_t *gjkPtNearest(gjk_pt_t *pt)
     gjk_pt_edge_t *e;
     gjk_pt_face_t *f;
 
-    gjkListForEachEntry(&pt->vertices, v, list){
-        if (v->dist < nearest_dist){
-            nearest_dist = v->dist;
-            nearest = (gjk_pt_el_t *)v;
+    gjkListForEachEntry(&pt->faces, f, list){
+        if (f->dist < nearest_dist){
+            nearest_dist = f->dist;
+            nearest = (gjk_pt_el_t *)f;
         }
     }
 
     gjkListForEachEntry(&pt->edges, e, list){
-        if (e->dist < nearest_dist){
+        if (e->dist < nearest_dist || gjkEq(e->dist, nearest_dist)){
             nearest_dist = e->dist;
             nearest = (gjk_pt_el_t *)e;
         }
     }
 
-    gjkListForEachEntry(&pt->faces, f, list){
-        if (f->dist < nearest_dist){
-            nearest_dist = f->dist;
-            nearest = (gjk_pt_el_t *)f;
+    gjkListForEachEntry(&pt->vertices, v, list){
+        if (v->dist < nearest_dist || gjkEq(e->dist, nearest_dist)){
+            nearest_dist = v->dist;
+            nearest = (gjk_pt_el_t *)v;
         }
     }
 
@@ -213,15 +213,23 @@ gjk_pt_el_t *gjkPtNearest(gjk_pt_t *pt)
 
 void gjkPtDumpSVT(gjk_pt_t *pt, const char *fn)
 {
-    gjk_pt_vertex_t *v, *a, *b, *c;
-    gjk_pt_edge_t *e;
-    gjk_pt_face_t *f;
     FILE *fout;
-    size_t i;
 
     fout = fopen(fn, "a");
     if (fout == NULL)
         return;
+
+    gjkPtDumpSVT2(pt, fout);
+
+    fclose(fout);
+}
+
+void gjkPtDumpSVT2(gjk_pt_t *pt, FILE *fout)
+{
+    gjk_pt_vertex_t *v, *a, *b, *c;
+    gjk_pt_edge_t *e;
+    gjk_pt_face_t *f;
+    size_t i;
 
     fprintf(fout, "-----\n");
 
@@ -248,6 +256,4 @@ void gjkPtDumpSVT(gjk_pt_t *pt, const char *fn)
         }
         fprintf(fout, "%d %d %d\n", a->id, b->id, c->id);
     }
-
-    fclose(fout);
 }
