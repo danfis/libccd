@@ -2,6 +2,8 @@
 #include <cu/cu.h>
 #include "../gjk.h"
 #include "../gjk_support.h"
+#include "common.h"
+
 
 TEST(cylcylSetUp)
 {
@@ -99,6 +101,9 @@ TEST(cylcylAlignedZ)
         }
 
         c1.pos.v[2] += 0.1;
+
+        svtObj(&c1, stdout, "0. 0. 1.", NULL);
+        svtObj(&c2, stdout, "0. 0. 1.", NULL);
     }
 }
 

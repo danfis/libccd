@@ -324,12 +324,14 @@ static void penEPAPos(const gjk_pt_t *pt, const gjk_pt_el_t *nearest,
     gjkVec3Set(pos, 0., 0., 0.);
 
     gjkListForEachEntry(&pt->vertices, v, list){
-        gjkVec3Add(pos, &v->v.v2);
         gjkVec3Add(pos, &v->v.v1);
+        gjkVec3Add(pos, &v->v.v2);
         len += 2.;
     }
 
     gjkVec3Scale(pos, 1./len);
+
+    //penetrationPos(nearest, pos);
 }
 
 int gjkPenetrationEPA(const void *obj1, const void *obj2, const gjk_t *gjk,

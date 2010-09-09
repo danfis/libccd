@@ -27,7 +27,7 @@
 #include <gjk/vec3.h>
 
 struct _gjk_quat_t {
-    double q[4];
+    double q[4]; //!< x, y, z, w
 };
 typedef struct _gjk_quat_t gjk_quat_t;
 
@@ -46,6 +46,17 @@ _gjk_inline void gjkQuatSetAngleAxis(gjk_quat_t *q,
                                      double angle, const gjk_vec3_t *axis);
 
 _gjk_inline void gjkQuatScale(gjk_quat_t *q, double k);
+
+/**
+ * q = q * q2
+ */
+_gjk_inline void gjkQuatMul(gjk_quat_t *q, const gjk_quat_t *q2);
+
+/**
+ * q = a * b
+ */
+_gjk_inline void gjkQuatMul2(gjk_quat_t *q,
+                             const gjk_quat_t *a, const gjk_quat_t *b);
 
 /**
  * Inverts quaternion.
@@ -136,6 +147,34 @@ _gjk_inline void gjkQuatScale(gjk_quat_t *q, double k)
     size_t i;
     for (i = 0; i < 4; i++)
         q->q[i] *= k;
+}
+
+_gjk_inline void gjkQuatMul(gjk_quat_t *q, const gjk_quat_t *q2)
+{
+    gjk_quat_t a;
+    gjkQuatCopy(&a, q);
+    gjkQuatMul2(q, &a, q2);
+}
+
+_gjk_inline void gjkQuatMul2(gjk_quat_t *q,
+                             const gjk_quat_t *a, const gjk_quat_t *b)
+{
+    q->q[0] = a->q[3] * b->q[0]
+                + a->q[0] * b->q[3]
+                + a->q[1] * b->q[2]
+                - a->q[2] * b->q[1];
+    q->q[1] = a->q[3] * b->q[1]
+                + a->q[1] * b->q[3]
+                - a->q[0] * b->q[2]
+                + a->q[2] * b->q[0];
+    q->q[2] = a->q[3] * b->q[2]
+                + a->q[2] * b->q[3]
+                + a->q[0] * b->q[1]
+                - a->q[1] * b->q[0];
+    q->q[3] = a->q[3] * b->q[3]
+                - a->q[0] * b->q[0]
+                - a->q[1] * b->q[1]
+                - a->q[2] * b->q[2];
 }
 
 _gjk_inline int gjkQuatInvert(gjk_quat_t *q)
