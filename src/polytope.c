@@ -186,6 +186,12 @@ gjk_pt_el_t *gjkPtNearest(gjk_pt_t *pt)
     gjk_pt_edge_t *e;
     gjk_pt_face_t *f;
 
+    // Order of element search (face -> edge -> vertex) is important
+    // because if nearest face has nearest point on its edge it is
+    // necessary to return edge instead of face. If nearest element is
+    // vertex it must be returned this vertex (instead of face or edge)
+    // because it will terminate algorithm.
+
     gjkListForEachEntry(&pt->faces, f, list){
         if (f->dist < nearest_dist){
             nearest_dist = f->dist;
