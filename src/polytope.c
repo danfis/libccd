@@ -207,7 +207,7 @@ gjk_pt_el_t *gjkPtNearest(gjk_pt_t *pt)
     }
 
     gjkListForEachEntry(&pt->vertices, v, list){
-        if (v->dist < nearest_dist || gjkEq(e->dist, nearest_dist)){
+        if (v->dist < nearest_dist || gjkEq(v->dist, nearest_dist)){
             nearest_dist = v->dist;
             nearest = (gjk_pt_el_t *)v;
         }

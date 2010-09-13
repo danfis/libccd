@@ -8,7 +8,8 @@ LDFLAGS += -L./ -Lcu/ -lcu -lm -L../ -lgjk
 CHECK_REG=cu/check-regressions
 CHECK_TS ?=
 
-OBJS = common.o vec3.o polytope.o boxbox.o spheresphere.o cylcyl.o
+OBJS = common.o vec3.o polytope.o boxbox.o spheresphere.o cylcyl.o \
+       boxcyl.o
 
 
 all: test

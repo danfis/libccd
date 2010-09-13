@@ -187,10 +187,21 @@ static void penetrationPosEdge(const gjk_pt_edge_t *nearest, gjk_vec3_t *pos)
     scale /= gjkVec3Dist2(&nearest->vertex[0]->v.v, &nearest->vertex[1]->v.v);
     scale  = sqrt(scale);
 
-    gjkVec3Sub2(&d, e1[1], e1[0]);
+    gjkVec3Sub2(&d, e2[1], e1[0]);
     gjkVec3Scale(&d, scale);
+    /*
     gjkVec3Copy(pos, e1[0]);
     gjkVec3Add(pos, &d);
+    */
+    gjkVec3Add(&d, e2[1]);
+    gjkVec3Copy(pos, &d);
+
+    gjkVec3Sub2(&d, e2[0], e1[1]);
+    gjkVec3Scale(&d, scale);
+    gjkVec3Add(&d, e2[0]);
+    gjkVec3Add(pos, &d);
+
+    gjkVec3Scale(pos, 0.5);
 }
 
 static void penetrationBestTriangle(const gjk_pt_face_t *nearest,
@@ -311,25 +322,64 @@ static void penetrationPos(const gjk_pt_el_t *nearest, gjk_vec3_t *pos)
 
 static FILE *fEPA;
 
+static int penEPAPosCmp(const void *a, const void *b)
+{
+    gjk_pt_vertex_t *v1, *v2;
+    v1 = *(gjk_pt_vertex_t **)a;
+    v2 = *(gjk_pt_vertex_t **)b;
+
+    if (gjkEq(v1->dist, v2->dist)){
+        return 0;
+    }else if (v1->dist < v2->dist){
+        return -1;
+    }else{
+        return 1;
+    }
+}
+
 static void penEPAPos(const gjk_pt_t *pt, const gjk_pt_el_t *nearest,
                       gjk_vec3_t *pos)
 {
-    double len;
     gjk_pt_vertex_t *v;
+    gjk_pt_vertex_t **vs;
+    size_t i, len;
+    double median, scale;
 
-
-    // position is computed as centroid of all vertices in polytope
-
-    len = 0.;
-    gjkVec3Set(pos, 0., 0., 0.);
-
+    // compute median
+    len = 0;
     gjkListForEachEntry(&pt->vertices, v, list){
-        gjkVec3Add(pos, &v->v.v1);
-        gjkVec3Add(pos, &v->v.v2);
-        len += 2.;
+        len++;
     }
 
-    gjkVec3Scale(pos, 1./len);
+    vs = GJK_ALLOC_ARR(gjk_pt_vertex_t *, len);
+    i = 0;
+    gjkListForEachEntry(&pt->vertices, v, list){
+        vs[i++] = v;
+    }
+
+    qsort(vs, len, sizeof(gjk_pt_vertex_t *), penEPAPosCmp);
+
+    if (len % 2 == 0){
+        median  = vs[len / 2 - 1]->dist;
+        median += vs[len / 2]->dist;
+        median  = median / 2.;
+    }else{
+        median  = vs[len / 2]->dist;
+    }
+
+    gjkVec3Set(pos, 0., 0., 0.);
+    scale = 0.;
+    if (len % 2 == 1)
+        len++;
+
+    for (i = 0; i < len / 2; i++){
+        gjkVec3Add(pos, &vs[i]->v.v1);
+        gjkVec3Add(pos, &vs[i]->v.v2);
+        scale += 2.;
+    }
+    gjkVec3Scale(pos, 1. / scale);
+
+    free(vs);
 
     //penetrationPos(nearest, pos);
 }

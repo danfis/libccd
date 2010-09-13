@@ -334,13 +334,19 @@ TEST(boxboxSeparate)
 }
 
 
+#define TOSVT() \
+    svtObjPen(&box1, &box2, stdout, "Pen 1", depth, &dir, &pos); \
+    gjkVec3Scale(&dir, depth); \
+    gjkVec3Add(&box2.pos, &dir); \
+    svtObjPen(&box1, &box2, stdout, "Pen 1", depth, &dir, &pos)
+
 TEST(boxboxPenetration)
 {
     gjk_t gjk;
     GJK_BOX(box1);
     GJK_BOX(box2);
     int res;
-    gjk_vec3_t sep, expsep, expsep2, axis;
+    gjk_vec3_t axis;
     gjk_quat_t rot;
     double depth;
     gjk_vec3_t dir, pos;
@@ -356,37 +362,19 @@ TEST(boxboxPenetration)
     GJK_INIT(&gjk);
     gjk.support = gjkSupport;
 
-    /*
     res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
-    DBG("depth: %lf", depth);
-    DBG_VEC3(&dir, "dir:   ");
-    DBG_VEC3(&pos, "pos:   ");
     assertTrue(res == 0);
-    gjkVec3Set(&expsep, 0.25, 0., 0.);
-    assertTrue(gjkVec3Eq(&sep, &expsep));
-    */
-
-    //svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 1", stdout);
-
-    /*
-    gjkVec3Scale(&sep, -1.);
-    gjkVec3Add(&box1.pos, &sep);
-    res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
-    assertTrue(res == 0);
-    gjkVec3Set(&expsep, 0., 0., 0.);
-    assertTrue(gjkVec3Eq(&sep, &expsep));
+    recPen(depth, &dir, &pos, stdout, "Pen 1");
+    //TOSVT();
 
 
     gjkVec3Set(&box1.pos, -0.3, 0.5, 1.);
-    res = gjkSeparateEPA(&box1, &box2, &gjk, &sep);
+    res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
-    gjkVec3Set(&expsep, 0., 0., -0.25);
-    assertTrue(gjkVec3Eq(&sep, &expsep));
-    */
+    recPen(depth, &dir, &pos, stdout, "Pen 2");
+    //TOSVT(); <<<
 
 
-
-    /*
     box1.x = box1.y = box1.z = 1.;
     box2.x = box2.y = box2.z = 1.;
     gjkVec3Set(&axis, 0., 0., 1.);
@@ -395,18 +383,10 @@ TEST(boxboxPenetration)
 
     res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
-    gjkVec3Set(&expsep, 0., 0., 1.);
-    gjkVec3Set(&expsep2, 0., 0., -1.);
-    assertTrue(gjkVec3Eq(&sep, &expsep) || gjkVec3Eq(&sep, &expsep2));
-
-    svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 2", stdout);
-    gjkVec3Scale(&dir, depth);
-    gjkVec3Add(&box2.pos, &dir);
-    svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 3", stdout);
-    */
+    recPen(depth, &dir, &pos, stdout, "Pen 3");
+    //TOSVT();
 
 
-    /*
     box1.x = box1.y = box1.z = 1.;
     box2.x = box2.y = box2.z = 1.;
     gjkVec3Set(&axis, 0., 0., 1.);
@@ -415,13 +395,10 @@ TEST(boxboxPenetration)
 
     res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
-    svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 3", stdout);
-    gjkVec3Scale(&dir, depth);
-    gjkVec3Add(&box2.pos, &dir);
-    svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 3", stdout);
-    */
+    recPen(depth, &dir, &pos, stdout, "Pen 4");
+    //TOSVT();
 
-    /*
+
     box1.x = box1.y = box1.z = 1.;
     box2.x = box2.y = box2.z = 1.;
     gjkVec3Set(&axis, 0., 0., 1.);
@@ -430,17 +407,10 @@ TEST(boxboxPenetration)
 
     res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
-
-    svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 3", stdout);
-
-    gjkVec3Scale(&dir, depth);
-    gjkVec3Add(&box2.pos, &dir);
-    svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 3", stdout);
-    */
+    recPen(depth, &dir, &pos, stdout, "Pen 5");
+    //TOSVT();
 
 
-
-    /*
     box1.x = box1.y = box1.z = 1.;
     gjkVec3Set(&axis, 0., 1., 1.);
     gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
@@ -448,16 +418,10 @@ TEST(boxboxPenetration)
 
     res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
-
-    svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 3", stdout);
-    gjkVec3Scale(&dir, depth);
-    gjkVec3Add(&box2.pos, &dir);
-    svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 3", stdout);
-    */
+    recPen(depth, &dir, &pos, stdout, "Pen 6");
+    //TOSVT();
 
 
-
-    /*
     box1.x = box1.y = box1.z = 1.;
     gjkVec3Set(&axis, 0., 1., 1.);
     gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
@@ -468,13 +432,8 @@ TEST(boxboxPenetration)
 
     res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
-
-    svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 3", stdout);
-    gjkVec3Scale(&dir, depth);
-    gjkVec3Add(&box2.pos, &dir);
-    svtBoxesPenetr(&box1, &box2, depth, &dir, &pos, "Pen 3", stdout);
-    */
-
+    recPen(depth, &dir, &pos, stdout, "Pen 7");
+    //TOSVT(); <<<
 
 
     box1.x = box1.y = box1.z = 1.;
@@ -492,9 +451,6 @@ TEST(boxboxPenetration)
 
     res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
-
-    svtObjPen(&box1, &box2, stdout, "Pen 4", depth, &dir, &pos);
-    gjkVec3Scale(&dir, depth);
-    gjkVec3Add(&box2.pos, &dir);
-    svtObjPen(&box1, &box2, stdout, "Pen 4", depth, &dir, &pos);
+    recPen(depth, &dir, &pos, stdout, "Pen 8");
+    //TOSVT();
 }

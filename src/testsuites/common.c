@@ -159,3 +159,16 @@ void svtObjPen(void *o1, void *o2,
         sprintf(oname, "%s o1", name);
     svtObj(o2, out, "0.1 0.9 0.1", oname);
 }
+
+
+void recPen(double depth, const gjk_vec3_t *dir, const gjk_vec3_t *pos,
+            FILE *out, const char *note)
+{
+    if (!note)
+        note = "";
+
+    fprintf(out, "# %s: depth: %lf\n", note, depth);
+    fprintf(out, "# %s: dir:   [%lf %lf %lf]\n", note, gjkVec3X(dir), gjkVec3Y(dir), gjkVec3Z(dir));
+    fprintf(out, "# %s: pos:   [%lf %lf %lf]\n", note, gjkVec3X(pos), gjkVec3Y(pos), gjkVec3Z(pos));
+    fprintf(out, "#\n");
+}
