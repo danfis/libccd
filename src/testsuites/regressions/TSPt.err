@@ -48,34 +48,34 @@ ptNearest ::        ->dist: 0.166667
 ptNearest ::        ->witness: [-0.333333 0.166667 0.166667]
 ptNearest :: nearest->type: 2
 ptNearest ::        ->dist: 0.200000
-ptNearest ::        ->witness: [0.200000 -0.400000 0.000000]
+ptNearest ::        ->witness: [-0.400000 0.200000 0.000000]
 ptNearest :: nearest->type: 2
 ptNearest ::        ->dist: 0.200000
-ptNearest ::        ->witness: [-0.400000 0.200000 0.000000]
+ptNearest ::        ->witness: [0.200000 -0.400000 0.000000]
 ptNearest :: nearest->type: 3
 ptNearest ::        ->dist: 0.333333
 ptNearest ::        ->witness: [0.333333 0.333333 0.333333]
 ptNearest :: nearest->type: 2
 ptNearest ::        ->dist: 0.500000
-ptNearest ::        ->witness: [0.500000 0.000000 0.500000]
+ptNearest ::        ->witness: [0.000000 0.500000 0.500000]
 ptNearest :: nearest->type: 2
 ptNearest ::        ->dist: 0.500000
 ptNearest ::        ->witness: [0.500000 0.500000 0.000000]
 ptNearest :: nearest->type: 2
 ptNearest ::        ->dist: 0.500000
-ptNearest ::        ->witness: [0.000000 0.500000 0.500000]
+ptNearest ::        ->witness: [0.500000 0.000000 0.500000]
 ptNearest :: nearest->type: 2
 ptNearest ::        ->dist: 0.666667
 ptNearest ::        ->witness: [-0.333333 -0.333333 0.666667]
 ptNearest :: nearest->type: 1
 ptNearest ::        ->dist: 1.000000
-ptNearest ::        ->witness: [1.000000 0.000000 0.000000]
+ptNearest ::        ->witness: [0.000000 1.000000 0.000000]
 ptNearest :: nearest->type: 1
 ptNearest ::        ->dist: 1.000000
 ptNearest ::        ->witness: [0.000000 0.000000 1.000000]
 ptNearest :: nearest->type: 1
 ptNearest ::        ->dist: 1.000000
-ptNearest ::        ->witness: [0.000000 1.000000 0.000000]
+ptNearest ::        ->witness: [1.000000 0.000000 0.000000]
 ptNearest :: nearest->type: 1
 ptNearest ::        ->dist: 2.000000
 ptNearest ::        ->witness: [-1.000000 -1.000000 0.000000]
