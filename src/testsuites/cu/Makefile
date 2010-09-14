@@ -1,5 +1,11 @@
-CC = gcc
+CC ?= gcc
 CFLAGS = -g -Wall -pedantic
+
+ENABLE_TIMER ?= no
+
+ifeq '$(ENABLE_TIMER)' 'yes'
+  CFLAGS += -DCU_ENABLE_TIMER
+endif
 
 TARGETS = libcu.a
 

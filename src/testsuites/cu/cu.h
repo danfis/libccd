@@ -23,6 +23,10 @@
 #ifndef _CU_H_
 #define _CU_H_
 
+#ifdef CU_ENABLE_TIMER
+# include <time.h>
+#endif /* CU_ENABLE_TIMER */
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -131,6 +135,27 @@ void cu_run(int argc, char *argv[]);
 void cu_success_assertation(void);
 void cu_fail_assertation(const char *file, int line, const char *msg);
 void cu_set_out_prefix(const char *str);
+
+/** Timer **/
+#ifdef CU_ENABLE_TIMER
+extern struct timespec __cu_timer;
+
+/**
+ * Returns value of timer. (as timespec struct)
+ */
+const struct timespec *cuTimer(void);
+
+/**
+ * Starts timer.
+ */
+void cuTimerStart(void);
+
+/**
+ * Stops timer and record elapsed time from last call of cuTimerStart().
+ * Returns current value of timer.
+ */
+const struct timespec *cuTimerStop(void);
+#endif /* CU_ENABLE_TIMER */
 
 #ifdef __cplusplus
 }

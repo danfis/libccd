@@ -352,3 +352,36 @@ static void close_out_err(void)
     fclose(stdout);
     fclose(stderr);
 }
+
+
+#ifdef CU_ENABLE_TIMER
+/* global variables for timer functions */
+struct timespec __cu_timer;
+static struct timespec __cu_timer_start, __cu_timer_stop;
+
+const struct timespec *cuTimer(void)
+{
+    return &__cu_timer;
+}
+
+void cuTimerStart(void)
+{
+    clock_gettime(CLOCK_MONOTONIC, &__cu_timer_start);
+}
+
+const struct timespec *cuTimerStop(void)
+{
+    clock_gettime(CLOCK_MONOTONIC, &__cu_timer_stop);
+
+    /* store into t difference between time_start and time_end */
+    if (__cu_timer_stop.tv_nsec > __cu_timer_start.tv_nsec){
+        __cu_timer.tv_nsec = __cu_timer_stop.tv_nsec - __cu_timer_start.tv_nsec;
+        __cu_timer.tv_sec = __cu_timer_stop.tv_sec - __cu_timer_start.tv_sec;
+    }else{
+        __cu_timer.tv_nsec = __cu_timer_stop.tv_nsec + 1000000000L - __cu_timer_start.tv_nsec;
+        __cu_timer.tv_sec = __cu_timer_stop.tv_sec - 1 - __cu_timer_start.tv_sec;
+    }
+
+    return &__cu_timer;
+}
+#endif /* CU_ENABLE_TIMER */
