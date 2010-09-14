@@ -26,6 +26,10 @@
 #include <gjk/compiler.h>
 #include <gjk/vec3.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 struct _gjk_quat_t {
     double q[4]; //!< x, y, z, w
 };
@@ -238,5 +242,9 @@ _gjk_inline void gjkQuatRotVec(gjk_vec3_t *v, const gjk_quat_t *q)
             + (yz + wx) * gjkVec3Y(v));
     gjkVec3Set(v, vx, vy, vz);
 }
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif /* __cplusplus */
 
 #endif /* __GJK_QUAT_H__ */

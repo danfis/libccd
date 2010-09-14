@@ -29,6 +29,10 @@
 
 #include <gjk/quat.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #define GJK_OBJ_BOX 1
 #define GJK_OBJ_SPHERE 2
 #define GJK_OBJ_CYL 3
@@ -90,5 +94,10 @@ typedef struct _gjk_cyl_t gjk_cyl_t;
  */
 void gjkSupport(const void *obj, const gjk_vec3_t *dir,
                 gjk_vec3_t *v);
+
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif /* __cplusplus */
 
 #endif /* __GJK_SUPPORT_H__ */

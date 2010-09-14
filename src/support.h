@@ -27,6 +27,10 @@
 #include <gjk/vec3.h>
 #include <gjk/gjk.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 struct _gjk_support_t {
     gjk_vec3_t v;  //!< Support point in minkowski sum
     gjk_vec3_t v1; //!< Support point in obj1
@@ -50,5 +54,9 @@ _gjk_inline void gjkSupportCopy(gjk_support_t *d, const gjk_support_t *s)
 {
     *d = *s;
 }
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif /* __cplusplus */
 
 #endif /* __GJK_SUPPORT_H__ */

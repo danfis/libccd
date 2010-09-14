@@ -25,6 +25,10 @@
 
 #include <stdlib.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 /**
  * Functions and macros required for memory allocation.
  */
@@ -45,5 +49,9 @@
     __GJK_ALLOC_MEMORY(type, ptr, sizeof(type) * (num_elements))
 
 void *gjkRealloc(void *ptr, size_t size);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif /* __cplusplus */
 
 #endif /* __GJK_ALLOC_H__ */

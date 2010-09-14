@@ -26,6 +26,9 @@
 #include <string.h>
 #include <gjk/compiler.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 struct _gjk_list_t {
     struct _gjk_list_t *next, *prev;
@@ -149,5 +152,9 @@ _gjk_inline void gjkListDel(gjk_list_t *item)
     item->next = item;
     item->prev = item;
 }
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif /* __cplusplus */
 
 #endif /* __GJK_LIST_H__ */

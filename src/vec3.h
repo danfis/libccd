@@ -26,6 +26,9 @@
 #include <math.h>
 #include <gjk/compiler.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 #define GJK_EPS 1E-10
 
@@ -257,5 +260,9 @@ _gjk_inline void gjkVec3Cross(gjk_vec3_t *d, const gjk_vec3_t *a, const gjk_vec3
     d->v[1] = (a->v[2] * b->v[0]) - (a->v[0] * b->v[2]);
     d->v[2] = (a->v[0] * b->v[1]) - (a->v[1] * b->v[0]);
 }
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif /* __cplusplus */
 
 #endif /* __GJK_VEC3_H__ */

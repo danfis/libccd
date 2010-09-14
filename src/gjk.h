@@ -25,6 +25,9 @@
 
 #include <gjk/vec3.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 /**
  * Type of *support* function that takes pointer to 3D object and direction
@@ -99,5 +102,9 @@ int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
  */
 int gjkPenetrationEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
                       double *depth, gjk_vec3_t *dir, gjk_vec3_t *pos);
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif /* __cplusplus */
 
 #endif /* __GJK_H__ */

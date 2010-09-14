@@ -29,6 +29,10 @@
 #include <gjk/alloc.h>
 #include <gjk/dbg.h>// TODO: remove this!
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 #define GJK_PT_VERTEX 1
 #define GJK_PT_EDGE   2
 #define GJK_PT_FACE   3
@@ -299,5 +303,10 @@ _gjk_inline void gjkPtEdgeFaces(const gjk_pt_edge_t *e,
     *f1 = e->faces[0];
     *f2 = e->faces[1];
 }
+
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif /* __cplusplus */
 
 #endif /* __GJK_POLYTOPE_H__ */

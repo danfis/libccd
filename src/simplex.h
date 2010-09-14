@@ -26,6 +26,10 @@
 #include <gjk/support.h>
 #include <gjk/compiler.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 struct _gjk_simplex_t {
     gjk_support_t ps[4];
     int last; //!< index of last added point
@@ -41,13 +45,6 @@ _gjk_inline const gjk_support_t *gjkSimplexPoint(const gjk_simplex_t *s, int idx
 _gjk_inline void gjkSimplexAdd(gjk_simplex_t *s, const gjk_support_t *v);
 _gjk_inline void gjkSimplexSet(gjk_simplex_t *s, size_t pos, const gjk_support_t *a);
 _gjk_inline void gjkSimplexSetSize(gjk_simplex_t *s, int size);
-/*
-_gjk_inline void gjkSimplexSet1(gjk_simplex_t *s, const gjk_support_t *last);
-_gjk_inline void gjkSimplexSet2(gjk_simplex_t *s,
-                                const gjk_support_t *a, const gjk_support_t *last);
-_gjk_inline void gjkSimplexSet3(gjk_simplex_t *s, const gjk_support_t *a,
-                                const gjk_support_t *b, const gjk_support_t *last);
-                                */
 
 
 /**** INLINES ****/
@@ -90,30 +87,8 @@ _gjk_inline void gjkSimplexSetSize(gjk_simplex_t *s, int size)
     s->last = size - 1;
 }
 
-/*
-_gjk_inline void gjkSimplexSet1(gjk_simplex_t *s, const gjk_support_t *last)
-{
-    s->last = 0;
-    gjkSupportCopy(s->ps, last);
-}
-
-_gjk_inline void gjkSimplexSet2(gjk_simplex_t *s,
-                                const gjk_support_t *a, const gjk_support_t *last)
-{
-    s->last = 1;
-    gjkSupportCopy(s->ps, a);
-    gjkSupportCopy(s->ps + 1, last);
-}
-
-_gjk_inline void gjkSimplexSet3(gjk_simplex_t *s,
-                                const gjk_support_t *a, const gjk_support_t *b,
-                                const gjk_support_t *last)
-{
-    s->last = 2;
-    gjkSupportCopy(s->ps, a);
-    gjkSupportCopy(s->ps + 1, b);
-    gjkSupportCopy(s->ps + 2, last);
-}
-*/
+#ifdef __cplusplus
+} /* extern "C" */
+#endif /* __cplusplus */
 
 #endif /* __GJK_SIMPLEX_H__ */
