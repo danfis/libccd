@@ -10,12 +10,16 @@ CHECK_TS ?=
 
 OBJS = common.o vec3.o polytope.o boxbox.o spheresphere.o cylcyl.o \
        boxcyl.o
+BENCH_OBJS = bench-boxbox.o
 
 
-all: test
+all: test bench
 
 test: cu $(OBJS) main.c
 	$(CC) $(CFLAGS) -o $@ main.c $(OBJS) $(LDFLAGS)
+
+bench: cu bench.c
+	$(CC) $(CFLAGS) -o $@ bench.c $(LDFLAGS)
 
 %.o: %.c %.h
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -42,7 +46,7 @@ check-valgrind-gen-suppressions: all
              ./test $(CHECK_TS)
 
 cu:
-	$(MAKE) -C cu/
+	$(MAKE) ENABLE_TIMER=yes -C cu/
 
 clean:
 	rm -f *.o
