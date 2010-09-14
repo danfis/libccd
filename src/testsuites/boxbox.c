@@ -362,6 +362,7 @@ TEST(boxboxPenetration)
     GJK_INIT(&gjk);
     gjk.support = gjkSupport;
 
+    gjkVec3Set(&box2.pos, 0.1, 0., 0.);
     res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 1");
@@ -379,7 +380,7 @@ TEST(boxboxPenetration)
     box2.x = box2.y = box2.z = 1.;
     gjkVec3Set(&axis, 0., 0., 1.);
     gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
-    gjkVec3Set(&box1.pos, 0., 0., 0.);
+    gjkVec3Set(&box1.pos, 0.1, 0., 0.1);
 
     res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);

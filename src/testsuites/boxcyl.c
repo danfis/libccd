@@ -28,6 +28,7 @@ TEST(boxcylPenEPA)
     GJK_INIT(&gjk);
     gjk.support = gjkSupport;
 
+    gjkVec3Set(&cyl.pos, 0.1, 0., 0.);
     res = gjkPenetrationEPA(&box, &cyl, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 1");

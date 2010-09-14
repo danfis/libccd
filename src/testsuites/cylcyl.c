@@ -130,6 +130,7 @@ TEST(cylcylPenetrationEPA)
     GJK_INIT(&gjk);
     gjk.support = gjkSupport;
 
+    gjkVec3Set(&cyl2.pos, 0., 0., 0.3);
     res = gjkPenetrationEPA(&cyl1, &cyl2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 1");
