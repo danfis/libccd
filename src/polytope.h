@@ -99,6 +99,10 @@ struct _gjk_pt_t {
     gjk_list_t vertices; //!< List of vertices
     gjk_list_t edges; //!< List of edges
     gjk_list_t faces; //!< List of faces
+
+    gjk_pt_el_t *nearest;
+    double nearest_dist;
+    int nearest_type;
 };
 typedef struct _gjk_pt_t gjk_pt_t;
 
@@ -195,6 +199,10 @@ _gjk_inline int gjkPtDelVertex(gjk_pt_t *pt, gjk_pt_vertex_t *v)
     // delete vertex from main list
     gjkListDel(&v->list);
 
+    if ((void *)pt->nearest == (void *)v){
+        pt->nearest = NULL;
+    }
+
     free(v);
     return 0;
 }
@@ -212,6 +220,10 @@ _gjk_inline int gjkPtDelEdge(gjk_pt_t *pt, gjk_pt_edge_t *e)
 
     // disconnect edge from main list
     gjkListDel(&e->list);
+
+    if ((void *)pt->nearest == (void *)e){
+        pt->nearest = NULL;
+    }
 
     free(e);
     return 0;
@@ -233,6 +245,10 @@ _gjk_inline int gjkPtDelFace(gjk_pt_t *pt, gjk_pt_face_t *f)
 
     // remove face from list of all faces
     gjkListDel(&f->list);
+
+    if ((void *)pt->nearest == (void *)f){
+        pt->nearest = NULL;
+    }
 
     free(f);
     return 0;

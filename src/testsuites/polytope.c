@@ -250,18 +250,18 @@ TEST(ptNearest)
     f[3] = gjkPtAddFace(&pt, e[5], e[3], e[2]);
 
     nearest = gjkPtNearest(&pt);
-    DBG("nearest->type: %d", nearest->type);
-    DBG("       ->dist: %lf", nearest->dist);
-    DBG_VEC3(&nearest->witness, "       ->witness: ");
+    //DBG("nearest->type: %d", nearest->type);
+    //DBG("       ->dist: %lf", nearest->dist);
+    //DBG_VEC3(&nearest->witness, "       ->witness: ");
     assertEquals(nearest->type, GJK_PT_FACE);
     assertEquals(nearest, (gjk_pt_el_t *)f[1]);
     assertTrue(gjkPtDelFace(&pt, f[1]) == 0);
 
 
     nearest = gjkPtNearest(&pt);
-    DBG("nearest->type: %d", nearest->type);
-    DBG("       ->dist: %lf", nearest->dist);
-    DBG_VEC3(&nearest->witness, "       ->witness: ");
+    //DBG("nearest->type: %d", nearest->type);
+    //DBG("       ->dist: %lf", nearest->dist);
+    //DBG_VEC3(&nearest->witness, "       ->witness: ");
     assertEquals(nearest->type, GJK_PT_FACE);
     assertTrue(nearest == (gjk_pt_el_t *)f[0]
                 || nearest == (gjk_pt_el_t *)f[3]);
@@ -269,9 +269,9 @@ TEST(ptNearest)
 
 
     nearest = gjkPtNearest(&pt);
-    DBG("nearest->type: %d", nearest->type);
-    DBG("       ->dist: %lf", nearest->dist);
-    DBG_VEC3(&nearest->witness, "       ->witness: ");
+    //DBG("nearest->type: %d", nearest->type);
+    //DBG("       ->dist: %lf", nearest->dist);
+    //DBG_VEC3(&nearest->witness, "       ->witness: ");
     assertEquals(nearest->type, GJK_PT_FACE);
     assertTrue(nearest == (gjk_pt_el_t *)f[0]
                 || nearest == (gjk_pt_el_t *)f[3]);
@@ -279,9 +279,9 @@ TEST(ptNearest)
 
 
     nearest = gjkPtNearest(&pt);
-    DBG("nearest->type: %d", nearest->type);
-    DBG("       ->dist: %lf", nearest->dist);
-    DBG_VEC3(&nearest->witness, "       ->witness: ");
+    //DBG("nearest->type: %d", nearest->type);
+    //DBG("       ->dist: %lf", nearest->dist);
+    //DBG_VEC3(&nearest->witness, "       ->witness: ");
     assertEquals(nearest->type, GJK_PT_EDGE);
     assertTrue(nearest == (gjk_pt_el_t *)e[0]
                 || nearest == (gjk_pt_el_t *)e[3]);
@@ -289,9 +289,9 @@ TEST(ptNearest)
 
 
     nearest = gjkPtNearest(&pt);
-    DBG("nearest->type: %d", nearest->type);
-    DBG("       ->dist: %lf", nearest->dist);
-    DBG_VEC3(&nearest->witness, "       ->witness: ");
+    //DBG("nearest->type: %d", nearest->type);
+    //DBG("       ->dist: %lf", nearest->dist);
+    //DBG_VEC3(&nearest->witness, "       ->witness: ");
     assertEquals(nearest->type, GJK_PT_EDGE);
     assertTrue(nearest == (gjk_pt_el_t *)e[0]
                 || nearest == (gjk_pt_el_t *)e[3]);
@@ -299,18 +299,18 @@ TEST(ptNearest)
 
 
     nearest = gjkPtNearest(&pt);
-    DBG("nearest->type: %d", nearest->type);
-    DBG("       ->dist: %lf", nearest->dist);
-    DBG_VEC3(&nearest->witness, "       ->witness: ");
+    //DBG("nearest->type: %d", nearest->type);
+    //DBG("       ->dist: %lf", nearest->dist);
+    //DBG_VEC3(&nearest->witness, "       ->witness: ");
     assertEquals(nearest->type, GJK_PT_FACE);
     assertEquals(nearest, (gjk_pt_el_t *)f[2]);
     assertTrue(gjkPtDelFace(&pt, f[2]) == 0);
 
 
     nearest = gjkPtNearest(&pt);
-    DBG("nearest->type: %d", nearest->type);
-    DBG("       ->dist: %lf", nearest->dist);
-    DBG_VEC3(&nearest->witness, "       ->witness: ");
+    //DBG("nearest->type: %d", nearest->type);
+    //DBG("       ->dist: %lf", nearest->dist);
+    //DBG_VEC3(&nearest->witness, "       ->witness: ");
     assertEquals(nearest->type, GJK_PT_EDGE);
     assertTrue(nearest == (gjk_pt_el_t *)e[1]
                 || nearest == (gjk_pt_el_t *)e[4]
@@ -319,9 +319,9 @@ TEST(ptNearest)
 
 
     nearest = gjkPtNearest(&pt);
-    DBG("nearest->type: %d", nearest->type);
-    DBG("       ->dist: %lf", nearest->dist);
-    DBG_VEC3(&nearest->witness, "       ->witness: ");
+    //DBG("nearest->type: %d", nearest->type);
+    //DBG("       ->dist: %lf", nearest->dist);
+    //DBG_VEC3(&nearest->witness, "       ->witness: ");
     assertEquals(nearest->type, GJK_PT_EDGE);
     assertTrue(nearest == (gjk_pt_el_t *)e[1]
                 || nearest == (gjk_pt_el_t *)e[4]
@@ -330,9 +330,9 @@ TEST(ptNearest)
 
 
     nearest = gjkPtNearest(&pt);
-    DBG("nearest->type: %d", nearest->type);
-    DBG("       ->dist: %lf", nearest->dist);
-    DBG_VEC3(&nearest->witness, "       ->witness: ");
+    //DBG("nearest->type: %d", nearest->type);
+    //DBG("       ->dist: %lf", nearest->dist);
+    //DBG_VEC3(&nearest->witness, "       ->witness: ");
     assertEquals(nearest->type, GJK_PT_EDGE);
     assertTrue(nearest == (gjk_pt_el_t *)e[1]
                 || nearest == (gjk_pt_el_t *)e[4]
@@ -341,18 +341,18 @@ TEST(ptNearest)
 
 
     nearest = gjkPtNearest(&pt);
-    DBG("nearest->type: %d", nearest->type);
-    DBG("       ->dist: %lf", nearest->dist);
-    DBG_VEC3(&nearest->witness, "       ->witness: ");
+    //DBG("nearest->type: %d", nearest->type);
+    //DBG("       ->dist: %lf", nearest->dist);
+    //DBG_VEC3(&nearest->witness, "       ->witness: ");
     assertEquals(nearest->type, GJK_PT_EDGE);
     assertTrue(nearest == (gjk_pt_el_t *)e[2]);
     assertTrue(gjkPtDelEdge(&pt, (gjk_pt_edge_t *)nearest) == 0);
 
 
     nearest = gjkPtNearest(&pt);
-    DBG("nearest->type: %d", nearest->type);
-    DBG("       ->dist: %lf", nearest->dist);
-    DBG_VEC3(&nearest->witness, "       ->witness: ");
+    //DBG("nearest->type: %d", nearest->type);
+    //DBG("       ->dist: %lf", nearest->dist);
+    //DBG_VEC3(&nearest->witness, "       ->witness: ");
     assertEquals(nearest->type, GJK_PT_VERTEX);
     assertTrue(nearest == (gjk_pt_el_t *)v[1]
                 || nearest == (gjk_pt_el_t *)v[2]
@@ -361,9 +361,9 @@ TEST(ptNearest)
 
 
     nearest = gjkPtNearest(&pt);
-    DBG("nearest->type: %d", nearest->type);
-    DBG("       ->dist: %lf", nearest->dist);
-    DBG_VEC3(&nearest->witness, "       ->witness: ");
+    //DBG("nearest->type: %d", nearest->type);
+    //DBG("       ->dist: %lf", nearest->dist);
+    //DBG_VEC3(&nearest->witness, "       ->witness: ");
     assertEquals(nearest->type, GJK_PT_VERTEX);
     assertTrue(nearest == (gjk_pt_el_t *)v[1]
                 || nearest == (gjk_pt_el_t *)v[2]
@@ -372,9 +372,9 @@ TEST(ptNearest)
 
 
     nearest = gjkPtNearest(&pt);
-    DBG("nearest->type: %d", nearest->type);
-    DBG("       ->dist: %lf", nearest->dist);
-    DBG_VEC3(&nearest->witness, "       ->witness: ");
+    //DBG("nearest->type: %d", nearest->type);
+    //DBG("       ->dist: %lf", nearest->dist);
+    //DBG_VEC3(&nearest->witness, "       ->witness: ");
     assertEquals(nearest->type, GJK_PT_VERTEX);
     assertTrue(nearest == (gjk_pt_el_t *)v[1]
                 || nearest == (gjk_pt_el_t *)v[2]
@@ -383,9 +383,9 @@ TEST(ptNearest)
 
 
     nearest = gjkPtNearest(&pt);
-    DBG("nearest->type: %d", nearest->type);
-    DBG("       ->dist: %lf", nearest->dist);
-    DBG_VEC3(&nearest->witness, "       ->witness: ");
+    //DBG("nearest->type: %d", nearest->type);
+    //DBG("       ->dist: %lf", nearest->dist);
+    //DBG_VEC3(&nearest->witness, "       ->witness: ");
     assertEquals(nearest->type, GJK_PT_VERTEX);
     assertTrue(nearest == (gjk_pt_el_t *)v[0]);
     assertTrue(gjkPtDelVertex(&pt, (gjk_pt_vertex_t *)nearest) == 0);

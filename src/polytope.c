@@ -23,6 +23,46 @@
 #include <stdio.h>
 #include <float.h>
 #include "polytope.h"
+#include "alloc.h"
+
+_gjk_inline void _gjkPtNearestUpdate(gjk_pt_t *pt, gjk_pt_el_t *el)
+{
+    if (gjkEq(pt->nearest_dist, el->dist)){
+        if (el->type < pt->nearest_type){
+            pt->nearest = el;
+            pt->nearest_dist = el->dist;
+            pt->nearest_type = el->type;
+        }
+    }else if (el->dist < pt->nearest_dist){
+        pt->nearest = el;
+        pt->nearest_dist = el->dist;
+        pt->nearest_type = el->type;
+    }
+}
+
+static void _gjkPtNearestRenew(gjk_pt_t *pt)
+{
+    gjk_pt_vertex_t *v;
+    gjk_pt_edge_t *e;
+    gjk_pt_face_t *f;
+
+    pt->nearest_dist = DBL_MAX;
+    pt->nearest_type = 3;
+    pt->nearest = NULL;
+
+    gjkListForEachEntry(&pt->vertices, v, list){
+        _gjkPtNearestUpdate(pt, (gjk_pt_el_t *)v);
+    }
+
+    gjkListForEachEntry(&pt->edges, e, list){
+        _gjkPtNearestUpdate(pt, (gjk_pt_el_t *)e);
+    }
+
+    gjkListForEachEntry(&pt->faces, f, list){
+        _gjkPtNearestUpdate(pt, (gjk_pt_el_t *)f);
+    }
+}
+
 
 
 void gjkPtInit(gjk_pt_t *pt)
@@ -30,6 +70,10 @@ void gjkPtInit(gjk_pt_t *pt)
     gjkListInit(&pt->vertices);
     gjkListInit(&pt->edges);
     gjkListInit(&pt->faces);
+
+    pt->nearest = NULL;
+    pt->nearest_dist = DBL_MAX;
+    pt->nearest_type = 3;
 }
 
 void gjkPtDestroy(gjk_pt_t *pt)
@@ -71,6 +115,9 @@ gjk_pt_vertex_t *gjkPtAddVertex(gjk_pt_t *pt, const gjk_support_t *v)
     // add vertex to list
     gjkListAppend(&pt->vertices, &vert->list);
 
+    // update position in .nearest array
+    _gjkPtNearestUpdate(pt, (gjk_pt_el_t *)vert);
+
     return vert;
 }
 
@@ -94,6 +141,9 @@ gjk_pt_edge_t *gjkPtAddEdge(gjk_pt_t *pt, gjk_pt_vertex_t *v1,
     gjkListAppend(&edge->vertex[1]->edges, &edge->vertex_list[1]);
 
     gjkListAppend(&pt->edges, &edge->list);
+
+    // update position in .nearest array
+    _gjkPtNearestUpdate(pt, (gjk_pt_el_t *)edge);
 
     return edge;
 }
@@ -135,6 +185,9 @@ gjk_pt_face_t *gjkPtAddFace(gjk_pt_t *pt, gjk_pt_edge_t *e1,
     }
 
     gjkListAppend(&pt->faces, &face->list);
+
+    // update position in .nearest array
+    _gjkPtNearestUpdate(pt, (gjk_pt_el_t *)face);
 
     return face;
 }
@@ -180,40 +233,10 @@ void gjkPtRecomputeDistances(gjk_pt_t *pt)
 
 gjk_pt_el_t *gjkPtNearest(gjk_pt_t *pt)
 {
-    double nearest_dist = DBL_MAX;
-    gjk_pt_el_t *nearest = NULL;
-    gjk_pt_vertex_t *v;
-    gjk_pt_edge_t *e;
-    gjk_pt_face_t *f;
-
-    // Order of element search (face -> edge -> vertex) is important
-    // because if nearest face has nearest point on its edge it is
-    // necessary to return edge instead of face. If nearest element is
-    // vertex it must be returned this vertex (instead of face or edge)
-    // because it will terminate algorithm.
-
-    gjkListForEachEntry(&pt->faces, f, list){
-        if (f->dist < nearest_dist){
-            nearest_dist = f->dist;
-            nearest = (gjk_pt_el_t *)f;
-        }
+    if (!pt->nearest){
+        _gjkPtNearestRenew(pt);
     }
-
-    gjkListForEachEntry(&pt->edges, e, list){
-        if (e->dist < nearest_dist || gjkEq(e->dist, nearest_dist)){
-            nearest_dist = e->dist;
-            nearest = (gjk_pt_el_t *)e;
-        }
-    }
-
-    gjkListForEachEntry(&pt->vertices, v, list){
-        if (v->dist < nearest_dist || gjkEq(v->dist, nearest_dist)){
-            nearest_dist = v->dist;
-            nearest = (gjk_pt_el_t *)v;
-        }
-    }
-
-    return nearest;
+    return pt->nearest;
 }
 
 

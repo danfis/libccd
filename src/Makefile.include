@@ -19,12 +19,11 @@ ifeq '$(SYSTEM)' 'FreeBSD'
 else
   AWK ?= awk
   SED ?= sed
-  SYSTEM_LDFLAGS = -lrt -pthread
 endif
 
 NOWALL ?= no
 NOPEDANTIC ?= no
-DEBUG ?= yes
+DEBUG ?= no
 PROFIL ?= no
 
 ifeq '$(PROFIL)' 'yes'
