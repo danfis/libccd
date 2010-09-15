@@ -24,11 +24,11 @@
 #include "vec3.h"
 #include "dbg.h"
 
-static GJK_VEC3(__gjk_vec3_origin, 0., 0. ,0.);
+static GJK_VEC3(__gjk_vec3_origin, GJK_ZERO, GJK_ZERO, GJK_ZERO);
 gjk_vec3_t *gjk_vec3_origin = &__gjk_vec3_origin;
 
 
-double gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
+gjk_real_t gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
                                 const gjk_vec3_t *x0, const gjk_vec3_t *b,
                                 gjk_vec3_t *witness)
 {
@@ -47,7 +47,7 @@ double gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
     //
     // Bonus of this method is witness point for free.
 
-    double dist, t;
+    gjk_real_t dist, t;
     gjk_vec3_t d, a;
 
     // direction of segment
@@ -56,14 +56,14 @@ double gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
     // precompute vector from P to x0
     gjkVec3Sub2(&a, x0, P);
 
-    t  = -1. * gjkVec3Dot(&a, &d);
+    t  = -GJK_ONE * gjkVec3Dot(&a, &d);
     t /= gjkVec3Len2(&d);
 
-    if (t < 0. || gjkIsZero(t)){
+    if (t < GJK_ZERO || gjkIsZero(t)){
         dist = gjkVec3Dist2(x0, P);
         if (witness)
             gjkVec3Copy(witness, x0);
-    }else if (t > 1. || gjkEq(t, 1.)){
+    }else if (t > GJK_ONE || gjkEq(t, GJK_ONE)){
         dist = gjkVec3Dist2(b, P);
         if (witness)
             gjkVec3Copy(witness, b);
@@ -85,7 +85,7 @@ double gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
 }
 
 
-double gjkVec3PointTriDist2(const gjk_vec3_t *P,
+gjk_real_t gjkVec3PointTriDist2(const gjk_vec3_t *P,
                             const gjk_vec3_t *A, const gjk_vec3_t *B,
                             const gjk_vec3_t *C,
                             gjk_vec3_t *witness)
@@ -93,9 +93,9 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
     // See David Eberly's paper Distance Between Point and Triangle in 3D
 
     gjk_vec3_t E0, E1, D;
-    double a, b, c, d, e, f, det, s, t;
-    double tmp0, tmp1;
-    double dist;
+    gjk_real_t a, b, c, d, e, f, det, s, t;
+    gjk_real_t tmp0, tmp1;
+    gjk_real_t dist;
 
     // precompute all values
     gjkVec3Sub2(&E0, B, A);
@@ -113,8 +113,8 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
     t = (b * d) - (a * e);
 
     if (s + t < det || gjkEq(s + t, det)){
-        if (s < 0.){
-            if (t < 0.){
+        if (s < GJK_ZERO){
+            if (t < GJK_ZERO){
                 // region 4
                 // distance is distance from point A
                 gjkVec3Sub2(&D, A, P);
@@ -123,60 +123,60 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
                 return gjkVec3Len2(&D);
             }else{
                 // region 3
-                s = 0.;
-                if (e > 0. || gjkIsZero(e)){
-                    t = 0.;
+                s = GJK_ZERO;
+                if (e > GJK_ZERO || gjkIsZero(e)){
+                    t = GJK_ZERO;
                 }else{
                     if (-e > c || gjkEq(-e, c)){
-                        t = 1.;
+                        t = GJK_ONE;
                     }else{
                         t = -e / c;
                     }
                 }
             }
-        }else if (t < 0.){
+        }else if (t < GJK_ZERO){
             // region 5
-            t = 0.;
-            if (d > 0. || gjkIsZero(d)){
-                s = 0.;
+            t = GJK_ZERO;
+            if (d > GJK_ZERO || gjkIsZero(d)){
+                s = GJK_ZERO;
             }else{
                 if (-d > a || gjkEq(-d, a)){
-                    s = 1.;
+                    s = GJK_ONE;
                 }else{
                     s = -d / a;
                 }
             }
         }else{
             // region 0
-            tmp0 = 1. / det;
+            tmp0 = GJK_ONE / det;
             s *= tmp0;
             t *= tmp0;
         }
     }else{
-        if (s < 0.){
+        if (s < GJK_ZERO){
             // region 2
             // distance is distance from point C
             gjkVec3Sub2(&D, C, P);
             if (witness)
                 gjkVec3Copy(witness, C);
             return gjkVec3Len2(&D);
-        }else if (t < 0.){
+        }else if (t < GJK_ZERO){
             // region 6
             // distance is distance from point B
             gjkVec3Sub2(&D, B, P);
             if (witness)
                 gjkVec3Copy(witness, B);
-            return sqrt(gjkVec3Len2(&D));
+            return GJK_SQRT(gjkVec3Len2(&D));
         }else{
             // region 1
             tmp0 = c + e - b - d;
 
-            if (tmp0 < 0.){
-                s = 0.;
+            if (tmp0 < GJK_ZERO){
+                s = GJK_ZERO;
             }else{
-                tmp1 = a - 2. * b + c;
+                tmp1 = a - GJK_REAL(2.) * b + c;
                 if (tmp0 > tmp1 || gjkEq(tmp0, tmp1)){
-                    s = 1.;
+                    s = GJK_ONE;
                 }else{
                     s = tmp0 / tmp1;
                 }
@@ -196,10 +196,10 @@ double gjkVec3PointTriDist2(const gjk_vec3_t *P,
     }
 
     dist  = a * s * s;
-    dist += 2. * b * s * t;
+    dist += GJK_REAL(2.) * b * s * t;
     dist += c * t * t;
-    dist += 2. * d * s;
-    dist += 2. * e * t;
+    dist += GJK_REAL(2.) * d * s;
+    dist += GJK_REAL(2.) * e * t;
     dist += f;
 
     return dist;

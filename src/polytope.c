@@ -199,7 +199,7 @@ void gjkPtRecomputeDistances(gjk_pt_t *pt)
     gjk_pt_edge_t *e;
     gjk_pt_face_t *f;
     const gjk_vec3_t *a, *b, *c;
-    double dist;
+    gjk_real_t dist;
 
     gjkListForEachEntry(&pt->vertices, v, list){
         dist = gjkVec3Len2(&v->v.v);

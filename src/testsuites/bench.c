@@ -14,7 +14,7 @@ static size_t cycles = 10000;
 
 static void runBench(const void *o1, const void *o2, const gjk_t *gjk)
 {
-    double depth;
+    gjk_real_t depth;
     gjk_vec3_t dir, pos;
     int res;
     size_t i;

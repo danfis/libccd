@@ -16,7 +16,7 @@ TEST(boxcylPenEPA)
     GJK_CYL(cyl);
     int res;
     gjk_vec3_t axis;
-    double depth;
+    gjk_real_t depth;
     gjk_vec3_t dir, pos;
 
     box.x = 0.5;

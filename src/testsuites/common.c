@@ -8,14 +8,14 @@ static void svtCyl(gjk_cyl_t *c, FILE *out, const char *color, const char *name)
     gjk_vec3_t v[32];
     gjk_quat_t rot;
     gjk_vec3_t axis, vpos, vpos2;
-    double angle, x, y;
+    gjk_real_t angle, x, y;
     size_t i;
 
     gjkVec3Set(&axis, 0., 0., 1.);
     gjkVec3Set(&vpos, 0., c->radius, 0.);
     angle = 0.;
     for (i = 0; i < 16; i++){
-        angle = (double)i * (2. * M_PI / 16.);
+        angle = (gjk_real_t)i * (2. * M_PI / 16.);
 
         gjkQuatSetAngleAxis(&rot, angle, &axis);
         gjkVec3Copy(&vpos2, &vpos);
@@ -128,7 +128,7 @@ void svtObj(void *_o, FILE *out, const char *color, const char *name)
 
 void svtObjPen(void *o1, void *o2,
                FILE *out, const char *name,
-               double depth, const gjk_vec3_t *dir, const gjk_vec3_t *pos)
+               gjk_real_t depth, const gjk_vec3_t *dir, const gjk_vec3_t *pos)
 {
     gjk_vec3_t sep;
     char oname[500];
@@ -161,7 +161,7 @@ void svtObjPen(void *o1, void *o2,
 }
 
 
-void recPen(double depth, const gjk_vec3_t *dir, const gjk_vec3_t *pos,
+void recPen(gjk_real_t depth, const gjk_vec3_t *dir, const gjk_vec3_t *pos,
             FILE *out, const char *note)
 {
     if (!note)

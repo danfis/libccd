@@ -40,7 +40,7 @@ extern "C" {
 
 #define __GJK_PT_EL \
     int type;           /*! type of element */ \
-    double dist;        /*! distance from origin */ \
+    gjk_real_t dist;        /*! distance from origin */ \
     gjk_vec3_t witness; /*! witness point of projection of origin */ \
     gjk_list_t list;    /*! list of elements of same type */
 
@@ -101,7 +101,7 @@ struct _gjk_pt_t {
     gjk_list_t faces; //!< List of faces
 
     gjk_pt_el_t *nearest;
-    double nearest_dist;
+    gjk_real_t nearest_dist;
     int nearest_type;
 };
 typedef struct _gjk_pt_t gjk_pt_t;
@@ -142,7 +142,7 @@ _gjk_inline void gjkPtEdgeFaces(const gjk_pt_edge_t *e,
  */
 gjk_pt_vertex_t *gjkPtAddVertex(gjk_pt_t *pt, const gjk_support_t *v);
 _gjk_inline gjk_pt_vertex_t *gjkPtAddVertexCoords(gjk_pt_t *pt,
-                                                  double x, double y, double z);
+                                                  gjk_real_t x, gjk_real_t y, gjk_real_t z);
 
 /**
  * Adds edge to polytope.
@@ -183,7 +183,7 @@ void gjkPtDumpSVT2(gjk_pt_t *pt, FILE *);
 
 /**** INLINES ****/
 _gjk_inline gjk_pt_vertex_t *gjkPtAddVertexCoords(gjk_pt_t *pt,
-                                                  double x, double y, double z)
+                                                  gjk_real_t x, gjk_real_t y, gjk_real_t z)
 {
     gjk_support_t s;
     gjkVec3Set(&s.v, x, y, z);

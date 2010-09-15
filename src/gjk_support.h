@@ -49,20 +49,20 @@ typedef struct _gjk_obj_t gjk_obj_t;
 
 struct _gjk_box_t {
     __GJK_OBJ__
-    double x, y, z; //!< Lengths of box's edges
+    gjk_real_t x, y, z; //!< Lengths of box's edges
 };
 typedef struct _gjk_box_t gjk_box_t;
 
 struct _gjk_sphere_t {
     __GJK_OBJ__
-    double radius;
+    gjk_real_t radius;
 };
 typedef struct _gjk_sphere_t gjk_sphere_t;
 
 struct _gjk_cyl_t {
     __GJK_OBJ__
-    double radius;
-    double height;
+    gjk_real_t radius;
+    gjk_real_t height;
 };
 typedef struct _gjk_cyl_t gjk_cyl_t;
 

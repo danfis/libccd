@@ -48,6 +48,17 @@ ifneq '$(NOPEDANTIC)' 'yes'
   CXXFLAGS += -pedantic
 endif
 
+USE_DOUBLE ?= yes
+USE_SINGLE ?= no
+
+ifeq '$(USE_SINGLE)' 'yes'
+  CFLAGS += -DGJK_SINGLE
+  USE_DOUBLE = no
+endif
+ifeq '$(USE_DOUBLE)' 'yes'
+  CFLAGS += -DGJK_DOUBLE
+endif
+
 CFLAGS += --std=gnu99
 CXXFLAGS += $(SYSTEM_CXXFLAGS)
 LDFLAGS += $(SYSTEM_LDFLAGS)

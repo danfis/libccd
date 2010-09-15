@@ -14,7 +14,7 @@ TEST(vec3TearDown)
 TEST(vec3PointSegmentDist)
 {
     gjk_vec3_t P, a, b, w, ew;
-    double dist;
+    gjk_real_t dist;
 
     gjkVec3Set(&a, 0., 0., 0.);
     gjkVec3Set(&b, 1., 0., 0.);
@@ -156,7 +156,7 @@ TEST(vec3PointSegmentDist)
 TEST(vec3PointTriDist)
 {
     gjk_vec3_t P, a, b, c, w, P0;
-    double dist;
+    gjk_real_t dist;
 
     gjkVec3Set(&a, -1., 0., 0.);
     gjkVec3Set(&b, 0., 1., 1.);

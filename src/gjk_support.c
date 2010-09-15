@@ -43,34 +43,35 @@ void gjkSupport(const void *_obj, const gjk_vec3_t *_dir,
 
     if (obj->type == GJK_OBJ_BOX){
         gjk_box_t *box = (gjk_box_t *)obj;
-        gjkVec3Set(v, gjkSign(gjkVec3X(&dir)) * box->x * 0.5,
-                      gjkSign(gjkVec3Y(&dir)) * box->y * 0.5,
-                      gjkSign(gjkVec3Z(&dir)) * box->z * 0.5);
+        gjkVec3Set(v, gjkSign(gjkVec3X(&dir)) * box->x * GJK_REAL(0.5),
+                      gjkSign(gjkVec3Y(&dir)) * box->y * GJK_REAL(0.5),
+                      gjkSign(gjkVec3Z(&dir)) * box->z * GJK_REAL(0.5));
     }else if (obj->type == GJK_OBJ_SPHERE){
         gjk_sphere_t *sphere = (gjk_sphere_t *)obj;
-        double len;
+        gjk_real_t len;
 
         len = gjkVec3Len2(&dir);
-        if (len - GJK_EPS > 0.){
+        if (len - GJK_EPS > GJK_ZERO){
             gjkVec3Copy(v, &dir);
-            gjkVec3Scale(v, sphere->radius / sqrt(len));
+            gjkVec3Scale(v, sphere->radius / GJK_SQRT(len));
         }else{
-            gjkVec3Set(v, 0. ,0., 0.);
+            gjkVec3Set(v, GJK_ZERO, GJK_ZERO, GJK_ZERO);
         }
     }else if (obj->type == GJK_OBJ_CYL){
         gjk_cyl_t *cyl = (gjk_cyl_t *)obj;
-        double zdist, rad;
+        gjk_real_t zdist, rad;
 
         zdist = dir.v[0] * dir.v[0] + dir.v[1] * dir.v[1];
-        zdist = sqrt(zdist);
+        zdist = GJK_SQRT(zdist);
         if (gjkIsZero(zdist)){
-            gjkVec3Set(v, 0., 0., gjkSign(gjkVec3Z(&dir)) * cyl->height * 0.5);
+            gjkVec3Set(v, GJK_ZERO, GJK_ZERO,
+                          gjkSign(gjkVec3Z(&dir)) * cyl->height * GJK_REAL(0.5));
         }else{
             rad = cyl->radius / zdist;
 
             gjkVec3Set(v, rad * gjkVec3X(&dir),
                           rad * gjkVec3Y(&dir),
-                          gjkSign(gjkVec3Z(&dir)) * cyl->height * 0.5);
+                          gjkSign(gjkVec3Z(&dir)) * cyl->height * GJK_REAL(0.5));
         }
     }
 

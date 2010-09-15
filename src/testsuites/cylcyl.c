@@ -117,7 +117,7 @@ TEST(cylcylPenetrationEPA)
     GJK_CYL(cyl2);
     int res;
     gjk_vec3_t axis;
-    double depth;
+    gjk_real_t depth;
     gjk_vec3_t dir, pos;
 
     fprintf(stderr, "\n\n\n---- cylcylPenetration ----\n\n\n");

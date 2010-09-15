@@ -53,7 +53,7 @@ struct _gjk_t {
     gjk_support_fn support; //!< Function that returns support point of object
 
     unsigned long max_iterations; //!< Maximal number of iterations
-    double epa_tolerance;
+    gjk_real_t epa_tolerance;
 };
 typedef struct _gjk_t gjk_t;
 
@@ -68,7 +68,7 @@ void gjkFirstDirDefault(const void *o1, const void *o2, gjk_vec3_t *dir);
         (gjk)->support = NULL; \
         \
         (gjk)->max_iterations = (unsigned long)-1; \
-        (gjk)->epa_tolerance = 0.0001; \
+        (gjk)->epa_tolerance = GJK_REAL(0.0001); \
     } while(0)
 
 
@@ -101,7 +101,7 @@ int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
  * If obj1 and obj2 don't intersect -1 is returned.
  */
 int gjkPenetrationEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
-                      double *depth, gjk_vec3_t *dir, gjk_vec3_t *pos);
+                      gjk_real_t *depth, gjk_vec3_t *dir, gjk_vec3_t *pos);
 
 #ifdef __cplusplus
 } /* extern "C" */
