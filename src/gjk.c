@@ -322,17 +322,14 @@ static int __gjkGJKEPA(const void *obj1, const void *obj2,
     // transform simplex to polytope - simplex won't be used anymore
     size = gjkSimplexSize(&simplex);
     if (size == 4){
-        DBG2("4");
         if (simplexToPolytope4(obj1, obj2, gjk, &simplex, polytope, nearest) != 0){
             return 0;// touch contact
         }
     }else if (size == 3){
-        DBG2("3");
         if (simplexToPolytope3(obj1, obj2, gjk, &simplex, polytope, nearest) != 0){
             return 0; // touch contact
         }
     }else{ // size == 2
-        DBG2("2");
         if (simplexToPolytope2(obj1, obj2, gjk, &simplex, polytope, nearest) != 0){
             return 0; // touch contact
         }
@@ -348,7 +345,6 @@ static int __gjkGJKEPA(const void *obj1, const void *obj2,
 
         // expand nearest triangle using new point - supp
         expandPolytope(polytope, *nearest, &supp);
-        DBG2("");
     }
 
     return 0;
@@ -977,36 +973,22 @@ static int nextSupport(const void *obj1, const void *obj2, const gjk_t *gjk,
     gjk_vec3_t *a, *b, *c;
     gjk_real_t dist;
 
-    DBG("type: %d", el->type);
     if (el->type == GJK_PT_VERTEX)
         return -1;
 
     // touch contact
-    DBG("el->dist: %.20lf", (double)el->dist);
     if (gjkIsZero(el->dist))
         return -1;
 
     __gjkSupport(obj1, obj2, &el->witness, gjk, out);
-    DBG_VEC3(&out->v, "supp: ");
 
     if (el->type == GJK_PT_EDGE){
-        DBG_VEC3(&((gjk_pt_edge_t *)el)->vertex[0]->v.v, "v0: ");
-        DBG_VEC3(&((gjk_pt_edge_t *)el)->vertex[1]->v.v, "v1: ");
-        DBG2("EDGE");
         // fetch end points of edge
         gjkPtEdgeVec3((gjk_pt_edge_t *)el, &a, &b);
 
         // get distance from segment
         dist = gjkVec3PointSegmentDist2(&out->v, a, b, NULL);
     }else{ // el->type == GJK_PT_FACE
-        {
-            gjk_pt_vertex_t *v[3];
-            gjkPtFaceVertices((gjk_pt_face_t *)el, &v[0], &v[1], &v[2]);
-            DBG_VEC3(&v[0]->v.v, "v0: ");
-            DBG_VEC3(&v[1]->v.v, "v1: ");
-            DBG_VEC3(&v[2]->v.v, "v2: ");
-        }
-        DBG2("FACE");
         // fetch vertices of triangle face
         gjkPtFaceVec3((gjk_pt_face_t *)el, &a, &b, &c);
 
@@ -1014,7 +996,6 @@ static int nextSupport(const void *obj1, const void *obj2, const gjk_t *gjk,
         dist = gjkVec3PointTriDist2(&out->v, a, b, c, NULL);
     }
 
-    DBG("dist: %.20lf", (double)dist);
     if (dist < gjk->epa_tolerance)
         return -1;
 

@@ -362,7 +362,6 @@ TEST(boxboxPenetration)
     GJK_INIT(&gjk);
     gjk.support = gjkSupport;
 
-    /*
     gjkVec3Set(&box2.pos, 0.1, 0., 0.);
     res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
@@ -411,7 +410,6 @@ TEST(boxboxPenetration)
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 5");
     //TOSVT();
-    */
 
 
     box1.x = box1.y = box1.z = 1.;
@@ -426,8 +424,7 @@ TEST(boxboxPenetration)
     res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 6");
-    TOSVT();
-    return;
+    //TOSVT();
 
 
     box1.x = box1.y = box1.z = 1.;

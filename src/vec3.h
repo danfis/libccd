@@ -49,6 +49,8 @@ typedef float gjk_real_t;
 //# define GJK_EPS 1E-6
 # define GJK_EPS FLT_EPSILON
 
+# define GJK_REAL_MAX FLT_MAX
+
 # define GJK_REAL(x) (x ## f)   /*!< form a constant */
 # define GJK_SQRT(x) (sqrtf(x)) /*!< square root */
 # define GJK_FABS(x) (fabsf(x)) /*!< absolute value */
@@ -60,6 +62,8 @@ typedef double gjk_real_t;
 
 //# define GJK_EPS 1E-10
 # define GJK_EPS DBL_EPSILON
+
+# define GJK_REAL_MAX DBL_MAX
 
 # define GJK_REAL(x) (x)       /*!< form a constant */
 # define GJK_SQRT(x) (sqrt(x)) /*!< square root */

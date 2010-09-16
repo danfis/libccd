@@ -28,9 +28,10 @@ static GJK_VEC3(__gjk_vec3_origin, GJK_ZERO, GJK_ZERO, GJK_ZERO);
 gjk_vec3_t *gjk_vec3_origin = &__gjk_vec3_origin;
 
 
-gjk_real_t gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
-                                const gjk_vec3_t *x0, const gjk_vec3_t *b,
-                                gjk_vec3_t *witness)
+_gjk_inline gjk_real_t __gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
+                                                  const gjk_vec3_t *x0,
+                                                  const gjk_vec3_t *b,
+                                                  gjk_vec3_t *witness)
 {
     // The computation comes from solving equation of segment:
     //      S(t) = x0 + t.d
@@ -56,7 +57,7 @@ gjk_real_t gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
     // precompute vector from P to x0
     gjkVec3Sub2(&a, x0, P);
 
-    t  = -GJK_ONE * gjkVec3Dot(&a, &d);
+    t  = -GJK_REAL(1.) * gjkVec3Dot(&a, &d);
     t /= gjkVec3Len2(&d);
 
     if (t < GJK_ZERO || gjkIsZero(t)){
@@ -84,123 +85,85 @@ gjk_real_t gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
     return dist;
 }
 
+gjk_real_t gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
+                                    const gjk_vec3_t *x0, const gjk_vec3_t *b,
+                                    gjk_vec3_t *witness)
+{
+    return __gjkVec3PointSegmentDist2(P, x0, b, witness);
+}
 
 gjk_real_t gjkVec3PointTriDist2(const gjk_vec3_t *P,
-                            const gjk_vec3_t *A, const gjk_vec3_t *B,
-                            const gjk_vec3_t *C,
-                            gjk_vec3_t *witness)
+                                const gjk_vec3_t *x0, const gjk_vec3_t *B,
+                                const gjk_vec3_t *C,
+                                gjk_vec3_t *witness)
 {
-    // See David Eberly's paper Distance Between Point and Triangle in 3D
+    // Computation comes from analytic expression for triangle (x0, B, C)
+    //      T(s, t) = x0 + s.d1 + t.d2, where d1 = B - x0 and d2 = C - x0 and
+    // Then equation for distance is:
+    //      D(s, t) = | T(s, t) - P |^2
+    // This leads to minimization of quadratic function of two variables.
+    // The solution from is taken only if s is between 0 and 1, t is
+    // between 0 and 1 and t + s < 1, otherwise distance from segment is
+    // computed.
 
-    gjk_vec3_t E0, E1, D;
-    gjk_real_t a, b, c, d, e, f, det, s, t;
-    gjk_real_t tmp0, tmp1;
-    gjk_real_t dist;
+    gjk_vec3_t d1, d2, a;
+    gjk_real_t u, v, w, p, q, r;
+    gjk_real_t s, t, dist, dist2;
+    gjk_vec3_t witness2;
 
-    // precompute all values
-    gjkVec3Sub2(&E0, B, A);
-    gjkVec3Sub2(&E1, C, A);
-    gjkVec3Sub2(&D, A, P);
-    a = gjkVec3Dot(&E0, &E0);
-    b = gjkVec3Dot(&E0, &E1);
-    c = gjkVec3Dot(&E1, &E1);
-    d = gjkVec3Dot(&E0, &D);
-    e = gjkVec3Dot(&E1, &D);
-    f = gjkVec3Dot(&D, &D);
+    gjkVec3Sub2(&d1, B, x0);
+    gjkVec3Sub2(&d2, C, x0);
+    gjkVec3Sub2(&a, x0, P);
 
-    det = (a * c) - (b * b);
-    s = (b * e) - (c * d);
-    t = (b * d) - (a * e);
+    u = gjkVec3Dot(&a, &a);
+    v = gjkVec3Dot(&d1, &d1);
+    w = gjkVec3Dot(&d2, &d2);
+    p = gjkVec3Dot(&a, &d1);
+    q = gjkVec3Dot(&a, &d2);
+    r = gjkVec3Dot(&d1, &d2);
 
-    if (s + t < det || gjkEq(s + t, det)){
-        if (s < GJK_ZERO){
-            if (t < GJK_ZERO){
-                // region 4
-                // distance is distance from point A
-                gjkVec3Sub2(&D, A, P);
-                if (witness)
-                    gjkVec3Copy(witness, A);
-                return gjkVec3Len2(&D);
-            }else{
-                // region 3
-                s = GJK_ZERO;
-                if (e > GJK_ZERO || gjkIsZero(e)){
-                    t = GJK_ZERO;
-                }else{
-                    if (-e > c || gjkEq(-e, c)){
-                        t = GJK_ONE;
-                    }else{
-                        t = -e / c;
-                    }
-                }
-            }
-        }else if (t < GJK_ZERO){
-            // region 5
-            t = GJK_ZERO;
-            if (d > GJK_ZERO || gjkIsZero(d)){
-                s = GJK_ZERO;
-            }else{
-                if (-d > a || gjkEq(-d, a)){
-                    s = GJK_ONE;
-                }else{
-                    s = -d / a;
-                }
-            }
+    s = (q * r - w * p) / (w * v - r * r);
+    t = (-s * r - q) / w;
+
+    if ((gjkIsZero(s) || s > GJK_ZERO)
+            && (gjkEq(s, GJK_ONE) || s < GJK_ONE)
+            && (gjkIsZero(t) || t > GJK_ZERO)
+            && (gjkEq(t, GJK_ONE) || t < GJK_ONE)
+            && (gjkEq(t + s, GJK_ONE) || t + s < GJK_ONE)){
+
+        if (witness){
+            gjkVec3Scale(&d1, s);
+            gjkVec3Scale(&d2, t);
+            gjkVec3Copy(witness, x0);
+            gjkVec3Add(witness, &d1);
+            gjkVec3Add(witness, &d2);
+
+            dist = gjkVec3Dist2(witness, P);
         }else{
-            // region 0
-            tmp0 = GJK_ONE / det;
-            s *= tmp0;
-            t *= tmp0;
+            dist  = s * s * v;
+            dist += t * t * w;
+            dist += GJK_REAL(2.) * s * t * r;
+            dist += GJK_REAL(2.) * s * p;
+            dist += GJK_REAL(2.) * t * q;
+            dist += u;
         }
     }else{
-        if (s < GJK_ZERO){
-            // region 2
-            // distance is distance from point C
-            gjkVec3Sub2(&D, C, P);
-            if (witness)
-                gjkVec3Copy(witness, C);
-            return gjkVec3Len2(&D);
-        }else if (t < GJK_ZERO){
-            // region 6
-            // distance is distance from point B
-            gjkVec3Sub2(&D, B, P);
-            if (witness)
-                gjkVec3Copy(witness, B);
-            return GJK_SQRT(gjkVec3Len2(&D));
-        }else{
-            // region 1
-            tmp0 = c + e - b - d;
+        dist = __gjkVec3PointSegmentDist2(P, x0, B, witness);
 
-            if (tmp0 < GJK_ZERO){
-                s = GJK_ZERO;
-            }else{
-                tmp1 = a - GJK_REAL(2.) * b + c;
-                if (tmp0 > tmp1 || gjkEq(tmp0, tmp1)){
-                    s = GJK_ONE;
-                }else{
-                    s = tmp0 / tmp1;
-                }
-            }
+        dist2 = __gjkVec3PointSegmentDist2(P, x0, C, &witness2);
+        if (dist2 < dist){
+            dist = dist2;
+            if (witness)
+                gjkVec3Copy(witness, &witness2);
+        }
 
-            t = 1 - s;
+        dist2 = __gjkVec3PointSegmentDist2(P, B, C, &witness2);
+        if (dist2 < dist){
+            dist = dist2;
+            if (witness)
+                gjkVec3Copy(witness, &witness2);
         }
     }
-
-    if (witness){
-        gjkVec3Scale(&E0, s);
-        gjkVec3Scale(&E1, t);
-
-        gjkVec3Copy(witness, A);
-        gjkVec3Add(witness, &E0);
-        gjkVec3Add(witness, &E1);
-    }
-
-    dist  = a * s * s;
-    dist += GJK_REAL(2.) * b * s * t;
-    dist += c * t * t;
-    dist += GJK_REAL(2.) * d * s;
-    dist += GJK_REAL(2.) * e * t;
-    dist += f;
 
     return dist;
 }

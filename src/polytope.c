@@ -46,7 +46,7 @@ static void _gjkPtNearestRenew(gjk_pt_t *pt)
     gjk_pt_edge_t *e;
     gjk_pt_face_t *f;
 
-    pt->nearest_dist = DBL_MAX;
+    pt->nearest_dist = GJK_REAL_MAX;
     pt->nearest_type = 3;
     pt->nearest = NULL;
 
@@ -72,7 +72,7 @@ void gjkPtInit(gjk_pt_t *pt)
     gjkListInit(&pt->faces);
 
     pt->nearest = NULL;
-    pt->nearest_dist = DBL_MAX;
+    pt->nearest_dist = GJK_REAL_MAX;
     pt->nearest_type = 3;
 }
 
