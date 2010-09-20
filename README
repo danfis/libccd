@@ -1,0 +1,22 @@
+libgjk is library for a collision detection between convex shapes.
+libgjk implements variation on Gilbert–Johnson–Keerthi algorithm and Expand
+Polytope Algorithm (EPA).
+It is planned to also implement Minkowski Portal Refinement (MPR) (a.k.a.
+XenoCollide).
+
+
+Dependencies
+-------------
+This library is currently based only on standard libraries.
+The only exception are testsuites that are built on top of CU
+(cu.danfis.cz) library licensed under LGPL, however only testing depends on
+it and libgjk library itself can be distributed without it.
+
+
+License
+--------
+libgjk is licensed under OSI-approved 3-clause BSD License, text of license
+is distributed along with source code in BSD-LICENSE file.
+Each file should include license notice, the rest should be considered as
+licensed under 3-clause BSD License.
+
