@@ -15,13 +15,7 @@
 #  See the License for more information.
 ##
 
-CC   ?= gcc
-CXX  ?= g++
-MOC  ?= moc
-FLEX ?= flex
-DOXYGEN ?= doxygen
-DIA ?= dia
-CONVERT ?= convert
+CC ?= gcc
 M4 ?= m4
 
 SYSTEM = $(shell uname)
@@ -30,12 +24,8 @@ SYSTEM_CXXFLAGS =
 SYSTEM_LDFLAGS =
 
 ifeq '$(SYSTEM)' 'FreeBSD'
-  AWK ?= gawk
-  SED ?= gsed
   SYSTEM_CXXFLAGS = -Wno-long-long
 else
-  AWK ?= awk
-  SED ?= sed
 endif
 
 NOWALL ?= no
@@ -49,62 +39,61 @@ endif
 
 ifeq '$(DEBUG)' 'yes'
   CFLAGS = -g
-  CXXFLAGS = -g
 endif
 ifeq '$(PROFIL)' 'yes'
   CFLAGS += -pg
-  CXXFLAGS += -pg
 endif
 
 ifneq '$(NOWALL)' 'yes'
   CFLAGS += -Wall
-  CXXFLAGS += -Wall
 endif
 ifneq '$(NOPEDANTIC)' 'yes'
   CFLAGS += -pedantic
-  CXXFLAGS += -pedantic
 endif
 
+CONFIG_FLAGS =
 USE_DOUBLE ?= yes
 USE_SINGLE ?= no
 
 ifeq '$(USE_SINGLE)' 'yes'
-  CFLAGS += -DGJK_SINGLE
+  CONFIG_FLAGS += -DUSE_SINGLE
   USE_DOUBLE = no
 endif
 ifeq '$(USE_DOUBLE)' 'yes'
-  CFLAGS += -DGJK_DOUBLE
+  CONFIG_FLAGS += -DUSE_DOUBLE
 endif
 
 CFLAGS += --std=gnu99
-CXXFLAGS += $(SYSTEM_CXXFLAGS)
 LDFLAGS += $(SYSTEM_LDFLAGS)
 
 CHECKTARGETS = 
 check-dep: $(CHECKTARGETS)
 
+PREFIX     ?= /usr/local
+INCLUDEDIR ?= include
+LIBDIR     ?= lib
+
 showvars:
 	@echo "SYSTEM = "$(SYSTEM)
 	@echo ""
 	@echo "CC      = $(CC)"
-	@echo "CXX     = $(CXX)"
-	@echo "MOC     = $(MOC)"
-	@echo "FLEX    = $(FLEX)"
-	@echo "AWK     = $(AWK)"
-	@echo "SED     = $(SED)"
 	@echo "M4      = $(M4)"
-	@echo "DOXYGEN = $(DOXYGEN)"
-	@echo "SED     = $(SED)"
-	@echo "DIA     = $(DIA)"
 	@echo ""
 	@echo "DEBUG      = $(DEBUG)"
 	@echo "PROFIL     = $(PROFIL)"
 	@echo "NOWALL     = $(NOWALL)"
 	@echo "NOPEDANTIC = $(NOPEDANTIC)"
+	@echo "USE_SINGLE = $(USE_SINGLE)"
+	@echo "USE_DOUBLE = $(USE_DOUBLE)"
 	@echo ""
-	@echo "CFLAGS   = $(CFLAGS)"
-	@echo "CXXFLAGS = $(CXXFLAGS)"
-	@echo "LDFLAGS  = $(LDFLAGS)"
+	@echo "CFLAGS       = $(CFLAGS)"
+	@echo "LDFLAGS      = $(LDFLAGS)"
+	@echo "CONFIG_FLAGS = $(CONFIG_FLAGS)"
+	@echo ""
+	@echo "PREFIX     = $(PREFIX)"
+	@echo "INCLUDEDIR = $(INCLUDEDIR)"
+	@echo "LIBDIR     = $(LIBDIR)"
+	@echo ""
 
 .DEFAULT_GOAL := all
 .PHONY: showvars 

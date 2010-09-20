@@ -21,6 +21,7 @@
 #include <math.h>
 #include <float.h>
 #include <gjk/compiler.h>
+#include <gjk/config.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -21,6 +21,7 @@
 #include "vec3.h"
 #include "simplex.h"
 #include "polytope.h"
+#include "alloc.h"
 #include "dbg.h"
 
 /** samples points on unit sphere (taken from bullet source) */

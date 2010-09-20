@@ -28,14 +28,26 @@ libgjk.a: $(OBJS)
 	ar cr $@ $(OBJS)
 	ranlib $@
 
-%.o: %.c %.h
+config.h: config.h.in
+	$(M4) $(CONFIG_FLAGS) $< >$@
+
+%.o: %.c %.h config.h
 	$(CC) $(CFLAGS) $(DEFS) -c -o $@ $<
-%.o: %.c
+%.o: %.c config.h
 	$(CC) $(CFLAGS) $(DEFS) -c -o $@ $<
+%.h: config.h
+%.c: config.h
+
+install:
+	mkdir -p $(PREFIX)/$(INCLUDEDIR)/gjk
+	mkdir -p $(PREFIX)/$(LIBDIR)
+	cp *.h $(PREFIX)/$(INCLUDEDIR)/gjk/
+	cp libgjk.a $(PREFIX)/$(LIBDIR)
 
 clean:
 	rm -f $(OBJS)
 	rm -f $(TARGETS)
+	rm -f config.h
 	if [ -d testsuites ]; then $(MAKE) -C testsuites clean; fi;
 	
 check:

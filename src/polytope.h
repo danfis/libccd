@@ -22,7 +22,6 @@
 #include <stdio.h>
 #include <gjk/support.h>
 #include <gjk/list.h>
-#include <gjk/alloc.h>
 
 #ifdef __cplusplus
 extern "C" {
