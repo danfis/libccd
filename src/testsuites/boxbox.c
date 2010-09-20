@@ -25,7 +25,8 @@ TEST(boxboxAlignedX)
     int res;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
     //gjk.max_iterations = 20;
 
     box1.x = 1;
@@ -108,7 +109,8 @@ TEST(boxboxAlignedY)
     int res;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     box1.x = 1;
     box1.y = 2;
@@ -143,7 +145,8 @@ TEST(boxboxAlignedZ)
     int res;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     box1.x = 1;
     box1.y = 2;
@@ -181,7 +184,8 @@ TEST(boxboxRot)
     gjk_real_t angle;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     box1.x = 1;
     box1.y = 2;
@@ -271,7 +275,8 @@ TEST(boxboxSeparate)
 
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     gjkVec3Set(&box1.pos, -0.5, 0.5, 0.2);
     res = gjkIntersect(&box1, &box2, &gjk);
@@ -360,7 +365,8 @@ TEST(boxboxPenetration)
 
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     gjkVec3Set(&box2.pos, 0.1, 0., 0.);
     res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);

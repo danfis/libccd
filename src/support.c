@@ -25,10 +25,10 @@ void __gjkSupport(const void *obj1, const void *obj2,
 
     gjkVec3Copy(&dir, _dir);
 
-    gjk->support(obj1, &dir, &supp->v1);
+    gjk->support1(obj1, &dir, &supp->v1);
 
     gjkVec3Scale(&dir, -GJK_ONE);
-    gjk->support(obj2, &dir, &supp->v2);
+    gjk->support2(obj2, &dir, &supp->v2);
 
     gjkVec3Sub2(&supp->v, &supp->v1, &supp->v2);
 }

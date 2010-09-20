@@ -20,7 +20,8 @@ TEST(spheresphereAlignedX)
     int res;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     s1.radius = 0.35;
     s2.radius = .5;
@@ -48,7 +49,8 @@ TEST(spheresphereAlignedY)
     int res;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     s1.radius = 0.35;
     s2.radius = .5;
@@ -76,7 +78,8 @@ TEST(spheresphereAlignedZ)
     int res;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     s1.radius = 0.35;
     s2.radius = .5;

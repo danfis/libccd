@@ -50,7 +50,8 @@ static void boxbox(void)
     bench_num = 1;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     runBench(&box1, &box2, &gjk);
     runBench(&box2, &box1, &gjk);
@@ -135,7 +136,8 @@ void cylcyl(void)
     cyl2.height = 1.;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     runBench(&cyl1, &cyl2, &gjk);
     runBench(&cyl2, &cyl1, &gjk);
@@ -187,7 +189,8 @@ void boxcyl(void)
     cyl.height = 0.7;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     runBench(&box, &cyl, &gjk);
     runBench(&cyl, &box, &gjk);

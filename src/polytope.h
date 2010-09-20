@@ -19,6 +19,7 @@
 #define __GJK_POLYTOPE_H__
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <gjk/support.h>
 #include <gjk/list.h>
 #include <gjk/alloc.h>

@@ -23,7 +23,8 @@ TEST(cylcylAlignedX)
     int res;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     c1.radius = 0.35;
     c1.height = 0.5;
@@ -53,7 +54,8 @@ TEST(cylcylAlignedY)
     int res;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     c1.radius = 0.35;
     c1.height = 0.5;
@@ -83,7 +85,8 @@ TEST(cylcylAlignedZ)
     int res;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     c1.radius = 0.35;
     c1.height = 0.5;
@@ -128,7 +131,8 @@ TEST(cylcylPenetrationEPA)
     cyl2.height = 1.;
 
     GJK_INIT(&gjk);
-    gjk.support = gjkSupport;
+    gjk.support1 = gjkSupport;
+    gjk.support2 = gjkSupport;
 
     gjkVec3Set(&cyl2.pos, 0., 0., 0.3);
     res = gjkPenetrationEPA(&cyl1, &cyl2, &gjk, &depth, &dir, &pos);

@@ -44,8 +44,11 @@ typedef void (*gjk_first_dir_fn)(const void *obj1, const void *obj2,
  */
 struct _gjk_t {
     gjk_first_dir_fn first_dir; //!< Returns initial direction where first
-                                //   support point will be searched
-    gjk_support_fn support; //!< Function that returns support point of object
+                                //!< support point will be searched
+    gjk_support_fn support1; //!< Function that returns support point of
+                             //!< first object
+    gjk_support_fn support2; //!< Function that returns support point of
+                             //!< second object
 
     unsigned long max_iterations; //!< Maximal number of iterations
     gjk_real_t epa_tolerance;
@@ -60,7 +63,8 @@ void gjkFirstDirDefault(const void *o1, const void *o2, gjk_vec3_t *dir);
 #define GJK_INIT(gjk) \
     do { \
         (gjk)->first_dir = gjkFirstDirDefault; \
-        (gjk)->support = NULL; \
+        (gjk)->support1 = NULL; \
+        (gjk)->support2 = NULL; \
         \
         (gjk)->max_iterations = (unsigned long)-1; \
         (gjk)->epa_tolerance = GJK_REAL(0.0001); \
