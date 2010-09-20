@@ -1,7 +1,7 @@
 libgjk is library for a collision detection between convex shapes.
 libgjk implements variation on Gilbert–Johnson–Keerthi algorithm and Expand
 Polytope Algorithm (EPA).
-It is planned to also implement Minkowski Portal Refinement (MPR) (a.k.a.
+It is also planned to implement Minkowski Portal Refinement (MPR) (a.k.a.
 XenoCollide).
 
 
@@ -20,3 +20,39 @@ is distributed along with source code in BSD-LICENSE file.
 Each file should include license notice, the rest should be considered as
 licensed under 3-clause BSD License.
 
+
+Compile And Install
+--------------------
+Simple type 'make' and 'make install' in src/ directory.
+
+Library libgjk is by default compiled in double precision of floating point
+numbers - you can controll this by options USE_SINGLE/USE_DOUBLE, i.e.:
+    $ make USE_SINGLE=yes
+will compile library in single precision.
+
+Installation directory can be changed by options PREFIX, INCLUDEDIR and
+LIBDIR.
+
+For more info type 'make help'.
+
+
+Usage
+------
+See gjk.h for public API.
+In your application include <gjk/gjk.h>, setup gjk_t structure and run some
+of functions (all functions are reentrant). Then link with libgjk.a.
+
+
+Directories
+------------
+src/
+    - contains source files of libgjk.
+src/testsuites
+    - testsuites - libgjk must be compiled before compiling this.
+src/testsuites/cu
+    - CU unit testing framework
+src/testsuites/regressions
+    - files ready for regression tests
+
+doc/
+    - some documentation.
