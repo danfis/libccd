@@ -56,6 +56,25 @@ check-valgrind:
 	$(MAKE) -C testsuites check-valgrind
 
 help:
-	@echo "TODO"
+	@echo "Targets:"
+	@echo "    all     - Build library"
+	@echo "    install - Install library into system"
+	@echo ""
+	@echo "Options:"
+	@echo "    CC - Path to C compiler"
+	@echo "    M4 - Path to m4 macro processor"
+	@echo ""
+	@echo "    DEBUG 'yes'/'no'      - Turn on/off debugging (default: 'no')"
+	@echo "    PROFIL 'yes'/'no'     - Compiles profiling info (default: 'no')"
+	@echo "    NOWALL 'yes'/'no'     - Turns off -Wall gcc option (default: 'no')"
+	@echo "    NOPEDANTIC 'yes'/'no' - Turns off -pedantic gcc option (default: 'no')"
+	@echo ""
+	@echo "    USE_SINGLE 'yes' - Use single precision (default: 'no')"
+	@echo "    USE_DOUBLE 'yes' - Use double precision (default: 'yes')"
+	@echo ""
+	@echo "    PREFIX     - Prefix where library will be installed"
+	@echo "    INCLUDEDIR - Directory where header files will be installed (PREFIX/INCLUDEDIR)"
+	@echo "    LIBDIR     - Directory where library will be installed (PREFIX/LIBDIR)"
+	@echo ""
 
 .PHONY: all clean check check-valgrind help
