@@ -72,9 +72,9 @@ help:
 	@echo "    USE_SINGLE 'yes' - Use single precision (default: 'no')"
 	@echo "    USE_DOUBLE 'yes' - Use double precision (default: 'yes')"
 	@echo ""
-	@echo "    PREFIX     - Prefix where library will be installed"
-	@echo "    INCLUDEDIR - Directory where header files will be installed (PREFIX/INCLUDEDIR)"
-	@echo "    LIBDIR     - Directory where library will be installed (PREFIX/LIBDIR)"
+	@echo "    PREFIX     - Prefix where library will be installed (default: /usr/local)"
+	@echo "    INCLUDEDIR - Directory where header files will be installed (PREFIX/INCLUDEDIR) (default: include)"
+	@echo "    LIBDIR     - Directory where library will be installed (PREFIX/LIBDIR) (default: lib)"
 	@echo ""
 
 .PHONY: all clean check check-valgrind help
