@@ -19,6 +19,7 @@
 #include "gjk.h"
 #include "vec3.h"
 #include "gjk_support.h"
+#include "dbg.h"
 
 void gjkSupport(const void *_obj, const gjk_vec3_t *_dir,
                 gjk_vec3_t *v)
@@ -73,4 +74,13 @@ void gjkSupport(const void *_obj, const gjk_vec3_t *_dir,
     // transform support vertex
     gjkQuatRotVec(v, &obj->quat);
     gjkVec3Add(v, &obj->pos);
+}
+
+void gjkObjCenter(const void *_obj, gjk_vec3_t *center)
+{
+    gjk_obj_t *obj = (gjk_obj_t *)_obj;
+
+    gjkVec3Set(center, GJK_ZERO, GJK_ZERO, GJK_ZERO);
+    // rotation is not needed
+    gjkVec3Add(center, &obj->pos);
 }

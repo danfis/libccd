@@ -36,10 +36,12 @@ _gjk_inline void gjkSimplexInit(gjk_simplex_t *s);
 _gjk_inline int gjkSimplexSize(const gjk_simplex_t *s);
 _gjk_inline const gjk_support_t *gjkSimplexLast(const gjk_simplex_t *s);
 _gjk_inline const gjk_support_t *gjkSimplexPoint(const gjk_simplex_t *s, int idx);
+_gjk_inline gjk_support_t *gjkSimplexPointW(gjk_simplex_t *s, int idx);
 
 _gjk_inline void gjkSimplexAdd(gjk_simplex_t *s, const gjk_support_t *v);
 _gjk_inline void gjkSimplexSet(gjk_simplex_t *s, size_t pos, const gjk_support_t *a);
 _gjk_inline void gjkSimplexSetSize(gjk_simplex_t *s, int size);
+_gjk_inline void gjkSimplexSwap(gjk_simplex_t *s, size_t pos1, size_t pos2);
 
 
 /**** INLINES ****/
@@ -64,6 +66,10 @@ _gjk_inline const gjk_support_t *gjkSimplexPoint(const gjk_simplex_t *s, int idx
     // here is no check on boundaries
     return &s->ps[idx];
 }
+_gjk_inline gjk_support_t *gjkSimplexPointW(gjk_simplex_t *s, int idx)
+{
+    return &s->ps[idx];
+}
 
 _gjk_inline void gjkSimplexAdd(gjk_simplex_t *s, const gjk_support_t *v)
 {
@@ -80,6 +86,15 @@ _gjk_inline void gjkSimplexSet(gjk_simplex_t *s, size_t pos, const gjk_support_t
 _gjk_inline void gjkSimplexSetSize(gjk_simplex_t *s, int size)
 {
     s->last = size - 1;
+}
+
+_gjk_inline void gjkSimplexSwap(gjk_simplex_t *s, size_t pos1, size_t pos2)
+{
+    gjk_support_t supp;
+
+    gjkSupportCopy(&supp, &s->ps[pos1]);
+    gjkSupportCopy(&s->ps[pos1], &s->ps[pos2]);
+    gjkSupportCopy(&s->ps[pos2], &supp);
 }
 
 #ifdef __cplusplus

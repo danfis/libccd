@@ -9,7 +9,7 @@ CHECK_REG=cu/check-regressions
 CHECK_TS ?=
 
 OBJS = common.o vec3.o polytope.o boxbox.o spheresphere.o cylcyl.o \
-       boxcyl.o
+       boxcyl.o mpr_boxbox.o mpr_cylcyl.o mpr_boxcyl.o
 BENCH_OBJS = bench-boxbox.o
 
 

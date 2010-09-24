@@ -39,6 +39,13 @@ typedef void (*gjk_support_fn)(const void *obj, const gjk_vec3_t *dir,
 typedef void (*gjk_first_dir_fn)(const void *obj1, const void *obj2,
                                  gjk_vec3_t *dir);
 
+
+/**
+ * Returns (via center argument) geometric center (some point near center)
+ * of given object.
+ */
+typedef void (*gjk_center_fn)(const void *obj1, gjk_vec3_t *center);
+
 /**
  * Main structure of GJK algorithm.
  */
@@ -50,8 +57,14 @@ struct _gjk_t {
     gjk_support_fn support2; //!< Function that returns support point of
                              //!< second object
 
+    gjk_center_fn center1; //!< Function that returns geometric center of
+                           //!< first object
+    gjk_center_fn center2; //!< Function that returns geometric center of
+                           //!< second object
+
     unsigned long max_iterations; //!< Maximal number of iterations
     gjk_real_t epa_tolerance;
+    gjk_real_t mpr_tolerance; //!< Boundary tolerance for MPR algorithm
 };
 typedef struct _gjk_t gjk_t;
 
@@ -65,9 +78,12 @@ void gjkFirstDirDefault(const void *o1, const void *o2, gjk_vec3_t *dir);
         (gjk)->first_dir = gjkFirstDirDefault; \
         (gjk)->support1 = NULL; \
         (gjk)->support2 = NULL; \
+        (gjk)->center1  = NULL; \
+        (gjk)->center2  = NULL; \
         \
         (gjk)->max_iterations = (unsigned long)-1; \
         (gjk)->epa_tolerance = GJK_REAL(0.0001); \
+        (gjk)->mpr_tolerance = GJK_REAL(0.0001); \
     } while(0)
 
 
@@ -75,6 +91,11 @@ void gjkFirstDirDefault(const void *o1, const void *o2, gjk_vec3_t *dir);
  * Returns true if two given objects interest.
  */
 int gjkIntersect(const void *obj1, const void *obj2, const gjk_t *gjk);
+
+/**
+ * Returns true if two given objects intersect - MPR algorithm is used.
+ */
+int gjkMPRIntersect(const void *obj1, const void *obj2, const gjk_t *gjk);
 
 /**
  * This function computes separation vector of two objects. Separation

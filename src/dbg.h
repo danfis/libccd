@@ -48,6 +48,13 @@
             __func__, prefix, gjkVec3X(vec), gjkVec3Y(vec), gjkVec3Z(vec)); \
     fflush(stderr); \
     } while (0)
+/*
+# define DBG_VEC3(vec, prefix) do {\
+    fprintf(stderr, DBG_PROLOGUE "%s :: %s[%.20lf %.20lf %.20lf]\n", \
+            __func__, prefix, gjkVec3X(vec), gjkVec3Y(vec), gjkVec3Z(vec)); \
+    fflush(stderr); \
+    } while (0)
+*/
 
 #else
 # define DBG(format, ...)
