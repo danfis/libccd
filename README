@@ -23,7 +23,7 @@ licensed under 3-clause BSD License.
 
 Compile And Install
 --------------------
-Simple type 'make' and 'make install' in src/ directory.
+Simply type 'make' and 'make install' in src/ directory.
 
 Library libgjk is by default compiled in double precision of floating point
 numbers - you can controll this by options USE_SINGLE/USE_DOUBLE, i.e.:
