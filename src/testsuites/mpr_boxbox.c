@@ -365,16 +365,27 @@ TEST(mprBoxboxPenetration)
     GJK_INIT(&gjk);
     gjk.support1 = gjkSupport;
     gjk.support2 = gjkSupport;
+    gjk.center1  = gjkObjCenter;
+    gjk.center2  = gjkObjCenter;
+
+    /*
+    gjkVec3Set(&box2.pos, 0., 0., 0.);
+    res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
+    assertTrue(res == 0);
+    recPen(depth, &dir, &pos, stdout, "Pen 1");
+    TOSVT();
+    */
 
     gjkVec3Set(&box2.pos, 0.1, 0., 0.);
-    res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
+    res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 1");
     //TOSVT();
 
 
+    /*
     gjkVec3Set(&box1.pos, -0.3, 0.5, 1.);
-    res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
+    res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 2");
     //TOSVT(); <<<
@@ -386,7 +397,7 @@ TEST(mprBoxboxPenetration)
     gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
     gjkVec3Set(&box1.pos, 0.1, 0., 0.1);
 
-    res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
+    res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 3");
     //TOSVT();
@@ -398,7 +409,7 @@ TEST(mprBoxboxPenetration)
     gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
     gjkVec3Set(&box1.pos, -0.5, 0., 0.);
 
-    res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
+    res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 4");
     //TOSVT();
@@ -410,7 +421,7 @@ TEST(mprBoxboxPenetration)
     gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
     gjkVec3Set(&box1.pos, -0.5, 0.5, 0.);
 
-    res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
+    res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 5");
     //TOSVT();
@@ -425,7 +436,7 @@ TEST(mprBoxboxPenetration)
     gjkQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
     gjkVec3Set(&box1.pos, -0.5, 0.1, 0.4);
 
-    res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
+    res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 6");
     //TOSVT();
@@ -439,7 +450,7 @@ TEST(mprBoxboxPenetration)
     gjkQuatMul(&box1.quat, &rot);
     gjkVec3Set(&box1.pos, -0.5, 0.1, 0.4);
 
-    res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
+    res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 7");
     //TOSVT(); <<<
@@ -458,8 +469,9 @@ TEST(mprBoxboxPenetration)
 
     gjkVec3Set(&box2.pos, 0., 0., 0.);
 
-    res = gjkPenetrationEPA(&box1, &box2, &gjk, &depth, &dir, &pos);
+    res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 8");
     //TOSVT();
+    */
 }
