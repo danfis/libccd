@@ -20,6 +20,7 @@
 
 #include <math.h>
 #include <float.h>
+#include <stdlib.h>
 #include <gjk/compiler.h>
 #include <gjk/config.h>
 
@@ -80,6 +81,12 @@ typedef struct _gjk_vec3_t gjk_vec3_t;
  * Holds origin (0,0,0) - this variable is meant to be read-only!
  */
 extern gjk_vec3_t *gjk_vec3_origin;
+
+/**
+ * Array of points uniformly distributed on unit sphere.
+ */
+extern gjk_vec3_t *gjk_points_on_sphere;
+extern size_t gjk_points_on_sphere_len;
 
 /** Returns sign of value. */
 _gjk_inline int gjkSign(gjk_real_t val);
