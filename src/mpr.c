@@ -69,6 +69,8 @@ int gjkMPRIntersect(const void *obj1, const void *obj2, const gjk_t *gjk)
     // Phase 1: Portal discovery - find portal that intersects with origin
     // ray (ray from center of Minkowski diff to origin of coordinates)
     res = discoverPortal(obj1, obj2, gjk, &portal);
+    if (res < 0)
+        return -1;
     if (res != 0){
         return (res == 1 ? 1 : 0);
     }
@@ -82,6 +84,30 @@ int gjkMPRIntersect(const void *obj1, const void *obj2, const gjk_t *gjk)
     res = refinePortal(obj1, obj2, gjk, &portal);
     return (res == 0 ? 1 : 0);
 }
+
+int gjkMPRPenetration(const void *obj1, const void *obj2, const gjk_t *gjk,
+                      gjk_real_t *depth, gjk_vec3_t *dir, gjk_vec3_t *pos)
+{
+    gjk_simplex_t portal;
+    int res;
+
+    // Phase 1: Portal discovery - find portal that intersects with origin
+    // ray (ray from center of Minkowski diff to origin of coordinates)
+    res = discoverPortal(obj1, obj2, gjk, &portal);
+    if (res < 0)
+        return -1;
+
+    if (res == 0){
+        res = refinePortal(obj1, obj2, gjk, &portal);
+        if (res < 0)
+            return -1;
+    }
+
+    // TODO: Find penetration info
+    return 0;
+}
+
+
 
 _gjk_inline void findOrigin(const void *obj1, const void *obj2, const gjk_t *gjk,
                             gjk_support_t *center)

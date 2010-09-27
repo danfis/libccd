@@ -93,11 +93,6 @@ void gjkFirstDirDefault(const void *o1, const void *o2, gjk_vec3_t *dir);
 int gjkIntersect(const void *obj1, const void *obj2, const gjk_t *gjk);
 
 /**
- * Returns true if two given objects intersect - MPR algorithm is used.
- */
-int gjkMPRIntersect(const void *obj1, const void *obj2, const gjk_t *gjk);
-
-/**
  * This function computes separation vector of two objects. Separation
  * vector is minimal translation of obj2 to get obj1 and obj2 speparated
  * (without intersection).
@@ -121,6 +116,15 @@ int gjkSeparateEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
  * If obj1 and obj2 don't intersect -1 is returned.
  */
 int gjkPenetrationEPA(const void *obj1, const void *obj2, const gjk_t *gjk,
+                      gjk_real_t *depth, gjk_vec3_t *dir, gjk_vec3_t *pos);
+
+
+/**
+ * Returns true if two given objects intersect - MPR algorithm is used.
+ */
+int gjkMPRIntersect(const void *obj1, const void *obj2, const gjk_t *gjk);
+
+int gjkMPRPenetration(const void *obj1, const void *obj2, const gjk_t *gjk,
                       gjk_real_t *depth, gjk_vec3_t *dir, gjk_vec3_t *pos);
 
 #ifdef __cplusplus
