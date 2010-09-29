@@ -16,9 +16,9 @@
  */
 
 #include <stdio.h>
-#include "gjk.h"
-#include "vec3.h"
-#include "gjk_support.h"
+#include <gjk/gjk.h>
+#include <gjk/vec3.h>
+#include <gjk/gjk_support.h>
 
 void gjkSupport(const void *_obj, const gjk_vec3_t *_dir,
                 gjk_vec3_t *v)

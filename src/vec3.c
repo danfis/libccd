@@ -16,8 +16,8 @@
  */
 
 #include <stdio.h>
-#include "vec3.h"
-#include "dbg.h"
+#include <gjk/vec3.h>
+#include <gjk/dbg.h>
 
 static GJK_VEC3(__gjk_vec3_origin, GJK_ZERO, GJK_ZERO, GJK_ZERO);
 gjk_vec3_t *gjk_vec3_origin = &__gjk_vec3_origin;

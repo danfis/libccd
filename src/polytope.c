@@ -17,8 +17,8 @@
 
 #include <stdio.h>
 #include <float.h>
-#include "polytope.h"
-#include "alloc.h"
+#include <gjk/polytope.h>
+#include <gjk/alloc.h>
 
 _gjk_inline void _gjkPtNearestUpdate(gjk_pt_t *pt, gjk_pt_el_t *el)
 {

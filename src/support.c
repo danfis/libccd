@@ -15,7 +15,7 @@
  *  See the License for more information.
  */
 
-#include "support.h"
+#include <gjk/support.h>
 
 void __gjkSupport(const void *obj1, const void *obj2,
                   const gjk_vec3_t *_dir, const gjk_t *gjk,

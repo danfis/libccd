@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <cu/cu.h>
-#include "../vec3.h"
+#include <gjk/vec3.h>
 
 TEST(vec3SetUp)
 {

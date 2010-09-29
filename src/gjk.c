@@ -17,12 +17,12 @@
 
 #include <stdio.h>
 #include <float.h>
-#include "gjk.h"
-#include "vec3.h"
-#include "simplex.h"
-#include "polytope.h"
-#include "alloc.h"
-#include "dbg.h"
+#include <gjk/gjk.h>
+#include <gjk/vec3.h>
+#include <gjk/simplex.h>
+#include <gjk/polytope.h>
+#include <gjk/alloc.h>
+#include <gjk/dbg.h>
 
 /** samples points on unit sphere (taken from bullet source) */
 static gjk_vec3_t points_on_sphere[] = {

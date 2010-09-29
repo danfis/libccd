@@ -16,7 +16,7 @@
  */
 
 #include <stdio.h>
-#include "alloc.h"
+#include <gjk/alloc.h>
 
 void *gjkRealloc(void *ptr, size_t size)
 {

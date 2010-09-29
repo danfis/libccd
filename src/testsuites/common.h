@@ -2,7 +2,7 @@
 #define TEST_COMMON
 
 #include <stdio.h>
-#include "../vec3.h"
+#include <gjk/vec3.h>
 
 void svtObj(void *o, FILE *out, const char *color, const char *name);
 void svtObjPen(void *o1, void *o2,
