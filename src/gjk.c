@@ -572,8 +572,6 @@ static int doSimplex(gjk_simplex_t *simplex, gjk_vec3_t *dir)
         // so doSimplex4() also contains test on it
         return doSimplex4(simplex, dir);
     }
-
-    return 0;
 }
 
 _gjk_inline void tripleCross(const gjk_vec3_t *a, const gjk_vec3_t *b,
