@@ -1,6 +1,6 @@
 SUBDIRS = cu
 
-AM_CPPFLAGS = -I $(srcdir)/.. -I $(srcdir)/cu
+AM_CPPFLAGS = -I $(srcdir)/.. -I $(builddir)/.. -I $(srcdir)/cu
 
 LDADD = $(builddir)/cu/libcu.la $(builddir)/../libgjk.la
 
