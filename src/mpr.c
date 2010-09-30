@@ -15,11 +15,9 @@ _gjk_inline void findOrigin(const void *obj1, const void *obj2, const gjk_t *gjk
  *
  *  Returns -1 if already recognized that origin is outside Minkowski
  *  portal.
- *  Returns 1 if center of Minkowski difference is at origin (0,0,0) -
- *  center is returned as simplex's v0.
- *  Returns 2 if origin lies on v1 of simplex (only v0 and v1 are present
+ *  Returns 1 if origin lies on v1 of simplex (only v0 and v1 are present
  *  in simplex).
- *  Returns 3 if origin lies on v0-v1 segment.
+ *  Returns 2 if origin lies on v0-v1 segment.
  *  Returns 0 if portal was built.
  */
 static int discoverPortal(const void *obj1, const void *obj2,
@@ -128,9 +126,7 @@ int gjkMPRPenetration(const void *obj1, const void *obj2, const gjk_t *gjk,
     gjk_simplex_t portal;
     int res;
     gjk_vec3_t vec;
-    gjk_support_t supp, best_supp;
-    gjk_real_t dist, best_dist, k;
-    size_t i;
+    gjk_real_t k;
 
     // TODO: move (if res == 1,2,3) to separate functions
 
@@ -142,34 +138,6 @@ int gjkMPRPenetration(const void *obj1, const void *obj2, const gjk_t *gjk,
 
     }else if (res == 1){
         DBG2("res == 1");
-        // Origin lies on center of Minkowski difference (stored in
-        // portal's v0).
-        best_dist = GJK_REAL_MAX;
-        gjkVec3Copy(&best_supp.v, gjk_vec3_origin);
-        gjkVec3Copy(&best_supp.v1, gjk_vec3_origin);
-        gjkVec3Copy(&best_supp.v2, gjk_vec3_origin);
-        for (i = 0; i < gjk_points_on_sphere_len; i++){
-            __gjkSupport(obj1, obj2, &gjk_points_on_sphere[i], gjk, &supp);
-
-            dist = gjkVec3Len2(&supp.v);
-            if (dist < best_dist){
-                best_dist = dist;
-                gjkSupportCopy(&best_supp, &supp);
-            }
-        }
-
-        *depth = GJK_SQRT(best_dist);
-        gjkVec3Copy(dir, &best_supp.v);
-        gjkVec3Normalize(dir);
-
-        gjkVec3Copy(pos, &gjkSimplexPoint(&portal, 0)->v1);
-        gjkVec3Add(pos, &gjkSimplexPoint(&portal, 0)->v2);
-        gjkVec3Scale(pos, 0.5);
-
-        return 0;
-
-    }else if (res == 2){
-        DBG2("res == 2");
         // Touching contact on portal's v1 - so depth is zero and direction
         // is unimportant and pos can be guessed
         *depth = GJK_REAL(0.);
@@ -181,8 +149,8 @@ int gjkMPRPenetration(const void *obj1, const void *obj2, const gjk_t *gjk,
 
         return 0;
 
-    }else if (res == 3){
-        DBG2("res == 3");
+    }else if (res == 2){
+        DBG2("res == 2");
         // Origin lies on v0-v1 segment.
         // Depth is distance to v1, direction also and position must be
         // computed
@@ -237,8 +205,13 @@ static int discoverPortal(const void *obj1, const void *obj2,
     findOrigin(obj1, obj2, gjk, gjkSimplexPointW(portal, 0));
     gjkSimplexSetSize(portal, 1);
 
-    if (gjkVec3Eq(&gjkSimplexPoint(portal, 0)->v, gjk_vec3_origin))
-        return 1;
+    if (gjkVec3Eq(&gjkSimplexPoint(portal, 0)->v, gjk_vec3_origin)){
+        // Portal's center lies on origin (0,0,0) => we know that objects
+        // intersect but we would need to know penetration info.
+        // So move center little bit...
+        gjkVec3Set(&va, GJK_EPS * GJK_REAL(10.), GJK_ZERO, GJK_ZERO);
+        gjkVec3Add(&gjkSimplexPointW(portal, 0)->v, &va);
+    }
 
 
     // vertex 1 = support in direction of origin
@@ -260,10 +233,10 @@ static int discoverPortal(const void *obj1, const void *obj2,
     if (gjkVec3Eq(&dir, gjk_vec3_origin)){
         if (gjkVec3Eq(&gjkSimplexPoint(portal, 1)->v, gjk_vec3_origin)){
             // origin lies on v1
-            return 2;
+            return 1;
         }else{
             // origin lies on v0-v1 segment
-            return 3;
+            return 2;
         }
     }
 
