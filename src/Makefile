@@ -41,7 +41,7 @@ gjk/config.h: gjk/config.h.in
 install:
 	mkdir -p $(PREFIX)/$(INCLUDEDIR)/gjk
 	mkdir -p $(PREFIX)/$(LIBDIR)
-	cp *.h $(PREFIX)/$(INCLUDEDIR)/gjk/
+	cp gjk/*.h $(PREFIX)/$(INCLUDEDIR)/gjk/
 	cp libgjk.a $(PREFIX)/$(LIBDIR)
 
 clean:
