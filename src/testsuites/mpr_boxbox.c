@@ -368,31 +368,28 @@ TEST(mprBoxboxPenetration)
     gjk.center1  = gjkObjCenter;
     gjk.center2  = gjkObjCenter;
 
+    /*
     gjkVec3Set(&box2.pos, 0., 0., 0.);
     res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 1");
     TOSVT();
+    */
 
-    /*
     gjkVec3Set(&box2.pos, 0.1, 0., 0.);
     res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 1");
     //TOSVT();
-    */
 
 
-    /*
     gjkVec3Set(&box1.pos, -0.3, 0.5, 1.);
     res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 2");
     //TOSVT();
-    */
 
 
-    /*
     box1.x = box1.y = box1.z = 1.;
     box2.x = box2.y = box2.z = 1.;
     gjkVec3Set(&axis, 0., 0., 1.);
@@ -403,10 +400,8 @@ TEST(mprBoxboxPenetration)
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 3");
     //TOSVT();
-    */
 
 
-    /*
     box1.x = box1.y = box1.z = 1.;
     box2.x = box2.y = box2.z = 1.;
     gjkVec3Set(&axis, 0., 0., 1.);
@@ -416,11 +411,9 @@ TEST(mprBoxboxPenetration)
     res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 4");
-    TOSVT();
-    */
+    //TOSVT();
 
 
-    /*
     box1.x = box1.y = box1.z = 1.;
     box2.x = box2.y = box2.z = 1.;
     gjkVec3Set(&axis, 0., 0., 1.);
@@ -445,7 +438,7 @@ TEST(mprBoxboxPenetration)
     res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 6");
-    //TOSVT(); <<
+    //TOSVT();
 
 
     box1.x = box1.y = box1.z = 1.;
@@ -478,6 +471,30 @@ TEST(mprBoxboxPenetration)
     res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 8");
-    //TOSVT(); <<<
-    */
+    //TOSVT();
+
+
+    box1.x = box1.y = box1.z = 1.;
+    box2.x = 0.5; box2.y = 0.5; box2.z = .5;
+    gjkVec3Set(&box1.pos, 0., 0., 0.);
+    gjkQuatSet(&box1.quat, 0., 0., 0., 1.);
+    gjkVec3Set(&box2.pos, 0., 0.73, 0.);
+    gjkQuatSet(&box2.quat, 0., 0., 0., 1.);
+
+    res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
+    assertTrue(res == 0);
+    recPen(depth, &dir, &pos, stdout, "Pen 9");
+    //TOSVT();
+
+    box1.x = box1.y = box1.z = 1.;
+    box2.x = 0.5; box2.y = 0.5; box2.z = .5;
+    gjkVec3Set(&box1.pos, 0., 0., 0.);
+    gjkQuatSet(&box1.quat, 0., 0., 0., 1.);
+    gjkVec3Set(&box2.pos, 0.3, 0.738, 0.);
+    gjkQuatSet(&box2.quat, 0., 0., 0., 1.);
+
+    res = gjkMPRPenetration(&box1, &box2, &gjk, &depth, &dir, &pos);
+    assertTrue(res == 0);
+    recPen(depth, &dir, &pos, stdout, "Pen 10");
+    //TOSVT();
 }

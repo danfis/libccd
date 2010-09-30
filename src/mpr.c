@@ -35,6 +35,19 @@ static void findPenetr(const void *obj1, const void *obj2, const gjk_t *gjk,
                        gjk_simplex_t *portal,
                        gjk_real_t *depth, gjk_vec3_t *dir, gjk_vec3_t *pos);
 
+/** Finds penetration info if origin lies on portal's v1 */
+static void findPenetrTouch(const void *obj1, const void *obj2, const gjk_t *gjk,
+                            gjk_simplex_t *portal,
+                            gjk_real_t *depth, gjk_vec3_t *dir, gjk_vec3_t *pos);
+
+/** Find penetration info if origin lies on portal's segment v0-v1 */
+static void findPenetrSegment(const void *obj1, const void *obj2, const gjk_t *gjk,
+                              gjk_simplex_t *portal,
+                              gjk_real_t *depth, gjk_vec3_t *dir, gjk_vec3_t *pos);
+
+/** Finds position vector from fully established portal */
+static void findPos(const void *obj1, const void *obj2, const gjk_t *gjk,
+                    const gjk_simplex_t *portal, gjk_vec3_t *pos);
 
 /** Extends portal with new support point.
  *  Portal must have face v1-v2-v3 arranged to face outside portal. */
@@ -68,40 +81,6 @@ _gjk_inline int portalCanEncapsuleOrigin(const gjk_simplex_t *portal,
                                          const gjk_vec3_t *dir);
 
 
-static void svtSimplex(const gjk_simplex_t *s, FILE *out)
-{
-    fprintf(out, "-----\n");
-    fprintf(out, "Name: origin\n");
-    fprintf(out, "Point color: 1 0 0\n");
-    fprintf(out, "Points:\n0 0 0\n");
-    fprintf(out, "-----\n");
-    fprintf(out, "Point color: 0 1 0\n");
-    fprintf(out, "Points:\n%lf %lf %lf\n",
-                 gjkVec3X(&gjkSimplexPoint(s, 0)->v),
-                 gjkVec3Y(&gjkSimplexPoint(s, 0)->v),
-                 gjkVec3Z(&gjkSimplexPoint(s, 0)->v));
-    fprintf(out, "-----\n");
-    fprintf(out, "point color: 0 0 1\n");
-    fprintf(out, "edge color: 0 0 1\n");
-    fprintf(out, "face color: 0 0 1\n");
-    fprintf(out, "Points:\n%lf %lf %lf\n%lf %lf %lf\n%lf %lf %lf\n%lf %lf %lf\n",
-                 gjkVec3X(&gjkSimplexPoint(s, 0)->v),
-                 gjkVec3Y(&gjkSimplexPoint(s, 0)->v),
-                 gjkVec3Z(&gjkSimplexPoint(s, 0)->v),
-                 gjkVec3X(&gjkSimplexPoint(s, 1)->v),
-                 gjkVec3Y(&gjkSimplexPoint(s, 1)->v),
-                 gjkVec3Z(&gjkSimplexPoint(s, 1)->v),
-                 gjkVec3X(&gjkSimplexPoint(s, 2)->v),
-                 gjkVec3Y(&gjkSimplexPoint(s, 2)->v),
-                 gjkVec3Z(&gjkSimplexPoint(s, 2)->v),
-                 gjkVec3X(&gjkSimplexPoint(s, 3)->v),
-                 gjkVec3Y(&gjkSimplexPoint(s, 3)->v),
-                 gjkVec3Z(&gjkSimplexPoint(s, 3)->v));
-    fprintf(out, "Edges:\n0 1 0 2 0 3 1 2 2 3 3 1\n");
-    fprintf(out, "Faces:\n1 2 3\n");
-    fprintf(out, "-----\n");
-}
-
 int gjkMPRIntersect(const void *obj1, const void *obj2, const gjk_t *gjk)
 {
     gjk_simplex_t portal;
@@ -125,10 +104,6 @@ int gjkMPRPenetration(const void *obj1, const void *obj2, const gjk_t *gjk,
 {
     gjk_simplex_t portal;
     int res;
-    gjk_vec3_t vec;
-    gjk_real_t k;
-
-    // TODO: move (if res == 1,2,3) to separate functions
 
     // Phase 1: Portal discovery
     res = discoverPortal(obj1, obj2, gjk, &portal);
@@ -137,50 +112,23 @@ int gjkMPRPenetration(const void *obj1, const void *obj2, const gjk_t *gjk,
         return -1;
 
     }else if (res == 1){
-        DBG2("res == 1");
-        // Touching contact on portal's v1 - so depth is zero and direction
-        // is unimportant and pos can be guessed
-        *depth = GJK_REAL(0.);
-        gjkVec3Copy(dir, gjk_vec3_origin);
-
-        gjkVec3Copy(pos, &gjkSimplexPoint(&portal, 1)->v1);
-        gjkVec3Add(pos, &gjkSimplexPoint(&portal, 1)->v2);
-        gjkVec3Scale(pos, 0.5);
-
-        return 0;
+        // Touching contact on portal's v1.
+        findPenetrTouch(obj1, obj2, gjk, &portal, depth, dir, pos);
 
     }else if (res == 2){
-        DBG2("res == 2");
         // Origin lies on v0-v1 segment.
-        // Depth is distance to v1, direction also and position must be
-        // computed
-
-        gjkVec3Copy(pos, &gjkSimplexPoint(&portal, 0)->v1);
-        gjkVec3Add(pos, &gjkSimplexPoint(&portal, 0)->v2);
-        gjkVec3Scale(pos, GJK_REAL(0.5));
-
-        gjkVec3Sub2(&vec, &gjkSimplexPoint(&portal, 1)->v,
-                          &gjkSimplexPoint(&portal, 0)->v);
-        k  = GJK_SQRT(gjkVec3Len2(&gjkSimplexPoint(&portal, 0)->v));
-        k /= GJK_SQRT(gjkVec3Len2(&vec));
-        gjkVec3Scale(&vec, k);
-        gjkVec3Add(pos, &vec);
-
-        gjkVec3Copy(dir, &gjkSimplexPoint(&portal, 1)->v);
-        *depth = GJK_SQRT(gjkVec3Len2(dir));
-        gjkVec3Normalize(dir);
-
-        return 0;
+        findPenetrSegment(obj1, obj2, gjk, &portal, depth, dir, pos);
 
     }else if (res == 0){
         // Phase 2: Portal refinement
         res = refinePortal(obj1, obj2, gjk, &portal);
         if (res < 0)
             return -1;
+
+        // Phase 3. Penetration info
+        findPenetr(obj1, obj2, gjk, &portal, depth, dir, pos);
     }
 
-    // Phase 3. Penetration info
-    findPenetr(obj1, obj2, gjk, &portal, depth, dir, pos);
     return 0;
 }
 
@@ -348,33 +296,13 @@ static void findPenetr(const void *obj1, const void *obj2, const gjk_t *gjk,
 {
     gjk_vec3_t dir;
     gjk_support_t v4;
-    size_t i;
-
-    /*
-    {
-        size_t i;
-        gjk_support_t supp;
-
-        fprintf(stdout, "---\n");
-        fprintf(stdout, "Points:\n");
-        for (i = 0; i < gjk_points_on_sphere_len; i++){
-            __gjkSupport(obj1, obj2, &gjk_points_on_sphere[i], gjk, &supp);
-            fprintf(stdout, "%lf %lf %lf\n",
-                    gjkVec3X(&supp.v),
-                    gjkVec3Y(&supp.v),
-                    gjkVec3Z(&supp.v));
-        }
-        fprintf(stdout, "---\n");
-    }
-    */
 
     while (1){
-        //svtSimplex(portal, stdout);
-
         // compute portal direction and obtain next support point
         portalDir(portal, &dir);
         __gjkSupport(obj1, obj2, &dir, gjk, &v4);
 
+        // reached tolerance -> find penetration info
         if (portalReachTolerance(portal, &v4, &dir, gjk)){
             *depth = gjkVec3PointTriDist2(gjk_vec3_origin,
                                           &gjkSimplexPoint(portal, 1)->v,
@@ -384,100 +312,8 @@ static void findPenetr(const void *obj1, const void *obj2, const gjk_t *gjk,
             *depth = GJK_SQRT(*depth);
             gjkVec3Normalize(pdir);
 
-            gjkVec3Copy(pos, gjk_vec3_origin);
-            for (i = 0; i < 4; i++){
-                gjkVec3Add(pos, &gjkSimplexPoint(portal, i)->v1);
-                gjkVec3Add(pos, &gjkSimplexPoint(portal, i)->v2);
-            }
-            gjkVec3Scale(pos, GJK_REAL(1.) / GJK_REAL(8.));
-
-            /*
-               barycentric coordinates:
-            {
-                gjk_real_t b0, b1, b2, b3, sum, inv;
-                gjk_vec3_t vec, p1, p2;
-
-                gjkVec3Cross(&vec, &gjkSimplexPoint(portal, 1)->v,
-                                   &gjkSimplexPoint(portal, 2)->v);
-                b0 = gjkVec3Dot(&vec, &gjkSimplexPoint(portal, 3)->v);
-
-                gjkVec3Cross(&vec, &gjkSimplexPoint(portal, 3)->v,
-                                   &gjkSimplexPoint(portal, 2)->v);
-                b1 = gjkVec3Dot(&vec, &gjkSimplexPoint(portal, 0)->v);
-
-                gjkVec3Cross(&vec, &gjkSimplexPoint(portal, 0)->v,
-                                   &gjkSimplexPoint(portal, 1)->v);
-                b2 = gjkVec3Dot(&vec, &gjkSimplexPoint(portal, 3)->v);
-
-                gjkVec3Cross(&vec, &gjkSimplexPoint(portal, 2)->v,
-                                   &gjkSimplexPoint(portal, 1)->v);
-                b3 = gjkVec3Dot(&vec, &gjkSimplexPoint(portal, 0)->v);
-
-				sum = b0 + b1 + b2 + b3;
-
-                if (gjkIsZero(sum) || sum < GJK_ZERO){
-					b0 = GJK_REAL(0.);
-
-                    gjkVec3Cross(&vec, &gjkSimplexPoint(portal, 2)->v,
-                                       &gjkSimplexPoint(portal, 3)->v);
-                    b1 = gjkVec3Dot(&vec, &dir);
-                    gjkVec3Cross(&vec, &gjkSimplexPoint(portal, 3)->v,
-                                       &gjkSimplexPoint(portal, 1)->v);
-                    b2 = gjkVec3Dot(&vec, &dir);
-                    gjkVec3Cross(&vec, &gjkSimplexPoint(portal, 1)->v,
-                                       &gjkSimplexPoint(portal, 2)->v);
-                    b3 = gjkVec3Dot(&vec, &dir);
-
-					sum = b1 + b2 + b3;
-				}
-
-				inv = GJK_REAL(1.) / sum;
-
-                gjkVec3Copy(&p1, gjk_vec3_origin);
-                gjkVec3Copy(&vec, &gjkSimplexPoint(portal, 0)->v1);
-                gjkVec3Scale(&vec, b0);
-                gjkVec3Add(&p1, &vec);
-                gjkVec3Copy(&vec, &gjkSimplexPoint(portal, 1)->v1);
-                gjkVec3Scale(&vec, b1);
-                gjkVec3Add(&p1, &vec);
-                gjkVec3Copy(&vec, &gjkSimplexPoint(portal, 2)->v1);
-                gjkVec3Scale(&vec, b2);
-                gjkVec3Add(&p1, &vec);
-                gjkVec3Copy(&vec, &gjkSimplexPoint(portal, 3)->v1);
-                gjkVec3Scale(&vec, b3);
-                gjkVec3Add(&p1, &vec);
-                gjkVec3Scale(&p1, inv);
-
-                gjkVec3Copy(&p2, gjk_vec3_origin);
-                gjkVec3Copy(&vec, &gjkSimplexPoint(portal, 0)->v2);
-                gjkVec3Scale(&vec, b0);
-                gjkVec3Add(&p2, &vec);
-                gjkVec3Copy(&vec, &gjkSimplexPoint(portal, 1)->v2);
-                gjkVec3Scale(&vec, b1);
-                gjkVec3Add(&p2, &vec);
-                gjkVec3Copy(&vec, &gjkSimplexPoint(portal, 2)->v2);
-                gjkVec3Scale(&vec, b2);
-                gjkVec3Add(&p2, &vec);
-                gjkVec3Copy(&vec, &gjkSimplexPoint(portal, 3)->v2);
-                gjkVec3Scale(&vec, b3);
-                gjkVec3Add(&p2, &vec);
-                gjkVec3Scale(&p2, inv);
-
-                fprintf(stdout, "---\n");
-                fprintf(stdout, "Points:\n");
-                fprintf(stdout, "%lf %lf %lf\n",
-                        gjkVec3X(&p1),
-                        gjkVec3Y(&p1),
-                        gjkVec3Z(&p1));
-                fprintf(stdout, "---\n");
-                fprintf(stdout, "Points:\n");
-                fprintf(stdout, "%lf %lf %lf\n",
-                        gjkVec3X(&p2),
-                        gjkVec3Y(&p2),
-                        gjkVec3Z(&p2));
-                fprintf(stdout, "---\n");
-            }
-            */
+            // barycentric coordinates:
+            findPos(obj1, obj2, gjk, portal, pos);
 
             return;
         }
@@ -486,6 +322,117 @@ static void findPenetr(const void *obj1, const void *obj2, const gjk_t *gjk,
     }
 }
 
+static void findPenetrTouch(const void *obj1, const void *obj2, const gjk_t *gjk,
+                            gjk_simplex_t *portal,
+                            gjk_real_t *depth, gjk_vec3_t *dir, gjk_vec3_t *pos)
+{
+    // Touching contact on portal's v1 - so depth is zero and direction
+    // is unimportant and pos can be guessed
+    *depth = GJK_REAL(0.);
+    gjkVec3Copy(dir, gjk_vec3_origin);
+
+    gjkVec3Copy(pos, &gjkSimplexPoint(portal, 1)->v1);
+    gjkVec3Add(pos, &gjkSimplexPoint(portal, 1)->v2);
+    gjkVec3Scale(pos, 0.5);
+}
+
+static void findPenetrSegment(const void *obj1, const void *obj2, const gjk_t *gjk,
+                              gjk_simplex_t *portal,
+                              gjk_real_t *depth, gjk_vec3_t *dir, gjk_vec3_t *pos)
+{
+    /*
+    gjk_vec3_t vec;
+    gjk_real_t k;
+    */
+
+    // Origin lies on v0-v1 segment.
+    // Depth is distance to v1, direction also and position must be
+    // computed
+
+    gjkVec3Copy(pos, &gjkSimplexPoint(portal, 1)->v1);
+    gjkVec3Add(pos, &gjkSimplexPoint(portal, 1)->v2);
+    gjkVec3Scale(pos, GJK_REAL(0.5));
+
+    /*
+    gjkVec3Sub2(&vec, &gjkSimplexPoint(portal, 1)->v,
+                      &gjkSimplexPoint(portal, 0)->v);
+    k  = GJK_SQRT(gjkVec3Len2(&gjkSimplexPoint(portal, 0)->v));
+    k /= GJK_SQRT(gjkVec3Len2(&vec));
+    gjkVec3Scale(&vec, -k);
+    gjkVec3Add(pos, &vec);
+    */
+
+    gjkVec3Copy(dir, &gjkSimplexPoint(portal, 1)->v);
+    *depth = GJK_SQRT(gjkVec3Len2(dir));
+    gjkVec3Normalize(dir);
+}
+
+
+static void findPos(const void *obj1, const void *obj2, const gjk_t *gjk,
+                    const gjk_simplex_t *portal, gjk_vec3_t *pos)
+{
+    gjk_vec3_t dir;
+    size_t i;
+    gjk_real_t b[4], sum, inv;
+    gjk_vec3_t vec, p1, p2;
+
+    portalDir(portal, &dir);
+
+    // use barycentric coordinates of tetrahedron to find origin
+    gjkVec3Cross(&vec, &gjkSimplexPoint(portal, 1)->v,
+                       &gjkSimplexPoint(portal, 2)->v);
+    b[0] = gjkVec3Dot(&vec, &gjkSimplexPoint(portal, 3)->v);
+
+    gjkVec3Cross(&vec, &gjkSimplexPoint(portal, 3)->v,
+                       &gjkSimplexPoint(portal, 2)->v);
+    b[1] = gjkVec3Dot(&vec, &gjkSimplexPoint(portal, 0)->v);
+
+    gjkVec3Cross(&vec, &gjkSimplexPoint(portal, 0)->v,
+                       &gjkSimplexPoint(portal, 1)->v);
+    b[2] = gjkVec3Dot(&vec, &gjkSimplexPoint(portal, 3)->v);
+
+    gjkVec3Cross(&vec, &gjkSimplexPoint(portal, 2)->v,
+                       &gjkSimplexPoint(portal, 1)->v);
+    b[3] = gjkVec3Dot(&vec, &gjkSimplexPoint(portal, 0)->v);
+
+	sum = b[0] + b[1] + b[2] + b[3];
+
+    if (gjkIsZero(sum) || sum < GJK_ZERO){
+		b[0] = GJK_REAL(0.);
+
+        gjkVec3Cross(&vec, &gjkSimplexPoint(portal, 2)->v,
+                           &gjkSimplexPoint(portal, 3)->v);
+        b[1] = gjkVec3Dot(&vec, &dir);
+        gjkVec3Cross(&vec, &gjkSimplexPoint(portal, 3)->v,
+                           &gjkSimplexPoint(portal, 1)->v);
+        b[2] = gjkVec3Dot(&vec, &dir);
+        gjkVec3Cross(&vec, &gjkSimplexPoint(portal, 1)->v,
+                           &gjkSimplexPoint(portal, 2)->v);
+        b[3] = gjkVec3Dot(&vec, &dir);
+
+		sum = b[1] + b[2] + b[3];
+	}
+
+	inv = GJK_REAL(1.) / sum;
+
+    gjkVec3Copy(&p1, gjk_vec3_origin);
+    gjkVec3Copy(&p2, gjk_vec3_origin);
+    for (i = 0; i < 4; i++){
+        gjkVec3Copy(&vec, &gjkSimplexPoint(portal, i)->v1);
+        gjkVec3Scale(&vec, b[i]);
+        gjkVec3Add(&p1, &vec);
+
+        gjkVec3Copy(&vec, &gjkSimplexPoint(portal, i)->v2);
+        gjkVec3Scale(&vec, b[i]);
+        gjkVec3Add(&p2, &vec);
+    }
+    gjkVec3Scale(&p1, inv);
+    gjkVec3Scale(&p2, inv);
+
+    gjkVec3Copy(pos, &p1);
+    gjkVec3Add(pos, &p2);
+    gjkVec3Scale(pos, 0.5);
+}
 
 _gjk_inline void expandPortal(gjk_simplex_t *portal,
                               const gjk_support_t *v4)

@@ -7,14 +7,14 @@ TEST(mprCylcylAlignedX);
 TEST(mprCylcylAlignedY);
 TEST(mprCylcylAlignedZ);
 
-TEST(mprCylcylPenetrationEPA);
+TEST(mprCylcylPenetration);
 
 TEST_SUITE(TSMPRCylCyl) {
     TEST_ADD(mprCylcylAlignedX),
     TEST_ADD(mprCylcylAlignedY),
     TEST_ADD(mprCylcylAlignedZ),
 
-    //TEST_ADD(mprCylcylPenetrationEPA),
+    TEST_ADD(mprCylcylPenetration),
 
     TEST_SUITE_CLOSURE
 };

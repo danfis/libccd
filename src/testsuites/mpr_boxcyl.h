@@ -4,11 +4,11 @@
 #include <cu/cu.h>
 
 TEST(mprBoxcylIntersect);
-TEST(mprBoxcylPenEPA);
+TEST(mprBoxcylPen);
 
 TEST_SUITE(TSMPRBoxCyl){
     TEST_ADD(mprBoxcylIntersect),
-    //TEST_ADD(mprBoxcylPenEPA),
+    TEST_ADD(mprBoxcylPen),
 
     TEST_SUITE_CLOSURE
 };

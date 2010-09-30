@@ -13,13 +13,15 @@ OBJS = common.o vec3.o polytope.o boxbox.o spheresphere.o cylcyl.o \
 BENCH_OBJS = bench-boxbox.o
 
 
-all: test bench
+all: test bench bench2
 
 test: cu $(OBJS) main.c
 	$(CC) $(CFLAGS) -o $@ main.c $(OBJS) $(LDFLAGS)
 
 bench: cu bench.c
 	$(CC) $(CFLAGS) -o $@ bench.c $(LDFLAGS)
+bench2: cu bench2.c
+	$(CC) $(CFLAGS) -o $@ bench2.c $(LDFLAGS)
 
 %.o: %.c %.h
 	$(CC) $(CFLAGS) -c -o $@ $<
