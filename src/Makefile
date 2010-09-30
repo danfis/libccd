@@ -28,7 +28,7 @@ libgjk.a: $(OBJS)
 	ar cr $@ $(OBJS)
 	ranlib $@
 
-gjk/config.h: gjk/config.h.in
+gjk/config.h: gjk/config.h.m4
 	$(M4) $(CONFIG_FLAGS) $< >$@
 
 %.o: %.c %.h gjk/config.h
