@@ -90,6 +90,10 @@ typedef struct _gjk_cyl_t gjk_cyl_t;
 void gjkSupport(const void *obj, const gjk_vec3_t *dir,
                 gjk_vec3_t *v);
 
+/**
+ * Returns center of object.
+ */
+void gjkObjCenter(const void *obj, gjk_vec3_t *center);
 
 #ifdef __cplusplus
 } /* extern "C" */

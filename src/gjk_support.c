@@ -74,3 +74,12 @@ void gjkSupport(const void *_obj, const gjk_vec3_t *_dir,
     gjkQuatRotVec(v, &obj->quat);
     gjkVec3Add(v, &obj->pos);
 }
+
+void gjkObjCenter(const void *_obj, gjk_vec3_t *center)
+{
+    gjk_obj_t *obj = (gjk_obj_t *)_obj;
+
+    gjkVec3Set(center, GJK_ZERO, GJK_ZERO, GJK_ZERO);
+    // rotation is not needed
+    gjkVec3Add(center, &obj->pos);
+}
