@@ -53,7 +53,7 @@ cu:
 clean:
 	rm -f *.o
 	rm -f objs/*.o
-	rm -f test bench
+	rm -f test bench bench2
 	rm -f tmp.*
 	rm -f regressions/tmp.*
 

@@ -2,8 +2,8 @@
 #include <cu/cu.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../gjk.h"
-#include "../gjk_support.h"
+#include <gjk/gjk.h>
+#include <gjk/gjk_support.h>
 
 TEST_SUITES {
     TEST_SUITES_CLOSURE

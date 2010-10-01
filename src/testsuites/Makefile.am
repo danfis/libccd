@@ -5,7 +5,7 @@ AM_CPPFLAGS = -I $(srcdir)/.. -I $(builddir)/.. -I $(srcdir)/cu
 LDADD = $(builddir)/cu/libcu.la $(builddir)/../libgjk.la
 
 
-check_PROGRAMS = test bench
+check_PROGRAMS = test bench bench2
 
 test_SOURCES = main.c \
 		common.c common.h \
@@ -14,7 +14,12 @@ test_SOURCES = main.c \
 		boxbox.c boxbox.h \
 		spheresphere.c spheresphere.h \
 		cylcyl.c cylcyl.h \
-		boxcyl.c boxcyl.h
+		boxcyl.c boxcyl.h \
+		mpr_boxbox.c mpr_boxbox.h \
+		mpr_cylcyl.c mpr_cylcyl.h \
+		mpr_boxcyl.c mpr_boxcyl.h
 
 bench_SOURCES = bench.c
+
+bench2_SOURCES = bench2.c
 

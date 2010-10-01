@@ -1,7 +1,7 @@
 #include <cu/cu.h>
 #include "common.h"
-#include "../gjk.h"
-#include "../gjk_support.h"
+#include <gjk/gjk.h>
+#include <gjk/gjk_support.h>
 
 #define TOSVT() \
     svtObjPen(&box, &cyl, stdout, "Pen 1", depth, &dir, &pos); \

@@ -12,5 +12,6 @@ libgjk_la_SOURCES = alloc.c gjk/alloc.h \
 		gjk/quat.h \
 		gjk/simplex.h \
 		support.c gjk/support.h \
-		vec3.c gjk/vec3.h
+		vec3.c gjk/vec3.h \
+        mpr.c
 

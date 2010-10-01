@@ -1,9 +1,7 @@
 #include <stdlib.h>
-#include "gjk.h"
-#include "simplex.h"
-#include "dbg.h"
-
-// TODO: add more explanatory comments.
+#include <gjk/gjk.h>
+#include <gjk/simplex.h>
+#include <gjk/dbg.h>
 
 /** Finds origin (center) of Minkowski difference (actually it can be any
  *  interior point of Minkowski difference. */
