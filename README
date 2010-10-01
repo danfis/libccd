@@ -1,8 +1,10 @@
 libgjk is library for a collision detection between convex shapes.
 libgjk implements variation on Gilbert–Johnson–Keerthi algorithm and Expand
 Polytope Algorithm (EPA).
-It is also planned to implement Minkowski Portal Refinement (MPR) (a.k.a.
-XenoCollide).
+libgjk also contains implementation of Minkowski Portal Refinement (MPR,
+a.k.a. XenoCollide) as described in Game Programming Gems 7.
+
+For more info see home of libgjk: http://libgjk.danfis.cz.
 
 
 Dependencies
@@ -34,6 +36,19 @@ Installation directory can be changed by options PREFIX, INCLUDEDIR and
 LIBDIR.
 
 For more info type 'make help'.
+
+
+Compile And Install Using Autotools
+------------------------------------
+libgjk also contains support for autotools:
+1) Generate configure script etc.: $ ./bootstrap
+2) Create new build/ directory: $ mkdir build && cd build
+3) Run configure script: $ ../configure
+4) Run make and make install: $ make && make install
+
+configure script can change the way libgjk is compiled and installed, most
+significant option is --enable-double which enables double precision
+(single is default in this case).
 
 
 Usage
