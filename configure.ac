@@ -30,8 +30,10 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([clock_gettime])
 
 use_double=no
-AC_ARG_ENABLE(double, AS_HELP_STRING([--enable-double], [enable double precision computations instead of single precision]),
-                      [use_double=yes])
+AC_ARG_ENABLE(double-precision,
+              AS_HELP_STRING([--enable-double-precision],
+                             [enable double precision computations instead of single precision]),
+              [use_double=yes])
 if test $use_double = no
 then
         AC_DEFINE([GJK_SINGLE], [], [use single precision])
