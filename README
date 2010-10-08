@@ -47,8 +47,8 @@ libgjk also contains support for autotools:
 4) Run make and make install: $ make && make install
 
 configure script can change the way libgjk is compiled and installed, most
-significant option is --enable-double which enables double precision
-(single is default in this case).
+significant option is --enable-double-precision which enables double
+precision (single is default in this case).
 
 
 Usage
