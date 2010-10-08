@@ -2,7 +2,7 @@
 #include <cu/cu.h>
 
 #include <gjk/gjk.h>
-#include <gjk/gjk_support.h>
+#include "support.h"
 #include <gjk/vec3.h>
 #include <gjk/dbg.h>
 #include "common.h"

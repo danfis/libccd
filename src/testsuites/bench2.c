@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gjk/gjk.h>
-#include <gjk/gjk_support.h>
+#include "support.h"
 
 TEST_SUITES {
     TEST_SUITES_CLOSURE

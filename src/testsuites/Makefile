@@ -8,8 +8,8 @@ LDFLAGS += -L./ -Lcu/ -lcu -lrt -lm -L../ -lgjk
 CHECK_REG=cu/check-regressions
 CHECK_TS ?=
 
-OBJS = common.o vec3.o polytope.o boxbox.o spheresphere.o cylcyl.o \
-       boxcyl.o mpr_boxbox.o mpr_cylcyl.o mpr_boxcyl.o
+OBJS = common.o support.o vec3.o polytope.o boxbox.o spheresphere.o \
+       cylcyl.o boxcyl.o mpr_boxbox.o mpr_cylcyl.o mpr_boxcyl.o
 BENCH_OBJS = bench-boxbox.o
 
 
@@ -18,10 +18,10 @@ all: test bench bench2
 test: cu $(OBJS) main.c
 	$(CC) $(CFLAGS) -o $@ main.c $(OBJS) $(LDFLAGS)
 
-bench: cu bench.c
-	$(CC) $(CFLAGS) -o $@ bench.c $(LDFLAGS)
-bench2: cu bench2.c
-	$(CC) $(CFLAGS) -o $@ bench2.c $(LDFLAGS)
+bench: cu bench.c support.o
+	$(CC) $(CFLAGS) -o $@ bench.c support.o $(LDFLAGS)
+bench2: cu bench2.c support.o
+	$(CC) $(CFLAGS) -o $@ bench2.c support.o $(LDFLAGS)
 
 %.o: %.c %.h
 	$(CC) $(CFLAGS) -c -o $@ $<

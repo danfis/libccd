@@ -1,7 +1,7 @@
 #include "common.h"
 #include <gjk/vec3.h>
 #include <gjk/quat.h>
-#include <gjk/gjk_support.h>
+#include "support.h"
 
 static void svtCyl(gjk_cyl_t *c, FILE *out, const char *color, const char *name)
 {

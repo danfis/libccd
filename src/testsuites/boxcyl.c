@@ -1,7 +1,7 @@
 #include <cu/cu.h>
 #include "common.h"
 #include <gjk/gjk.h>
-#include <gjk/gjk_support.h>
+#include "support.h"
 
 
 #define TOSVT() \
