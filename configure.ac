@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 #AC_PREREQ([2.65])
-AC_INIT([libgjk], [0.2], [danfis@danfis.cz])
+AC_INIT([libccd], [0.2], [danfis@danfis.cz])
 AC_CONFIG_SRCDIR([src/gjk.c])
 AC_CONFIG_HEADERS([src/gjk/config.h])
 AM_INIT_AUTOMAKE

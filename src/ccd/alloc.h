@@ -1,10 +1,10 @@
 /***
- * libgjk
+ * libccd
  * ---------------------------------
  * Copyright (c)2010 Daniel Fiser <danfis@danfis.cz>
  *
  *
- *  This file is part of libgjk.
+ *  This file is part of libccd.
  *
  *  Distributed under the OSI-approved BSD License (the "License");
  *  see accompanying file BDS-LICENSE for details or see
@@ -15,8 +15,8 @@
  *  See the License for more information.
  */
 
-#ifndef __GJK_ALLOC_H__
-#define __GJK_ALLOC_H__
+#ifndef __CCD_ALLOC_H__
+#define __CCD_ALLOC_H__
 
 #include <stdlib.h>
 
@@ -29,24 +29,24 @@ extern "C" {
  */
 
 /* Memory allocation: */
-#define __GJK_ALLOC_MEMORY(type, ptr_old, size) \
-    (type *)gjkRealloc((void *)ptr_old, (size))
+#define __CCD_ALLOC_MEMORY(type, ptr_old, size) \
+    (type *)ccdRealloc((void *)ptr_old, (size))
 
 /** Allocate memory for one element of type.  */
-#define GJK_ALLOC(type) \
-    __GJK_ALLOC_MEMORY(type, NULL, sizeof(type))
+#define CCD_ALLOC(type) \
+    __CCD_ALLOC_MEMORY(type, NULL, sizeof(type))
 
 /** Allocate memory for array of elements of type type.  */
-#define GJK_ALLOC_ARR(type, num_elements) \
-    __GJK_ALLOC_MEMORY(type, NULL, sizeof(type) * (num_elements))
+#define CCD_ALLOC_ARR(type, num_elements) \
+    __CCD_ALLOC_MEMORY(type, NULL, sizeof(type) * (num_elements))
 
-#define GJK_REALLOC_ARR(ptr, type, num_elements) \
-    __GJK_ALLOC_MEMORY(type, ptr, sizeof(type) * (num_elements))
+#define CCD_REALLOC_ARR(ptr, type, num_elements) \
+    __CCD_ALLOC_MEMORY(type, ptr, sizeof(type) * (num_elements))
 
-void *gjkRealloc(void *ptr, size_t size);
+void *ccdRealloc(void *ptr, size_t size);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* __GJK_ALLOC_H__ */
+#endif /* __CCD_ALLOC_H__ */

@@ -1,10 +1,10 @@
 ###
-# libgjk
+# libccd
 # ---------------------------------
 # Copyright (c)2010 Daniel Fiser <danfis@danfis.cz>
 #
 #
-#  This file is part of libgjk.
+#  This file is part of libccd.
 #
 #  Distributed under the OSI-approved BSD License (the "License");
 #  see accompanying file BDS-LICENSE for details or see
@@ -19,35 +19,35 @@
 
 CFLAGS += -I.
 
-TARGETS = libgjk.a
-OBJS = gjk.o mpr.o support.o vec3.o alloc.o polytope.o
+TARGETS = libccd.a
+OBJS = ccd.o mpr.o support.o vec3.o alloc.o polytope.o
 
 all: $(TARGETS)
 
-libgjk.a: $(OBJS)
+libccd.a: $(OBJS)
 	ar cr $@ $(OBJS)
 	ranlib $@
 
-gjk/config.h: gjk/config.h.m4
+ccd/config.h: ccd/config.h.m4
 	$(M4) $(CONFIG_FLAGS) $< >$@
 
-%.o: %.c %.h gjk/config.h
+%.o: %.c %.h ccd/config.h
 	$(CC) $(CFLAGS) $(DEFS) -c -o $@ $<
-%.o: %.c gjk/config.h
+%.o: %.c ccd/config.h
 	$(CC) $(CFLAGS) $(DEFS) -c -o $@ $<
-%.h: gjk/config.h
-%.c: gjk/config.h
+%.h: ccd/config.h
+%.c: ccd/config.h
 
 install:
-	mkdir -p $(PREFIX)/$(INCLUDEDIR)/gjk
+	mkdir -p $(PREFIX)/$(INCLUDEDIR)/ccd
 	mkdir -p $(PREFIX)/$(LIBDIR)
-	cp gjk/*.h $(PREFIX)/$(INCLUDEDIR)/gjk/
-	cp libgjk.a $(PREFIX)/$(LIBDIR)
+	cp ccd/*.h $(PREFIX)/$(INCLUDEDIR)/ccd/
+	cp libccd.a $(PREFIX)/$(LIBDIR)
 
 clean:
 	rm -f $(OBJS)
 	rm -f $(TARGETS)
-	rm -f gjk/config.h
+	rm -f ccd/config.h
 	if [ -d testsuites ]; then $(MAKE) -C testsuites clean; fi;
 	
 check:

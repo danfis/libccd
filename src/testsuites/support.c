@@ -1,10 +1,10 @@
 /***
- * libgjk
+ * libccd
  * ---------------------------------
  * Copyright (c)2010 Daniel Fiser <danfis@danfis.cz>
  *
  *
- *  This file is part of libgjk.
+ *  This file is part of libccd.
  *
  *  Distributed under the OSI-approved BSD License (the "License");
  *  see accompanying file BDS-LICENSE for details or see
@@ -16,70 +16,70 @@
  */
 
 #include <stdio.h>
-#include <gjk/gjk.h>
-#include <gjk/vec3.h>
+#include <ccd/ccd.h>
+#include <ccd/vec3.h>
 #include "support.h"
 
-void gjkSupport(const void *_obj, const gjk_vec3_t *_dir,
-                gjk_vec3_t *v)
+void ccdSupport(const void *_obj, const ccd_vec3_t *_dir,
+                ccd_vec3_t *v)
 {
     // Support function is made according to Gino van den Bergen's paper
-    //  A Fast and Robust GJK Implementation for Collision Detection of
+    //  A Fast and Robust CCD Implementation for Collision Detection of
     //  Convex Objects
 
-    gjk_obj_t *obj = (gjk_obj_t *)_obj;
-    gjk_vec3_t dir;
-    gjk_quat_t qinv;
+    ccd_obj_t *obj = (ccd_obj_t *)_obj;
+    ccd_vec3_t dir;
+    ccd_quat_t qinv;
 
-    gjkVec3Copy(&dir, _dir);
-    gjkQuatInvert2(&qinv, &obj->quat);
+    ccdVec3Copy(&dir, _dir);
+    ccdQuatInvert2(&qinv, &obj->quat);
 
-    gjkQuatRotVec(&dir, &qinv);
+    ccdQuatRotVec(&dir, &qinv);
 
-    if (obj->type == GJK_OBJ_BOX){
-        gjk_box_t *box = (gjk_box_t *)obj;
-        gjkVec3Set(v, gjkSign(gjkVec3X(&dir)) * box->x * GJK_REAL(0.5),
-                      gjkSign(gjkVec3Y(&dir)) * box->y * GJK_REAL(0.5),
-                      gjkSign(gjkVec3Z(&dir)) * box->z * GJK_REAL(0.5));
-    }else if (obj->type == GJK_OBJ_SPHERE){
-        gjk_sphere_t *sphere = (gjk_sphere_t *)obj;
-        gjk_real_t len;
+    if (obj->type == CCD_OBJ_BOX){
+        ccd_box_t *box = (ccd_box_t *)obj;
+        ccdVec3Set(v, ccdSign(ccdVec3X(&dir)) * box->x * CCD_REAL(0.5),
+                      ccdSign(ccdVec3Y(&dir)) * box->y * CCD_REAL(0.5),
+                      ccdSign(ccdVec3Z(&dir)) * box->z * CCD_REAL(0.5));
+    }else if (obj->type == CCD_OBJ_SPHERE){
+        ccd_sphere_t *sphere = (ccd_sphere_t *)obj;
+        ccd_real_t len;
 
-        len = gjkVec3Len2(&dir);
-        if (len - GJK_EPS > GJK_ZERO){
-            gjkVec3Copy(v, &dir);
-            gjkVec3Scale(v, sphere->radius / GJK_SQRT(len));
+        len = ccdVec3Len2(&dir);
+        if (len - CCD_EPS > CCD_ZERO){
+            ccdVec3Copy(v, &dir);
+            ccdVec3Scale(v, sphere->radius / CCD_SQRT(len));
         }else{
-            gjkVec3Set(v, GJK_ZERO, GJK_ZERO, GJK_ZERO);
+            ccdVec3Set(v, CCD_ZERO, CCD_ZERO, CCD_ZERO);
         }
-    }else if (obj->type == GJK_OBJ_CYL){
-        gjk_cyl_t *cyl = (gjk_cyl_t *)obj;
-        gjk_real_t zdist, rad;
+    }else if (obj->type == CCD_OBJ_CYL){
+        ccd_cyl_t *cyl = (ccd_cyl_t *)obj;
+        ccd_real_t zdist, rad;
 
         zdist = dir.v[0] * dir.v[0] + dir.v[1] * dir.v[1];
-        zdist = GJK_SQRT(zdist);
-        if (gjkIsZero(zdist)){
-            gjkVec3Set(v, GJK_ZERO, GJK_ZERO,
-                          gjkSign(gjkVec3Z(&dir)) * cyl->height * GJK_REAL(0.5));
+        zdist = CCD_SQRT(zdist);
+        if (ccdIsZero(zdist)){
+            ccdVec3Set(v, CCD_ZERO, CCD_ZERO,
+                          ccdSign(ccdVec3Z(&dir)) * cyl->height * CCD_REAL(0.5));
         }else{
             rad = cyl->radius / zdist;
 
-            gjkVec3Set(v, rad * gjkVec3X(&dir),
-                          rad * gjkVec3Y(&dir),
-                          gjkSign(gjkVec3Z(&dir)) * cyl->height * GJK_REAL(0.5));
+            ccdVec3Set(v, rad * ccdVec3X(&dir),
+                          rad * ccdVec3Y(&dir),
+                          ccdSign(ccdVec3Z(&dir)) * cyl->height * CCD_REAL(0.5));
         }
     }
 
     // transform support vertex
-    gjkQuatRotVec(v, &obj->quat);
-    gjkVec3Add(v, &obj->pos);
+    ccdQuatRotVec(v, &obj->quat);
+    ccdVec3Add(v, &obj->pos);
 }
 
-void gjkObjCenter(const void *_obj, gjk_vec3_t *center)
+void ccdObjCenter(const void *_obj, ccd_vec3_t *center)
 {
-    gjk_obj_t *obj = (gjk_obj_t *)_obj;
+    ccd_obj_t *obj = (ccd_obj_t *)_obj;
 
-    gjkVec3Set(center, GJK_ZERO, GJK_ZERO, GJK_ZERO);
+    ccdVec3Set(center, CCD_ZERO, CCD_ZERO, CCD_ZERO);
     // rotation is not needed
-    gjkVec3Add(center, &obj->pos);
+    ccdVec3Add(center, &obj->pos);
 }

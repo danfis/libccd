@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <cu/cu.h>
 #include "support.h"
-#include <gjk/gjk.h>
+#include <ccd/ccd.h>
 
 TEST(spheresphereSetUp)
 {
@@ -13,22 +13,22 @@ TEST(spheresphereTearDown)
 
 TEST(spheresphereAlignedX)
 {
-    gjk_t gjk;
-    GJK_SPHERE(s1);
-    GJK_SPHERE(s2);
+    ccd_t ccd;
+    CCD_SPHERE(s1);
+    CCD_SPHERE(s2);
     size_t i;
     int res;
 
-    GJK_INIT(&gjk);
-    gjk.support1 = gjkSupport;
-    gjk.support2 = gjkSupport;
+    CCD_INIT(&ccd);
+    ccd.support1 = ccdSupport;
+    ccd.support2 = ccdSupport;
 
     s1.radius = 0.35;
     s2.radius = .5;
 
-    gjkVec3Set(&s1.pos, -5., 0., 0.);
+    ccdVec3Set(&s1.pos, -5., 0., 0.);
     for (i = 0; i < 100; i++){
-        res = gjkIntersect(&s1, &s2, &gjk);
+        res = ccdGJKIntersect(&s1, &s2, &ccd);
 
         if (i < 42 || i > 58){
             assertFalse(res);
@@ -42,22 +42,22 @@ TEST(spheresphereAlignedX)
 
 TEST(spheresphereAlignedY)
 {
-    gjk_t gjk;
-    GJK_SPHERE(s1);
-    GJK_SPHERE(s2);
+    ccd_t ccd;
+    CCD_SPHERE(s1);
+    CCD_SPHERE(s2);
     size_t i;
     int res;
 
-    GJK_INIT(&gjk);
-    gjk.support1 = gjkSupport;
-    gjk.support2 = gjkSupport;
+    CCD_INIT(&ccd);
+    ccd.support1 = ccdSupport;
+    ccd.support2 = ccdSupport;
 
     s1.radius = 0.35;
     s2.radius = .5;
 
-    gjkVec3Set(&s1.pos, 0., -5., 0.);
+    ccdVec3Set(&s1.pos, 0., -5., 0.);
     for (i = 0; i < 100; i++){
-        res = gjkIntersect(&s1, &s2, &gjk);
+        res = ccdGJKIntersect(&s1, &s2, &ccd);
 
         if (i < 42 || i > 58){
             assertFalse(res);
@@ -71,22 +71,22 @@ TEST(spheresphereAlignedY)
 
 TEST(spheresphereAlignedZ)
 {
-    gjk_t gjk;
-    GJK_SPHERE(s1);
-    GJK_SPHERE(s2);
+    ccd_t ccd;
+    CCD_SPHERE(s1);
+    CCD_SPHERE(s2);
     size_t i;
     int res;
 
-    GJK_INIT(&gjk);
-    gjk.support1 = gjkSupport;
-    gjk.support2 = gjkSupport;
+    CCD_INIT(&ccd);
+    ccd.support1 = ccdSupport;
+    ccd.support2 = ccdSupport;
 
     s1.radius = 0.35;
     s2.radius = .5;
 
-    gjkVec3Set(&s1.pos, 0., 0., -5.);
+    ccdVec3Set(&s1.pos, 0., 0., -5.);
     for (i = 0; i < 100; i++){
-        res = gjkIntersect(&s1, &s2, &gjk);
+        res = ccdGJKIntersect(&s1, &s2, &ccd);
 
         if (i < 42 || i > 58){
             assertFalse(res);

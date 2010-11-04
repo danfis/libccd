@@ -1,10 +1,10 @@
 /***
- * libgjk
+ * libccd
  * ---------------------------------
  * Copyright (c)2010 Daniel Fiser <danfis@danfis.cz>
  *
  *
- *  This file is part of libgjk.
+ *  This file is part of libccd.
  *
  *  Distributed under the OSI-approved BSD License (the "License");
  *  see accompanying file BDS-LICENSE for details or see
@@ -15,44 +15,44 @@
  *  See the License for more information.
  */
 
-#ifndef __GJK_LIST_H__
-#define __GJK_LIST_H__
+#ifndef __CCD_LIST_H__
+#define __CCD_LIST_H__
 
 #include <string.h>
-#include <gjk/compiler.h>
+#include <ccd/compiler.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-struct _gjk_list_t {
-    struct _gjk_list_t *next, *prev;
+struct _ccd_list_t {
+    struct _ccd_list_t *next, *prev;
 };
-typedef struct _gjk_list_t gjk_list_t;
+typedef struct _ccd_list_t ccd_list_t;
 
 
 
 /**
  * Get the struct for this entry.
- * @ptr:	the &gjk_list_t pointer.
+ * @ptr:	the &ccd_list_t pointer.
  * @type:	the type of the struct this is embedded in.
  * @member:	the name of the list_struct within the struct.
  */
-#define gjkListEntry(ptr, type, member) \
-    gjk_container_of(ptr, type, member)
+#define ccdListEntry(ptr, type, member) \
+    ccd_container_of(ptr, type, member)
 
 /**
  * Iterates over list.
  */
-#define gjkListForEach(list, item) \
+#define ccdListForEach(list, item) \
         for (item = (list)->next; \
-             _gjk_prefetch((item)->next), item != (list); \
+             _ccd_prefetch((item)->next), item != (list); \
              item = (item)->next)
 
 /**
  * Iterates over list safe against remove of list entry
  */
-#define gjkListForEachSafe(list, item, tmp) \
+#define ccdListForEachSafe(list, item, tmp) \
 	    for (item = (list)->next, tmp = (item)->next; \
              item != (list); \
 		     item = tmp, tmp = (item)->next)
@@ -63,10 +63,10 @@ typedef struct _gjk_list_t gjk_list_t;
  * @head:	the head for your list.
  * @member:	the name of the list_struct within the struct.
  */
-#define gjkListForEachEntry(head, pos, member)				\
-	for (pos = gjkListEntry((head)->next, typeof(*pos), member);	\
-	     _gjk_prefetch(pos->member.next), &pos->member != (head); 	\
-	     pos = gjkListEntry(pos->member.next, typeof(*pos), member))
+#define ccdListForEachEntry(head, pos, member)				\
+	for (pos = ccdListEntry((head)->next, typeof(*pos), member);	\
+	     _ccd_prefetch(pos->member.next), &pos->member != (head); 	\
+	     pos = ccdListEntry(pos->member.next, typeof(*pos), member))
 
 /**
  * Iterates over list of given type safe against removal of list entry
@@ -75,35 +75,35 @@ typedef struct _gjk_list_t gjk_list_t;
  * @head:	the head for your list.
  * @member:	the name of the list_struct within the struct.
  */
-#define gjkListForEachEntrySafe(head, pos, n, member)			\
-	for (pos = gjkListEntry((head)->next, typeof(*pos), member),	\
-		 n = gjkListEntry(pos->member.next, typeof(*pos), member);	\
+#define ccdListForEachEntrySafe(head, pos, n, member)			\
+	for (pos = ccdListEntry((head)->next, typeof(*pos), member),	\
+		 n = ccdListEntry(pos->member.next, typeof(*pos), member);	\
 	     &pos->member != (head); 					\
-	     pos = n, n = gjkListEntry(n->member.next, typeof(*n), member))
+	     pos = n, n = ccdListEntry(n->member.next, typeof(*n), member))
 
 
 /**
  * Initialize list.
  */
-_gjk_inline void gjkListInit(gjk_list_t *l);
+_ccd_inline void ccdListInit(ccd_list_t *l);
 
-_gjk_inline gjk_list_t *gjkListNext(gjk_list_t *l);
-_gjk_inline gjk_list_t *gjkListPrev(gjk_list_t *l);
+_ccd_inline ccd_list_t *ccdListNext(ccd_list_t *l);
+_ccd_inline ccd_list_t *ccdListPrev(ccd_list_t *l);
 
 /**
  * Returns true if list is empty.
  */
-_gjk_inline int gjkListEmpty(const gjk_list_t *head);
+_ccd_inline int ccdListEmpty(const ccd_list_t *head);
 
 /**
  * Appends item to end of the list l.
  */
-_gjk_inline void gjkListAppend(gjk_list_t *l, gjk_list_t *item);
+_ccd_inline void ccdListAppend(ccd_list_t *l, ccd_list_t *item);
 
 /**
  * Removes item from list.
  */
-_gjk_inline void gjkListDel(gjk_list_t *item);
+_ccd_inline void ccdListDel(ccd_list_t *item);
 
 
 
@@ -111,28 +111,28 @@ _gjk_inline void gjkListDel(gjk_list_t *item);
 /// INLINES:
 ///
 
-_gjk_inline void gjkListInit(gjk_list_t *l)
+_ccd_inline void ccdListInit(ccd_list_t *l)
 {
     l->next = l;
     l->prev = l;
 }
 
-_gjk_inline gjk_list_t *gjkListNext(gjk_list_t *l)
+_ccd_inline ccd_list_t *ccdListNext(ccd_list_t *l)
 {
     return l->next;
 }
 
-_gjk_inline gjk_list_t *gjkListPrev(gjk_list_t *l)
+_ccd_inline ccd_list_t *ccdListPrev(ccd_list_t *l)
 {
     return l->prev;
 }
 
-_gjk_inline int gjkListEmpty(const gjk_list_t *head)
+_ccd_inline int ccdListEmpty(const ccd_list_t *head)
 {
     return head->next == head;
 }
 
-_gjk_inline void gjkListAppend(gjk_list_t *l, gjk_list_t *new)
+_ccd_inline void ccdListAppend(ccd_list_t *l, ccd_list_t *new)
 {
     new->prev = l->prev;
     new->next = l;
@@ -140,7 +140,7 @@ _gjk_inline void gjkListAppend(gjk_list_t *l, gjk_list_t *new)
     l->prev = new;
 }
 
-_gjk_inline void gjkListDel(gjk_list_t *item)
+_ccd_inline void ccdListDel(ccd_list_t *item)
 {
     item->next->prev = item->prev;
     item->prev->next = item->next;
@@ -152,4 +152,4 @@ _gjk_inline void gjkListDel(gjk_list_t *item)
 } /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* __GJK_LIST_H__ */
+#endif /* __CCD_LIST_H__ */

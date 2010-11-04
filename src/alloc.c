@@ -1,10 +1,10 @@
 /***
- * libgjk
+ * libccd
  * ---------------------------------
  * Copyright (c)2010 Daniel Fiser <danfis@danfis.cz>
  *
  *
- *  This file is part of libgjk.
+ *  This file is part of libccd.
  *
  *  Distributed under the OSI-approved BSD License (the "License");
  *  see accompanying file BDS-LICENSE for details or see
@@ -16,9 +16,9 @@
  */
 
 #include <stdio.h>
-#include <gjk/alloc.h>
+#include <ccd/alloc.h>
 
-void *gjkRealloc(void *ptr, size_t size)
+void *ccdRealloc(void *ptr, size_t size)
 {
     void *ret = realloc(ptr, size);
     if (ret == NULL && size != 0){

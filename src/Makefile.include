@@ -17,6 +17,7 @@
 
 CC ?= gcc
 M4 ?= m4
+PYTHON ?= python
 
 SYSTEM = $(shell uname)
 

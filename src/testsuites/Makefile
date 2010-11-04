@@ -3,7 +3,7 @@ DEBUG = yes
 
 -include ../Makefile.include
 CFLAGS += -I./ -I../ -Icu/
-LDFLAGS += -L./ -Lcu/ -lcu -lrt -lm -L../ -lgjk
+LDFLAGS += -L./ -Lcu/ -lcu -lrt -lm -L../ -lccd
 
 CHECK_REG=cu/check-regressions
 CHECK_TS ?=
@@ -34,7 +34,7 @@ check: all
 	./test $(CHECK_TS)
 	@echo "----------------------------------------";
 	@echo "Checking regressions:";
-	./$(CHECK_REG) regressions
+	$(PYTHON) $(CHECK_REG) regressions
 	@echo ""
 
 check-valgrind: all

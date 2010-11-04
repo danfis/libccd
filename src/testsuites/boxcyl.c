@@ -1,23 +1,23 @@
 #include <cu/cu.h>
 #include "common.h"
-#include <gjk/gjk.h>
+#include <ccd/ccd.h>
 #include "support.h"
 
 
 #define TOSVT() \
     svtObjPen(&box, &cyl, stdout, "Pen 1", depth, &dir, &pos); \
-    gjkVec3Scale(&dir, depth); \
-    gjkVec3Add(&cyl.pos, &dir); \
+    ccdVec3Scale(&dir, depth); \
+    ccdVec3Add(&cyl.pos, &dir); \
     svtObjPen(&box, &cyl, stdout, "Pen 1", depth, &dir, &pos)
 
 
 TEST(boxcylIntersect)
 {
-    gjk_t gjk;
-    GJK_BOX(box);
-    GJK_CYL(cyl);
+    ccd_t ccd;
+    CCD_BOX(box);
+    CCD_CYL(cyl);
     int res;
-    gjk_vec3_t axis;
+    ccd_vec3_t axis;
 
     box.x = 0.5;
     box.y = 1.;
@@ -25,67 +25,67 @@ TEST(boxcylIntersect)
     cyl.radius = 0.4;
     cyl.height = 0.7;
 
-    GJK_INIT(&gjk);
-    gjk.support1 = gjkSupport;
-    gjk.support2 = gjkSupport;
+    CCD_INIT(&ccd);
+    ccd.support1 = ccdSupport;
+    ccd.support2 = ccdSupport;
 
-    gjkVec3Set(&cyl.pos, 0.1, 0., 0.);
-    res = gjkIntersect(&box, &cyl, &gjk);
+    ccdVec3Set(&cyl.pos, 0.1, 0., 0.);
+    res = ccdGJKIntersect(&box, &cyl, &ccd);
     assertTrue(res);
 
-    gjkVec3Set(&cyl.pos, .6, 0., 0.);
-    res = gjkIntersect(&box, &cyl, &gjk);
+    ccdVec3Set(&cyl.pos, .6, 0., 0.);
+    res = ccdGJKIntersect(&box, &cyl, &ccd);
     assertTrue(res);
 
-    gjkVec3Set(&cyl.pos, .6, 0.6, 0.);
-    res = gjkIntersect(&box, &cyl, &gjk);
+    ccdVec3Set(&cyl.pos, .6, 0.6, 0.);
+    res = ccdGJKIntersect(&box, &cyl, &ccd);
     assertTrue(res);
 
-    gjkVec3Set(&cyl.pos, .6, 0.6, 0.5);
-    res = gjkIntersect(&box, &cyl, &gjk);
+    ccdVec3Set(&cyl.pos, .6, 0.6, 0.5);
+    res = ccdGJKIntersect(&box, &cyl, &ccd);
     assertTrue(res);
 
-    gjkVec3Set(&axis, 0., 1., 0.);
-    gjkQuatSetAngleAxis(&cyl.quat, M_PI / 3., &axis);
-    gjkVec3Set(&cyl.pos, .6, 0.6, 0.5);
-    res = gjkIntersect(&box, &cyl, &gjk);
+    ccdVec3Set(&axis, 0., 1., 0.);
+    ccdQuatSetAngleAxis(&cyl.quat, M_PI / 3., &axis);
+    ccdVec3Set(&cyl.pos, .6, 0.6, 0.5);
+    res = ccdGJKIntersect(&box, &cyl, &ccd);
     assertTrue(res);
 
-    gjkVec3Set(&axis, 0.67, 1.1, 0.12);
-    gjkQuatSetAngleAxis(&cyl.quat, M_PI / 4., &axis);
-    gjkVec3Set(&cyl.pos, .6, 0., 0.5);
-    res = gjkIntersect(&box, &cyl, &gjk);
+    ccdVec3Set(&axis, 0.67, 1.1, 0.12);
+    ccdQuatSetAngleAxis(&cyl.quat, M_PI / 4., &axis);
+    ccdVec3Set(&cyl.pos, .6, 0., 0.5);
+    res = ccdGJKIntersect(&box, &cyl, &ccd);
     assertTrue(res);
 
-    gjkVec3Set(&axis, -0.1, 2.2, -1.);
-    gjkQuatSetAngleAxis(&cyl.quat, M_PI / 5., &axis);
-    gjkVec3Set(&cyl.pos, .6, 0., 0.5);
-    gjkVec3Set(&axis, 1., 1., 0.);
-    gjkQuatSetAngleAxis(&box.quat, -M_PI / 4., &axis);
-    gjkVec3Set(&box.pos, .6, 0., 0.5);
-    res = gjkIntersect(&box, &cyl, &gjk);
+    ccdVec3Set(&axis, -0.1, 2.2, -1.);
+    ccdQuatSetAngleAxis(&cyl.quat, M_PI / 5., &axis);
+    ccdVec3Set(&cyl.pos, .6, 0., 0.5);
+    ccdVec3Set(&axis, 1., 1., 0.);
+    ccdQuatSetAngleAxis(&box.quat, -M_PI / 4., &axis);
+    ccdVec3Set(&box.pos, .6, 0., 0.5);
+    res = ccdGJKIntersect(&box, &cyl, &ccd);
     assertTrue(res);
 
-    gjkVec3Set(&axis, -0.1, 2.2, -1.);
-    gjkQuatSetAngleAxis(&cyl.quat, M_PI / 5., &axis);
-    gjkVec3Set(&cyl.pos, .6, 0., 0.5);
-    gjkVec3Set(&axis, 1., 1., 0.);
-    gjkQuatSetAngleAxis(&box.quat, -M_PI / 4., &axis);
-    gjkVec3Set(&box.pos, .9, 0.8, 0.5);
-    res = gjkIntersect(&box, &cyl, &gjk);
+    ccdVec3Set(&axis, -0.1, 2.2, -1.);
+    ccdQuatSetAngleAxis(&cyl.quat, M_PI / 5., &axis);
+    ccdVec3Set(&cyl.pos, .6, 0., 0.5);
+    ccdVec3Set(&axis, 1., 1., 0.);
+    ccdQuatSetAngleAxis(&box.quat, -M_PI / 4., &axis);
+    ccdVec3Set(&box.pos, .9, 0.8, 0.5);
+    res = ccdGJKIntersect(&box, &cyl, &ccd);
     assertTrue(res);
 }
 
 
 TEST(boxcylPenEPA)
 {
-    gjk_t gjk;
-    GJK_BOX(box);
-    GJK_CYL(cyl);
+    ccd_t ccd;
+    CCD_BOX(box);
+    CCD_CYL(cyl);
     int res;
-    gjk_vec3_t axis;
-    gjk_real_t depth;
-    gjk_vec3_t dir, pos;
+    ccd_vec3_t axis;
+    ccd_real_t depth;
+    ccd_vec3_t dir, pos;
 
     box.x = 0.5;
     box.y = 1.;
@@ -93,68 +93,68 @@ TEST(boxcylPenEPA)
     cyl.radius = 0.4;
     cyl.height = 0.7;
 
-    GJK_INIT(&gjk);
-    gjk.support1 = gjkSupport;
-    gjk.support2 = gjkSupport;
+    CCD_INIT(&ccd);
+    ccd.support1 = ccdSupport;
+    ccd.support2 = ccdSupport;
 
-    gjkVec3Set(&cyl.pos, 0.1, 0., 0.);
-    res = gjkPenetrationEPA(&box, &cyl, &gjk, &depth, &dir, &pos);
+    ccdVec3Set(&cyl.pos, 0.1, 0., 0.);
+    res = ccdGJKPenetration(&box, &cyl, &ccd, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 1");
     //TOSVT();
 
-    gjkVec3Set(&cyl.pos, .6, 0., 0.);
-    res = gjkPenetrationEPA(&box, &cyl, &gjk, &depth, &dir, &pos);
+    ccdVec3Set(&cyl.pos, .6, 0., 0.);
+    res = ccdGJKPenetration(&box, &cyl, &ccd, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 2");
     //TOSVT(); <<<
 
-    gjkVec3Set(&cyl.pos, .6, 0.6, 0.);
-    res = gjkPenetrationEPA(&box, &cyl, &gjk, &depth, &dir, &pos);
+    ccdVec3Set(&cyl.pos, .6, 0.6, 0.);
+    res = ccdGJKPenetration(&box, &cyl, &ccd, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 3");
     //TOSVT();
 
-    gjkVec3Set(&cyl.pos, .6, 0.6, 0.5);
-    res = gjkPenetrationEPA(&box, &cyl, &gjk, &depth, &dir, &pos);
+    ccdVec3Set(&cyl.pos, .6, 0.6, 0.5);
+    res = ccdGJKPenetration(&box, &cyl, &ccd, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 4");
     //TOSVT();
 
-    gjkVec3Set(&axis, 0., 1., 0.);
-    gjkQuatSetAngleAxis(&cyl.quat, M_PI / 3., &axis);
-    gjkVec3Set(&cyl.pos, .6, 0.6, 0.5);
-    res = gjkPenetrationEPA(&box, &cyl, &gjk, &depth, &dir, &pos);
+    ccdVec3Set(&axis, 0., 1., 0.);
+    ccdQuatSetAngleAxis(&cyl.quat, M_PI / 3., &axis);
+    ccdVec3Set(&cyl.pos, .6, 0.6, 0.5);
+    res = ccdGJKPenetration(&box, &cyl, &ccd, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 5");
     //TOSVT();
 
-    gjkVec3Set(&axis, 0.67, 1.1, 0.12);
-    gjkQuatSetAngleAxis(&cyl.quat, M_PI / 4., &axis);
-    gjkVec3Set(&cyl.pos, .6, 0., 0.5);
-    res = gjkPenetrationEPA(&box, &cyl, &gjk, &depth, &dir, &pos);
+    ccdVec3Set(&axis, 0.67, 1.1, 0.12);
+    ccdQuatSetAngleAxis(&cyl.quat, M_PI / 4., &axis);
+    ccdVec3Set(&cyl.pos, .6, 0., 0.5);
+    res = ccdGJKPenetration(&box, &cyl, &ccd, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 6");
     //TOSVT();
 
-    gjkVec3Set(&axis, -0.1, 2.2, -1.);
-    gjkQuatSetAngleAxis(&cyl.quat, M_PI / 5., &axis);
-    gjkVec3Set(&cyl.pos, .6, 0., 0.5);
-    gjkVec3Set(&axis, 1., 1., 0.);
-    gjkQuatSetAngleAxis(&box.quat, -M_PI / 4., &axis);
-    gjkVec3Set(&box.pos, .6, 0., 0.5);
-    res = gjkPenetrationEPA(&box, &cyl, &gjk, &depth, &dir, &pos);
+    ccdVec3Set(&axis, -0.1, 2.2, -1.);
+    ccdQuatSetAngleAxis(&cyl.quat, M_PI / 5., &axis);
+    ccdVec3Set(&cyl.pos, .6, 0., 0.5);
+    ccdVec3Set(&axis, 1., 1., 0.);
+    ccdQuatSetAngleAxis(&box.quat, -M_PI / 4., &axis);
+    ccdVec3Set(&box.pos, .6, 0., 0.5);
+    res = ccdGJKPenetration(&box, &cyl, &ccd, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 7");
     //TOSVT();
 
-    gjkVec3Set(&axis, -0.1, 2.2, -1.);
-    gjkQuatSetAngleAxis(&cyl.quat, M_PI / 5., &axis);
-    gjkVec3Set(&cyl.pos, .6, 0., 0.5);
-    gjkVec3Set(&axis, 1., 1., 0.);
-    gjkQuatSetAngleAxis(&box.quat, -M_PI / 4., &axis);
-    gjkVec3Set(&box.pos, .9, 0.8, 0.5);
-    res = gjkPenetrationEPA(&box, &cyl, &gjk, &depth, &dir, &pos);
+    ccdVec3Set(&axis, -0.1, 2.2, -1.);
+    ccdQuatSetAngleAxis(&cyl.quat, M_PI / 5., &axis);
+    ccdVec3Set(&cyl.pos, .6, 0., 0.5);
+    ccdVec3Set(&axis, 1., 1., 0.);
+    ccdQuatSetAngleAxis(&box.quat, -M_PI / 4., &axis);
+    ccdVec3Set(&box.pos, .9, 0.8, 0.5);
+    res = ccdGJKPenetration(&box, &cyl, &ccd, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 8");
     //TOSVT();

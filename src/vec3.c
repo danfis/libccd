@@ -1,10 +1,10 @@
 /***
- * libgjk
+ * libccd
  * ---------------------------------
  * Copyright (c)2010 Daniel Fiser <danfis@danfis.cz>
  *
  *
- *  This file is part of libgjk.
+ *  This file is part of libccd.
  *
  *  Distributed under the OSI-approved BSD License (the "License");
  *  see accompanying file BDS-LICENSE for details or see
@@ -16,64 +16,64 @@
  */
 
 #include <stdio.h>
-#include <gjk/vec3.h>
-#include <gjk/dbg.h>
+#include <ccd/vec3.h>
+#include <ccd/dbg.h>
 
-static GJK_VEC3(__gjk_vec3_origin, GJK_ZERO, GJK_ZERO, GJK_ZERO);
-gjk_vec3_t *gjk_vec3_origin = &__gjk_vec3_origin;
+static CCD_VEC3(__ccd_vec3_origin, CCD_ZERO, CCD_ZERO, CCD_ZERO);
+ccd_vec3_t *ccd_vec3_origin = &__ccd_vec3_origin;
 
-static gjk_vec3_t points_on_sphere[] = {
-	GJK_VEC3_STATIC(GJK_REAL( 0.000000), GJK_REAL(-0.000000), GJK_REAL(-1.000000)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.723608), GJK_REAL(-0.525725), GJK_REAL(-0.447219)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.276388), GJK_REAL(-0.850649), GJK_REAL(-0.447219)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.894426), GJK_REAL(-0.000000), GJK_REAL(-0.447216)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.276388), GJK_REAL( 0.850649), GJK_REAL(-0.447220)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.723608), GJK_REAL( 0.525725), GJK_REAL(-0.447219)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.276388), GJK_REAL(-0.850649), GJK_REAL( 0.447220)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.723608), GJK_REAL(-0.525725), GJK_REAL( 0.447219)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.723608), GJK_REAL( 0.525725), GJK_REAL( 0.447219)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.276388), GJK_REAL( 0.850649), GJK_REAL( 0.447219)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.894426), GJK_REAL( 0.000000), GJK_REAL( 0.447216)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.000000), GJK_REAL( 0.000000), GJK_REAL( 1.000000)), 
-	GJK_VEC3_STATIC(GJK_REAL( 0.425323), GJK_REAL(-0.309011), GJK_REAL(-0.850654)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.162456), GJK_REAL(-0.499995), GJK_REAL(-0.850654)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.262869), GJK_REAL(-0.809012), GJK_REAL(-0.525738)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.425323), GJK_REAL( 0.309011), GJK_REAL(-0.850654)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.850648), GJK_REAL(-0.000000), GJK_REAL(-0.525736)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.525730), GJK_REAL(-0.000000), GJK_REAL(-0.850652)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.688190), GJK_REAL(-0.499997), GJK_REAL(-0.525736)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.162456), GJK_REAL( 0.499995), GJK_REAL(-0.850654)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.688190), GJK_REAL( 0.499997), GJK_REAL(-0.525736)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.262869), GJK_REAL( 0.809012), GJK_REAL(-0.525738)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.951058), GJK_REAL( 0.309013), GJK_REAL( 0.000000)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.951058), GJK_REAL(-0.309013), GJK_REAL( 0.000000)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.587786), GJK_REAL(-0.809017), GJK_REAL( 0.000000)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.000000), GJK_REAL(-1.000000), GJK_REAL( 0.000000)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.587786), GJK_REAL(-0.809017), GJK_REAL( 0.000000)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.951058), GJK_REAL(-0.309013), GJK_REAL(-0.000000)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.951058), GJK_REAL( 0.309013), GJK_REAL(-0.000000)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.587786), GJK_REAL( 0.809017), GJK_REAL(-0.000000)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.000000), GJK_REAL( 1.000000), GJK_REAL(-0.000000)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.587786), GJK_REAL( 0.809017), GJK_REAL(-0.000000)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.688190), GJK_REAL(-0.499997), GJK_REAL( 0.525736)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.262869), GJK_REAL(-0.809012), GJK_REAL( 0.525738)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.850648), GJK_REAL( 0.000000), GJK_REAL( 0.525736)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.262869), GJK_REAL( 0.809012), GJK_REAL( 0.525738)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.688190), GJK_REAL( 0.499997), GJK_REAL( 0.525736)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.525730), GJK_REAL( 0.000000), GJK_REAL( 0.850652)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.162456), GJK_REAL(-0.499995), GJK_REAL( 0.850654)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.425323), GJK_REAL(-0.309011), GJK_REAL( 0.850654)),
-	GJK_VEC3_STATIC(GJK_REAL(-0.425323), GJK_REAL( 0.309011), GJK_REAL( 0.850654)),
-	GJK_VEC3_STATIC(GJK_REAL( 0.162456), GJK_REAL( 0.499995), GJK_REAL( 0.850654))
+static ccd_vec3_t points_on_sphere[] = {
+	CCD_VEC3_STATIC(CCD_REAL( 0.000000), CCD_REAL(-0.000000), CCD_REAL(-1.000000)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.723608), CCD_REAL(-0.525725), CCD_REAL(-0.447219)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.276388), CCD_REAL(-0.850649), CCD_REAL(-0.447219)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.894426), CCD_REAL(-0.000000), CCD_REAL(-0.447216)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.276388), CCD_REAL( 0.850649), CCD_REAL(-0.447220)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.723608), CCD_REAL( 0.525725), CCD_REAL(-0.447219)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.276388), CCD_REAL(-0.850649), CCD_REAL( 0.447220)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.723608), CCD_REAL(-0.525725), CCD_REAL( 0.447219)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.723608), CCD_REAL( 0.525725), CCD_REAL( 0.447219)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.276388), CCD_REAL( 0.850649), CCD_REAL( 0.447219)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.894426), CCD_REAL( 0.000000), CCD_REAL( 0.447216)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.000000), CCD_REAL( 0.000000), CCD_REAL( 1.000000)), 
+	CCD_VEC3_STATIC(CCD_REAL( 0.425323), CCD_REAL(-0.309011), CCD_REAL(-0.850654)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.162456), CCD_REAL(-0.499995), CCD_REAL(-0.850654)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.262869), CCD_REAL(-0.809012), CCD_REAL(-0.525738)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.425323), CCD_REAL( 0.309011), CCD_REAL(-0.850654)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.850648), CCD_REAL(-0.000000), CCD_REAL(-0.525736)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.525730), CCD_REAL(-0.000000), CCD_REAL(-0.850652)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.688190), CCD_REAL(-0.499997), CCD_REAL(-0.525736)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.162456), CCD_REAL( 0.499995), CCD_REAL(-0.850654)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.688190), CCD_REAL( 0.499997), CCD_REAL(-0.525736)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.262869), CCD_REAL( 0.809012), CCD_REAL(-0.525738)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.951058), CCD_REAL( 0.309013), CCD_REAL( 0.000000)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.951058), CCD_REAL(-0.309013), CCD_REAL( 0.000000)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.587786), CCD_REAL(-0.809017), CCD_REAL( 0.000000)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.000000), CCD_REAL(-1.000000), CCD_REAL( 0.000000)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.587786), CCD_REAL(-0.809017), CCD_REAL( 0.000000)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.951058), CCD_REAL(-0.309013), CCD_REAL(-0.000000)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.951058), CCD_REAL( 0.309013), CCD_REAL(-0.000000)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.587786), CCD_REAL( 0.809017), CCD_REAL(-0.000000)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.000000), CCD_REAL( 1.000000), CCD_REAL(-0.000000)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.587786), CCD_REAL( 0.809017), CCD_REAL(-0.000000)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.688190), CCD_REAL(-0.499997), CCD_REAL( 0.525736)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.262869), CCD_REAL(-0.809012), CCD_REAL( 0.525738)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.850648), CCD_REAL( 0.000000), CCD_REAL( 0.525736)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.262869), CCD_REAL( 0.809012), CCD_REAL( 0.525738)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.688190), CCD_REAL( 0.499997), CCD_REAL( 0.525736)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.525730), CCD_REAL( 0.000000), CCD_REAL( 0.850652)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.162456), CCD_REAL(-0.499995), CCD_REAL( 0.850654)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.425323), CCD_REAL(-0.309011), CCD_REAL( 0.850654)),
+	CCD_VEC3_STATIC(CCD_REAL(-0.425323), CCD_REAL( 0.309011), CCD_REAL( 0.850654)),
+	CCD_VEC3_STATIC(CCD_REAL( 0.162456), CCD_REAL( 0.499995), CCD_REAL( 0.850654))
 };
-gjk_vec3_t *gjk_points_on_sphere = points_on_sphere;
-size_t gjk_points_on_sphere_len = sizeof(points_on_sphere) / sizeof(gjk_vec3_t);
+ccd_vec3_t *ccd_points_on_sphere = points_on_sphere;
+size_t ccd_points_on_sphere_len = sizeof(points_on_sphere) / sizeof(ccd_vec3_t);
 
 
-_gjk_inline gjk_real_t __gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
-                                                  const gjk_vec3_t *x0,
-                                                  const gjk_vec3_t *b,
-                                                  gjk_vec3_t *witness)
+_ccd_inline ccd_real_t __ccdVec3PointSegmentDist2(const ccd_vec3_t *P,
+                                                  const ccd_vec3_t *x0,
+                                                  const ccd_vec3_t *b,
+                                                  ccd_vec3_t *witness)
 {
     // The computation comes from solving equation of segment:
     //      S(t) = x0 + t.d
@@ -90,54 +90,54 @@ _gjk_inline gjk_real_t __gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
     //
     // Bonus of this method is witness point for free.
 
-    gjk_real_t dist, t;
-    gjk_vec3_t d, a;
+    ccd_real_t dist, t;
+    ccd_vec3_t d, a;
 
     // direction of segment
-    gjkVec3Sub2(&d, b, x0);
+    ccdVec3Sub2(&d, b, x0);
 
     // precompute vector from P to x0
-    gjkVec3Sub2(&a, x0, P);
+    ccdVec3Sub2(&a, x0, P);
 
-    t  = -GJK_REAL(1.) * gjkVec3Dot(&a, &d);
-    t /= gjkVec3Len2(&d);
+    t  = -CCD_REAL(1.) * ccdVec3Dot(&a, &d);
+    t /= ccdVec3Len2(&d);
 
-    if (t < GJK_ZERO || gjkIsZero(t)){
-        dist = gjkVec3Dist2(x0, P);
+    if (t < CCD_ZERO || ccdIsZero(t)){
+        dist = ccdVec3Dist2(x0, P);
         if (witness)
-            gjkVec3Copy(witness, x0);
-    }else if (t > GJK_ONE || gjkEq(t, GJK_ONE)){
-        dist = gjkVec3Dist2(b, P);
+            ccdVec3Copy(witness, x0);
+    }else if (t > CCD_ONE || ccdEq(t, CCD_ONE)){
+        dist = ccdVec3Dist2(b, P);
         if (witness)
-            gjkVec3Copy(witness, b);
+            ccdVec3Copy(witness, b);
     }else{
         if (witness){
-            gjkVec3Copy(witness, &d);
-            gjkVec3Scale(witness, t);
-            gjkVec3Add(witness, x0);
-            dist = gjkVec3Dist2(witness, P);
+            ccdVec3Copy(witness, &d);
+            ccdVec3Scale(witness, t);
+            ccdVec3Add(witness, x0);
+            dist = ccdVec3Dist2(witness, P);
         }else{
             // recycling variables
-            gjkVec3Scale(&d, t);
-            gjkVec3Add(&d, &a);
-            dist = gjkVec3Len2(&d);
+            ccdVec3Scale(&d, t);
+            ccdVec3Add(&d, &a);
+            dist = ccdVec3Len2(&d);
         }
     }
 
     return dist;
 }
 
-gjk_real_t gjkVec3PointSegmentDist2(const gjk_vec3_t *P,
-                                    const gjk_vec3_t *x0, const gjk_vec3_t *b,
-                                    gjk_vec3_t *witness)
+ccd_real_t ccdVec3PointSegmentDist2(const ccd_vec3_t *P,
+                                    const ccd_vec3_t *x0, const ccd_vec3_t *b,
+                                    ccd_vec3_t *witness)
 {
-    return __gjkVec3PointSegmentDist2(P, x0, b, witness);
+    return __ccdVec3PointSegmentDist2(P, x0, b, witness);
 }
 
-gjk_real_t gjkVec3PointTriDist2(const gjk_vec3_t *P,
-                                const gjk_vec3_t *x0, const gjk_vec3_t *B,
-                                const gjk_vec3_t *C,
-                                gjk_vec3_t *witness)
+ccd_real_t ccdVec3PointTriDist2(const ccd_vec3_t *P,
+                                const ccd_vec3_t *x0, const ccd_vec3_t *B,
+                                const ccd_vec3_t *C,
+                                ccd_vec3_t *witness)
 {
     // Computation comes from analytic expression for triangle (x0, B, C)
     //      T(s, t) = x0 + s.d1 + t.d2, where d1 = B - x0 and d2 = C - x0 and
@@ -148,62 +148,62 @@ gjk_real_t gjkVec3PointTriDist2(const gjk_vec3_t *P,
     // between 0 and 1 and t + s < 1, otherwise distance from segment is
     // computed.
 
-    gjk_vec3_t d1, d2, a;
-    gjk_real_t u, v, w, p, q, r;
-    gjk_real_t s, t, dist, dist2;
-    gjk_vec3_t witness2;
+    ccd_vec3_t d1, d2, a;
+    ccd_real_t u, v, w, p, q, r;
+    ccd_real_t s, t, dist, dist2;
+    ccd_vec3_t witness2;
 
-    gjkVec3Sub2(&d1, B, x0);
-    gjkVec3Sub2(&d2, C, x0);
-    gjkVec3Sub2(&a, x0, P);
+    ccdVec3Sub2(&d1, B, x0);
+    ccdVec3Sub2(&d2, C, x0);
+    ccdVec3Sub2(&a, x0, P);
 
-    u = gjkVec3Dot(&a, &a);
-    v = gjkVec3Dot(&d1, &d1);
-    w = gjkVec3Dot(&d2, &d2);
-    p = gjkVec3Dot(&a, &d1);
-    q = gjkVec3Dot(&a, &d2);
-    r = gjkVec3Dot(&d1, &d2);
+    u = ccdVec3Dot(&a, &a);
+    v = ccdVec3Dot(&d1, &d1);
+    w = ccdVec3Dot(&d2, &d2);
+    p = ccdVec3Dot(&a, &d1);
+    q = ccdVec3Dot(&a, &d2);
+    r = ccdVec3Dot(&d1, &d2);
 
     s = (q * r - w * p) / (w * v - r * r);
     t = (-s * r - q) / w;
 
-    if ((gjkIsZero(s) || s > GJK_ZERO)
-            && (gjkEq(s, GJK_ONE) || s < GJK_ONE)
-            && (gjkIsZero(t) || t > GJK_ZERO)
-            && (gjkEq(t, GJK_ONE) || t < GJK_ONE)
-            && (gjkEq(t + s, GJK_ONE) || t + s < GJK_ONE)){
+    if ((ccdIsZero(s) || s > CCD_ZERO)
+            && (ccdEq(s, CCD_ONE) || s < CCD_ONE)
+            && (ccdIsZero(t) || t > CCD_ZERO)
+            && (ccdEq(t, CCD_ONE) || t < CCD_ONE)
+            && (ccdEq(t + s, CCD_ONE) || t + s < CCD_ONE)){
 
         if (witness){
-            gjkVec3Scale(&d1, s);
-            gjkVec3Scale(&d2, t);
-            gjkVec3Copy(witness, x0);
-            gjkVec3Add(witness, &d1);
-            gjkVec3Add(witness, &d2);
+            ccdVec3Scale(&d1, s);
+            ccdVec3Scale(&d2, t);
+            ccdVec3Copy(witness, x0);
+            ccdVec3Add(witness, &d1);
+            ccdVec3Add(witness, &d2);
 
-            dist = gjkVec3Dist2(witness, P);
+            dist = ccdVec3Dist2(witness, P);
         }else{
             dist  = s * s * v;
             dist += t * t * w;
-            dist += GJK_REAL(2.) * s * t * r;
-            dist += GJK_REAL(2.) * s * p;
-            dist += GJK_REAL(2.) * t * q;
+            dist += CCD_REAL(2.) * s * t * r;
+            dist += CCD_REAL(2.) * s * p;
+            dist += CCD_REAL(2.) * t * q;
             dist += u;
         }
     }else{
-        dist = __gjkVec3PointSegmentDist2(P, x0, B, witness);
+        dist = __ccdVec3PointSegmentDist2(P, x0, B, witness);
 
-        dist2 = __gjkVec3PointSegmentDist2(P, x0, C, &witness2);
+        dist2 = __ccdVec3PointSegmentDist2(P, x0, C, &witness2);
         if (dist2 < dist){
             dist = dist2;
             if (witness)
-                gjkVec3Copy(witness, &witness2);
+                ccdVec3Copy(witness, &witness2);
         }
 
-        dist2 = __gjkVec3PointSegmentDist2(P, B, C, &witness2);
+        dist2 = __ccdVec3PointSegmentDist2(P, B, C, &witness2);
         if (dist2 < dist){
             dist = dist2;
             if (witness)
-                gjkVec3Copy(witness, &witness2);
+                ccdVec3Copy(witness, &witness2);
         }
     }
 

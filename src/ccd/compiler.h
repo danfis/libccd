@@ -1,10 +1,10 @@
 /***
- * libgjk
+ * libccd
  * ---------------------------------
  * Copyright (c)2010 Daniel Fiser <danfis@danfis.cz>
  *
  *
- *  This file is part of libgjk.
+ *  This file is part of libccd.
  *
  *  Distributed under the OSI-approved BSD License (the "License");
  *  see accompanying file BDS-LICENSE for details or see
@@ -15,23 +15,23 @@
  *  See the License for more information.
  */
 
-#ifndef __GJK_COMPILER_H__
-#define __GJK_COMPILER_H__
+#ifndef __CCD_COMPILER_H__
+#define __CCD_COMPILER_H__
 
 
-#define gjk_offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+#define ccd_offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
-#define gjk_container_of(ptr, type, member) \
-    (type *)( (char *)ptr - gjk_offsetof(type, member))
+#define ccd_container_of(ptr, type, member) \
+    (type *)( (char *)ptr - ccd_offsetof(type, member))
 
 
 /**
  * Marks inline function.
  */
 #ifdef __GNUC__
-# define _gjk_inline static inline __attribute__((always_inline))
+# define _ccd_inline static inline __attribute__((always_inline))
 #else /* __GNUC__ */
-# define _gjk_inline static inline
+# define _ccd_inline static inline
 #endif /* __GNUC__ */
 
 
@@ -40,11 +40,11 @@
  * __prefetchw(x) - prefetches the cacheline at "x" for write
  */
 #ifdef __GNUC__
-# define _gjk_prefetch(x) __builtin_prefetch(x)
-# define _gjk_prefetchw(x) __builtin_prefetch(x,1)
+# define _ccd_prefetch(x) __builtin_prefetch(x)
+# define _ccd_prefetchw(x) __builtin_prefetch(x,1)
 #else /* __GNUC__ */
-# define _gjk_prefetch(x)
-# define _gjk_prefetchw(x)
+# define _ccd_prefetch(x)
+# define _ccd_prefetchw(x)
 #endif /* __GNUC__ */
 
 
@@ -55,5 +55,5 @@
 # pragma warning(disable:981)
 #endif /* __ICC */
 
-#endif /* __GJK_COMPILER_H__ */
+#endif /* __CCD_COMPILER_H__ */
 
