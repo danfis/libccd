@@ -1,16 +1,16 @@
 SUBDIRS = . testsuites
 
-lib_LTLIBRARIES = libgjk.la
+lib_LTLIBRARIES = libccd.la
 
-libgjk_la_SOURCES = alloc.c gjk/alloc.h \
-		gjk/compiler.h \
-		gjk/dbg.h \
-		gjk.c gjk/gjk.h \
-		gjk/list.h \
-		polytope.c gjk/polytope.h \
-		gjk/quat.h \
-		gjk/simplex.h \
-		support.c gjk/support.h \
-		vec3.c gjk/vec3.h \
+libccd_la_SOURCES = alloc.c ccd/alloc.h \
+		ccd/compiler.h \
+		ccd/dbg.h \
+		ccd.c ccd/ccd.h \
+		ccd/list.h \
+		polytope.c ccd/polytope.h \
+		ccd/quat.h \
+		ccd/simplex.h \
+		support.c ccd/support.h \
+		vec3.c ccd/vec3.h \
         mpr.c
 

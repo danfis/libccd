@@ -1,5 +1,5 @@
 *.o
 *.a
-gjk/config.h
-gjk/config.h.in
+ccd/config.h
+ccd/config.h.in
 

@@ -3,7 +3,7 @@
 # Creates .tar.gz package of specified version.
 # Takes one argument - identification of commit
 
-NAME=libgjk
+NAME=libccd
 COMMIT=""
 CMD="git archive"
 

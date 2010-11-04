@@ -3,8 +3,8 @@
 
 #AC_PREREQ([2.65])
 AC_INIT([libccd], [0.2], [danfis@danfis.cz])
-AC_CONFIG_SRCDIR([src/gjk.c])
-AC_CONFIG_HEADERS([src/gjk/config.h])
+AC_CONFIG_SRCDIR([src/ccd.c])
+AC_CONFIG_HEADERS([src/ccd/config.h])
 AM_INIT_AUTOMAKE
 
 # Checks for programs.
@@ -37,9 +37,9 @@ AC_ARG_ENABLE(double-precision,
               [use_double=yes])
 if test $use_double = no
 then
-        AC_DEFINE([GJK_SINGLE], [], [use single precision])
+        AC_DEFINE([CCD_SINGLE], [], [use single precision])
 else
-        AC_DEFINE([GJK_DOUBLE], [], [use double precision])
+        AC_DEFINE([CCD_DOUBLE], [], [use double precision])
 fi
 
 
