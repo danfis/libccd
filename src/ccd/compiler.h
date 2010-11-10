@@ -19,7 +19,7 @@
 #define __CCD_COMPILER_H__
 
 
-#define ccd_offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
+#define ccd_offsetof(TYPE, MEMBER) ((size_t)((size_t)&((TYPE *)8)->MEMBER - 8))
 
 #define ccd_container_of(ptr, type, member) \
     (type *)( (char *)ptr - ccd_offsetof(type, member))
@@ -31,7 +31,7 @@
 #ifdef __GNUC__
 # define _ccd_inline static inline __attribute__((always_inline))
 #else /* __GNUC__ */
-# define _ccd_inline static inline
+# define _ccd_inline static __inline
 #endif /* __GNUC__ */
 
 
@@ -43,8 +43,8 @@
 # define _ccd_prefetch(x) __builtin_prefetch(x)
 # define _ccd_prefetchw(x) __builtin_prefetch(x,1)
 #else /* __GNUC__ */
-# define _ccd_prefetch(x)
-# define _ccd_prefetchw(x)
+# define _ccd_prefetch(x) ((void)0)
+# define _ccd_prefetchw(x) ((void)0)
 #endif /* __GNUC__ */
 
 
