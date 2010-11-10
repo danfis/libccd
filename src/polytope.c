@@ -45,15 +45,15 @@ static void _ccdPtNearestRenew(ccd_pt_t *pt)
     pt->nearest_type = 3;
     pt->nearest = NULL;
 
-    ccdListForEachEntry(&pt->vertices, v, list){
+    ccdListForEachEntry(&pt->vertices, v, ccd_pt_vertex_t, list){
         _ccdPtNearestUpdate(pt, (ccd_pt_el_t *)v);
     }
 
-    ccdListForEachEntry(&pt->edges, e, list){
+    ccdListForEachEntry(&pt->edges, e, ccd_pt_edge_t, list){
         _ccdPtNearestUpdate(pt, (ccd_pt_el_t *)e);
     }
 
-    ccdListForEachEntry(&pt->faces, f, list){
+    ccdListForEachEntry(&pt->faces, f, ccd_pt_face_t, list){
         _ccdPtNearestUpdate(pt, (ccd_pt_el_t *)f);
     }
 }
@@ -78,17 +78,17 @@ void ccdPtDestroy(ccd_pt_t *pt)
     ccd_pt_vertex_t *v, *v2;
 
     // first delete all faces
-    ccdListForEachEntrySafe(&pt->faces, f, f2, list){
+    ccdListForEachEntrySafe(&pt->faces, f, ccd_pt_face_t, f2, ccd_pt_face_t, list){
         ccdPtDelFace(pt, f);
     }
 
     // delete all edges
-    ccdListForEachEntrySafe(&pt->edges, e, e2, list){
+    ccdListForEachEntrySafe(&pt->edges, e, ccd_pt_edge_t, e2, ccd_pt_edge_t, list){
         ccdPtDelEdge(pt, e);
     }
 
     // delete all vertices
-    ccdListForEachEntrySafe(&pt->vertices, v, v2, list){
+    ccdListForEachEntrySafe(&pt->vertices, v, ccd_pt_vertex_t, v2, ccd_pt_vertex_t, list){
         ccdPtDelVertex(pt, v);
     }
 }
@@ -196,20 +196,20 @@ void ccdPtRecomputeDistances(ccd_pt_t *pt)
     const ccd_vec3_t *a, *b, *c;
     ccd_real_t dist;
 
-    ccdListForEachEntry(&pt->vertices, v, list){
+    ccdListForEachEntry(&pt->vertices, v, ccd_pt_vertex_t, list){
         dist = ccdVec3Len2(&v->v.v);
         v->dist = dist;
         ccdVec3Copy(&v->witness, &v->v.v);
     }
 
-    ccdListForEachEntry(&pt->edges, e, list){
+    ccdListForEachEntry(&pt->edges, e, ccd_pt_edge_t, list){
         a = &e->vertex[0]->v.v;
         b = &e->vertex[1]->v.v;
         dist = ccdVec3PointSegmentDist2(ccd_vec3_origin, a, b, &e->witness);
         e->dist = dist;
     }
 
-    ccdListForEachEntry(&pt->faces, f, list){
+    ccdListForEachEntry(&pt->faces, f, ccd_pt_face_t, list){
         // obtain triplet of vertices
         a = &f->edge[0]->vertex[0]->v.v;
         b = &f->edge[0]->vertex[1]->v.v;
@@ -259,19 +259,19 @@ void ccdPtDumpSVT2(ccd_pt_t *pt, FILE *fout)
 
     fprintf(fout, "Points:\n");
     i = 0;
-    ccdListForEachEntry(&pt->vertices, v, list){
+    ccdListForEachEntry(&pt->vertices, v, ccd_pt_vertex_t, list){
         v->id = i++;
         fprintf(fout, "%lf %lf %lf\n",
                 ccdVec3X(&v->v.v), ccdVec3Y(&v->v.v), ccdVec3Z(&v->v.v));
     }
 
     fprintf(fout, "Edges:\n");
-    ccdListForEachEntry(&pt->edges, e, list){
+    ccdListForEachEntry(&pt->edges, e, ccd_pt_edge_t, list){
         fprintf(fout, "%d %d\n", e->vertex[0]->id, e->vertex[1]->id);
     }
 
     fprintf(fout, "Faces:\n");
-    ccdListForEachEntry(&pt->faces, f, list){
+    ccdListForEachEntry(&pt->faces, f, ccd_pt_face_t, list){
         a = f->edge[0]->vertex[0];
         b = f->edge[0]->vertex[1];
         c = f->edge[1]->vertex[0];

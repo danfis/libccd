@@ -63,10 +63,10 @@ typedef struct _ccd_list_t ccd_list_t;
  * @head:	the head for your list.
  * @member:	the name of the list_struct within the struct.
  */
-#define ccdListForEachEntry(head, pos, member)				\
-	for (pos = ccdListEntry((head)->next, typeof(*pos), member);	\
+#define ccdListForEachEntry(head, pos, postype, member)                 \
+	for (pos = ccdListEntry((head)->next, postype, member);	\
 	     _ccd_prefetch(pos->member.next), &pos->member != (head); 	\
-	     pos = ccdListEntry(pos->member.next, typeof(*pos), member))
+	     pos = ccdListEntry(pos->member.next, postype, member))
 
 /**
  * Iterates over list of given type safe against removal of list entry
@@ -75,11 +75,11 @@ typedef struct _ccd_list_t ccd_list_t;
  * @head:	the head for your list.
  * @member:	the name of the list_struct within the struct.
  */
-#define ccdListForEachEntrySafe(head, pos, n, member)			\
-	for (pos = ccdListEntry((head)->next, typeof(*pos), member),	\
-		 n = ccdListEntry(pos->member.next, typeof(*pos), member);	\
+#define ccdListForEachEntrySafe(head, pos, postype, n, ntype, member)         \
+    for (pos = ccdListEntry((head)->next, postype, member),             \
+		 n = ccdListEntry(pos->member.next, postype, member);	\
 	     &pos->member != (head); 					\
-	     pos = n, n = ccdListEntry(n->member.next, typeof(*n), member))
+	     pos = n, n = ccdListEntry(n->member.next, ntype, member))
 
 
 /**

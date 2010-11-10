@@ -139,13 +139,13 @@ static void penEPAPos(const ccd_pt_t *pt, const ccd_pt_el_t *nearest,
 
     // compute median
     len = 0;
-    ccdListForEachEntry(&pt->vertices, v, list){
+    ccdListForEachEntry(&pt->vertices, v, ccd_pt_vertex_t, list){
         len++;
     }
 
     vs = CCD_ALLOC_ARR(ccd_pt_vertex_t *, len);
     i = 0;
-    ccdListForEachEntry(&pt->vertices, v, list){
+    ccdListForEachEntry(&pt->vertices, v, ccd_pt_vertex_t, list){
         vs[i++] = v;
     }
 
