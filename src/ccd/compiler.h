@@ -18,8 +18,9 @@
 #ifndef __CCD_COMPILER_H__
 #define __CCD_COMPILER_H__
 
+#include <stddef.h>
 
-#define ccd_offsetof(TYPE, MEMBER) ((size_t)((size_t)&((TYPE *)8)->MEMBER - 8))
+#define ccd_offsetof(TYPE, MEMBER) offsetof(TYPE, MEMBER)
 
 #define ccd_container_of(ptr, type, member) \
     (type *)( (char *)ptr - ccd_offsetof(type, member))
