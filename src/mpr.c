@@ -176,7 +176,7 @@ static int discoverPortal(const void *obj1, const void *obj2,
     // vertex 2
     ccdVec3Cross(&dir, &ccdSimplexPoint(portal, 0)->v,
                        &ccdSimplexPoint(portal, 1)->v);
-    if (ccdVec3Eq(&dir, ccd_vec3_origin)){
+    if (ccdIsZero(ccdVec3Len2(&dir))){
         if (ccdVec3Eq(&ccdSimplexPoint(portal, 1)->v, ccd_vec3_origin)){
             // origin lies on v1
             return 1;
@@ -222,7 +222,7 @@ static int discoverPortal(const void *obj1, const void *obj2,
         ccdVec3Cross(&va, &ccdSimplexPoint(portal, 1)->v,
                           &ccdSimplexPoint(portal, 3)->v);
         dot = ccdVec3Dot(&va, &ccdSimplexPoint(portal, 0)->v);
-        if (dot < CCD_ZERO){
+        if (dot < CCD_ZERO && !ccdIsZero(dot)){
             ccdSimplexSet(portal, 2, ccdSimplexPoint(portal, 3));
             cont = 1;
         }
@@ -233,7 +233,7 @@ static int discoverPortal(const void *obj1, const void *obj2,
             ccdVec3Cross(&va, &ccdSimplexPoint(portal, 3)->v,
                               &ccdSimplexPoint(portal, 2)->v);
             dot = ccdVec3Dot(&va, &ccdSimplexPoint(portal, 0)->v);
-            if (dot < CCD_ZERO){
+            if (dot < CCD_ZERO && !ccdIsZero(dot)){
                 ccdSimplexSet(portal, 1, ccdSimplexPoint(portal, 3));
                 cont = 1;
             }
