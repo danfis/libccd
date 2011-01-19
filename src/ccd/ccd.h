@@ -1,7 +1,7 @@
 /***
  * libccd
  * ---------------------------------
- * Copyright (c)2010 Daniel Fiser <danfis@danfis.cz>
+ * Copyright (c)2010,2011 Daniel Fiser <danfis@danfis.cz>
  *
  *
  *  This file is part of libccd.

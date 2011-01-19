@@ -1,3 +1,20 @@
+/***
+ * libccd
+ * ---------------------------------
+ * Copyright (c)2010,2011 Daniel Fiser <danfis@danfis.cz>
+ *
+ *
+ *  This file is part of libccd.
+ *
+ *  Distributed under the OSI-approved BSD License (the "License");
+ *  see accompanying file BDS-LICENSE for details or see
+ *  <http://www.opensource.org/licenses/bsd-license.php>.
+ *
+ *  This software is distributed WITHOUT ANY WARRANTY; without even the
+ *  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the License for more information.
+ */
+
 #include <stdlib.h>
 #include <ccd/ccd.h>
 #include <ccd/simplex.h>
@@ -294,14 +311,17 @@ static void findPenetr(const void *obj1, const void *obj2, const ccd_t *ccd,
 {
     ccd_vec3_t dir;
     ccd_support_t v4;
+    unsigned long iterations;
 
+    iterations = 0UL;
     while (1){
         // compute portal direction and obtain next support point
         portalDir(portal, &dir);
         __ccdSupport(obj1, obj2, &dir, ccd, &v4);
 
         // reached tolerance -> find penetration info
-        if (portalReachTolerance(portal, &v4, &dir, ccd)){
+        if (portalReachTolerance(portal, &v4, &dir, ccd)
+                || iterations > ccd->max_iterations){
             *depth = ccdVec3PointTriDist2(ccd_vec3_origin,
                                           &ccdSimplexPoint(portal, 1)->v,
                                           &ccdSimplexPoint(portal, 2)->v,
@@ -317,6 +337,8 @@ static void findPenetr(const void *obj1, const void *obj2, const ccd_t *ccd,
         }
 
         expandPortal(portal, &v4);
+
+        iterations++;
     }
 }
 
@@ -482,13 +504,24 @@ _ccd_inline int portalReachTolerance(const ccd_simplex_t *portal,
                                      const ccd_vec3_t *dir,
                                      const ccd_t *ccd)
 {
-    ccd_vec3_t vec;
-    ccd_real_t dot;
+    ccd_real_t dv1, dv2, dv3, dv4;
+    ccd_real_t dot1, dot2, dot3;
 
-    ccdVec3Sub2(&vec, &v4->v, &ccdSimplexPoint(portal, 3)->v);
-    dot = ccdVec3Dot(&vec, dir);
+    // find the smallest dot product of dir and {v1-v4, v2-v4, v3-v4}
 
-    return ccdEq(dot, ccd->mpr_tolerance) || dot < ccd->mpr_tolerance;
+    dv1 = ccdVec3Dot(&ccdSimplexPoint(portal, 1)->v, dir);
+    dv2 = ccdVec3Dot(&ccdSimplexPoint(portal, 2)->v, dir);
+    dv3 = ccdVec3Dot(&ccdSimplexPoint(portal, 3)->v, dir);
+    dv4 = ccdVec3Dot(&v4->v, dir);
+
+    dot1 = dv4 - dv1;
+    dot2 = dv4 - dv2;
+    dot3 = dv4 - dv3;
+
+    dot1 = CCD_FMIN(dot1, dot2);
+    dot1 = CCD_FMIN(dot1, dot3);
+
+    return ccdEq(dot1, ccd->mpr_tolerance) || dot1 < ccd->mpr_tolerance;
 }
 
 _ccd_inline int portalCanEncapsuleOrigin(const ccd_simplex_t *portal,   

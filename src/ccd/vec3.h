@@ -1,7 +1,7 @@
 /***
  * libccd
  * ---------------------------------
- * Copyright (c)2010 Daniel Fiser <danfis@danfis.cz>
+ * Copyright (c)2010,2011 Daniel Fiser <danfis@danfis.cz>
  *
  *
  *  This file is part of libccd.
@@ -52,6 +52,7 @@ typedef float ccd_real_t;
 # define CCD_SQRT(x) (sqrtf(x)) /*!< square root */
 # define CCD_FABS(x) (fabsf(x)) /*!< absolute value */
 # define CCD_FMAX(x, y) (fmaxf((x), (y))) /*!< maximum of two floats */
+# define CCD_FMIN(x, y) (fminf((x), (y))) /*!< minimum of two floats */
 #endif /* CCD_SINGLE */
 
 #ifdef CCD_DOUBLE
@@ -66,6 +67,7 @@ typedef double ccd_real_t;
 # define CCD_SQRT(x) (sqrt(x)) /*!< square root */
 # define CCD_FABS(x) (fabs(x)) /*!< absolute value */
 # define CCD_FMAX(x, y) (fmax((x), (y))) /*!< maximum of two floats */
+# define CCD_FMIN(x, y) (fmin((x), (y))) /*!< minimum of two floats */
 #endif /* CCD_DOUBLE */
 
 #define CCD_ONE CCD_REAL(1.)
