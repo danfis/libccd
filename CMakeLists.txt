@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
 project(libccd C)
 
+set(CCD_VERSION "1.2")
+set(PKG_DESC "Library for collision detection between convex shapes")
+
 include_directories("src/")
-include_directories("src/testsuites/")
 
 # make sure only DOUBLE or SINGLE is set; default to SINGLE
 if (${CCD_SINGLE})
@@ -15,11 +17,14 @@ if (${CCD_DOUBLE})
   set(CCD_SINGLE false)
 endif()
 
+# set the default build type
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/ccd/config.h.cmake.in" "${CMAKE_CURRENT_SOURCE_DIR}/src/ccd/config.h")
-add_definitions(-DCU_ENABLE_TIMER)
 
 find_library(MATH m)
-find_library(RT rt)
 
 add_library(ccd STATIC 
   src/alloc.c
@@ -31,5 +36,9 @@ add_library(ccd STATIC
 )
 target_link_libraries(ccd ${MATH})
 
+set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/ccd.pc")
+configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
+
 install(TARGETS ccd DESTINATION lib/)
 install(DIRECTORY src/ccd DESTINATION include FILES_MATCHING PATTERN "*.h")
+install(FILES "${pkg_conf_file}" DESTINATION lib/pkgconfig/ COMPONENT pkgconfig)
