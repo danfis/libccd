@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 2.8)
 project(libccd C)
 
 set(CCD_VERSION "1.2")
+set(CCD_SOVERSION "1")
 set(PKG_DESC "Library for collision detection between convex shapes")
+set(LIB_SUFFIX "" CACHE STRING  "Library installation directory suffix")
 
 include_directories("src/")
 
@@ -35,6 +37,7 @@ set(SOURCE_FILES
   src/vec3.c)
 
 add_library(ccd SHARED ${SOURCE_FILES})
+set_target_properties(ccd PROPERTIES VERSION ${CCD_VERSION} SOVERSION ${CCD_SOVERSION})
 
 target_link_libraries(ccd ${MATH})
 
@@ -45,6 +48,7 @@ target_link_libraries(ccd_static ${MATH})
 set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/ccd.pc")
 configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
 
-install(TARGETS ccd ccd_static ARCHIVE DESTINATION lib/ LIBRARY DESTINATION lib/)
+install(TARGETS ccd ccd_static ARCHIVE DESTINATION lib${LIB_SUFFIX}/ LIBRARY DESTINATION lib${LIB_SUFFIX}/)
 install(DIRECTORY src/ccd DESTINATION include FILES_MATCHING PATTERN "*.h")
-install(FILES "${pkg_conf_file}" DESTINATION lib/pkgconfig/ COMPONENT pkgconfig)
+install(FILES "${pkg_conf_file}" DESTINATION lib${LIB_SUFFIX}/pkgconfig/ COMPONENT pkgconfig)
+
