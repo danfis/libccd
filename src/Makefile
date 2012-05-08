@@ -20,7 +20,7 @@
 CFLAGS += -I.
 
 TARGETS = libccd.a
-OBJS = ccd.o mpr.o support.o vec3.o alloc.o polytope.o
+OBJS = ccd.o mpr.o support.o vec3.o polytope.o
 
 all: $(TARGETS)
 

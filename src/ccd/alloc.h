@@ -30,7 +30,7 @@ extern "C" {
 
 /* Memory allocation: */
 #define __CCD_ALLOC_MEMORY(type, ptr_old, size) \
-    (type *)ccdRealloc((void *)ptr_old, (size))
+    (type *)realloc((void *)ptr_old, (size))
 
 /** Allocate memory for one element of type.  */
 #define CCD_ALLOC(type) \
@@ -42,8 +42,6 @@ extern "C" {
 
 #define CCD_REALLOC_ARR(ptr, type, num_elements) \
     __CCD_ALLOC_MEMORY(type, ptr, sizeof(type) * (num_elements))
-
-void *ccdRealloc(void *ptr, size_t size);
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -70,9 +70,10 @@ static int simplexToPolytope2(const void *obj1, const void *obj2,
                               const ccd_simplex_t *simplex,
                               ccd_pt_t *pt, ccd_pt_el_t **nearest);
 
-/** Expands polytope using new vertex v. */
-static void expandPolytope(ccd_pt_t *pt, ccd_pt_el_t *el,
-                           const ccd_support_t *newv);
+/** Expands polytope using new vertex v.
+ *  Return 0 on success, -2 on memory allocation failure.*/
+static int expandPolytope(ccd_pt_t *pt, ccd_pt_el_t *el,
+                          const ccd_support_t *newv);
 
 /** Finds next support point (at stores it in out argument).
  *  Returns 0 on success, -1 otherwise */
@@ -129,8 +130,8 @@ static int penEPAPosCmp(const void *a, const void *b)
     }
 }
 
-static void penEPAPos(const ccd_pt_t *pt, const ccd_pt_el_t *nearest,
-                      ccd_vec3_t *pos)
+static int penEPAPos(const ccd_pt_t *pt, const ccd_pt_el_t *nearest,
+                     ccd_vec3_t *pos)
 {
     ccd_pt_vertex_t *v;
     ccd_pt_vertex_t **vs;
@@ -144,6 +145,9 @@ static void penEPAPos(const ccd_pt_t *pt, const ccd_pt_el_t *nearest,
     }
 
     vs = CCD_ALLOC_ARR(ccd_pt_vertex_t *, len);
+    if (vs == NULL)
+        return -1;
+
     i = 0;
     ccdListForEachEntry(&pt->vertices, v, ccd_pt_vertex_t, list){
         vs[i++] = v;
@@ -164,6 +168,8 @@ static void penEPAPos(const ccd_pt_t *pt, const ccd_pt_el_t *nearest,
     ccdVec3Scale(pos, CCD_ONE / scale);
 
     free(vs);
+
+    return 0;
 }
 
 int ccdGJKPenetration(const void *obj1, const void *obj2, const ccd_t *ccd,
@@ -187,7 +193,10 @@ int ccdGJKPenetration(const void *obj1, const void *obj2, const ccd_t *ccd,
         ccdVec3Normalize(dir);
 
         // compute position
-        penEPAPos(&polytope, nearest, pos);
+        if (penEPAPos(&polytope, nearest, pos) != 0){
+            ccdPtDestroy(&polytope);
+            return -2;
+        }
     }
 
     ccdPtDestroy(&polytope);
@@ -271,18 +280,21 @@ static int __ccdGJKEPA(const void *obj1, const void *obj2,
     // transform simplex to polytope - simplex won't be used anymore
     size = ccdSimplexSize(&simplex);
     if (size == 4){
-        if (simplexToPolytope4(obj1, obj2, ccd, &simplex, polytope, nearest) != 0){
-            return 0;// touch contact
-        }
+        ret = simplexToPolytope4(obj1, obj2, ccd, &simplex, polytope, nearest);
     }else if (size == 3){
-        if (simplexToPolytope3(obj1, obj2, ccd, &simplex, polytope, nearest) != 0){
-            return 0; // touch contact
-        }
+        ret = simplexToPolytope3(obj1, obj2, ccd, &simplex, polytope, nearest);
     }else{ // size == 2
-        if (simplexToPolytope2(obj1, obj2, ccd, &simplex, polytope, nearest) != 0){
-            return 0; // touch contact
-        }
+        ret = simplexToPolytope2(obj1, obj2, ccd, &simplex, polytope, nearest);
     }
+
+    if (ret == -1){
+        // touching contact
+        return 0;
+    }else if (ret == -2){
+        // failed memory allocation
+        return -2;
+    }
+
 
     while (1){
         // get triangle nearest to origin
@@ -293,7 +305,8 @@ static int __ccdGJKEPA(const void *obj1, const void *obj2,
             break;
 
         // expand nearest triangle using new point - supp
-        expandPolytope(polytope, *nearest, &supp);
+        if (expandPolytope(polytope, *nearest, &supp) != 0)
+            return -2;
     }
 
     return 0;
@@ -599,10 +612,16 @@ static int simplexToPolytope4(const void *obj1, const void *obj2,
     e[4] = ccdPtAddEdge(pt, v[3], v[1]);
     e[5] = ccdPtAddEdge(pt, v[3], v[2]);
 
-    ccdPtAddFace(pt, e[0], e[1], e[2]);
-    ccdPtAddFace(pt, e[3], e[4], e[0]);
-    ccdPtAddFace(pt, e[4], e[5], e[1]);
-    ccdPtAddFace(pt, e[5], e[3], e[2]);
+    // ccdPtAdd*() functions return NULL either if the memory allocation
+    // failed of if any of the input pointers are NULL, so the bad
+    // allocation can be checked by the last calls of ccdPtAddFace()
+    // because the rest of the bad allocations eventually "bubble up" here
+    if (ccdPtAddFace(pt, e[0], e[1], e[2]) == NULL
+            || ccdPtAddFace(pt, e[3], e[4], e[0]) == NULL
+            || ccdPtAddFace(pt, e[4], e[5], e[1]) == NULL
+            || ccdPtAddFace(pt, e[5], e[3], e[2]) == NULL){
+        return -2;
+    }
 
     return 0;
 }
@@ -652,6 +671,8 @@ static int simplexToPolytope3(const void *obj1, const void *obj2,
         e[1] = ccdPtAddEdge(pt, v[1], v[2]);
         e[2] = ccdPtAddEdge(pt, v[2], v[0]);
         *nearest = (ccd_pt_el_t *)ccdPtAddFace(pt, e[0], e[1], e[2]);
+        if (*nearest == NULL)
+            return -2;
 
         return -1;
     }
@@ -675,13 +696,15 @@ static int simplexToPolytope3(const void *obj1, const void *obj2,
     e[7] = ccdPtAddEdge(pt, v[4], v[1]);
     e[8] = ccdPtAddEdge(pt, v[4], v[2]);
 
-    ccdPtAddFace(pt, e[3], e[4], e[0]);
-    ccdPtAddFace(pt, e[4], e[5], e[1]);
-    ccdPtAddFace(pt, e[5], e[3], e[2]);
+    if (ccdPtAddFace(pt, e[3], e[4], e[0]) == NULL
+            || ccdPtAddFace(pt, e[4], e[5], e[1]) == NULL
+            || ccdPtAddFace(pt, e[5], e[3], e[2]) == NULL
 
-    ccdPtAddFace(pt, e[6], e[7], e[0]);
-    ccdPtAddFace(pt, e[7], e[8], e[1]);
-    ccdPtAddFace(pt, e[8], e[6], e[2]);
+            || ccdPtAddFace(pt, e[6], e[7], e[0]) == NULL
+            || ccdPtAddFace(pt, e[7], e[8], e[1]) == NULL
+            || ccdPtAddFace(pt, e[8], e[6], e[2]) == NULL){
+        return -2;
+    }
 
     return 0;
 }
@@ -748,6 +771,9 @@ simplexToPolytope2_touching_contact:
     v[0] = ccdPtAddVertex(pt, a);
     v[1] = ccdPtAddVertex(pt, b);
     *nearest = (ccd_pt_el_t *)ccdPtAddEdge(pt, v[0], v[1]);
+    if (*nearest == NULL)
+        return -2;
+
     return -1;
 
 simplexToPolytope2_not_touching_contact:
@@ -774,23 +800,25 @@ simplexToPolytope2_not_touching_contact:
     e[10] = ccdPtAddEdge(pt, v[5], v[2]);
     e[11] = ccdPtAddEdge(pt, v[5], v[3]);
 
-    ccdPtAddFace(pt, e[4], e[5], e[0]);
-    ccdPtAddFace(pt, e[5], e[6], e[1]);
-    ccdPtAddFace(pt, e[6], e[7], e[2]);
-    ccdPtAddFace(pt, e[7], e[4], e[3]);
+    if (ccdPtAddFace(pt, e[4], e[5], e[0]) == NULL
+            || ccdPtAddFace(pt, e[5], e[6], e[1]) == NULL
+            || ccdPtAddFace(pt, e[6], e[7], e[2]) == NULL
+            || ccdPtAddFace(pt, e[7], e[4], e[3]) == NULL
 
-    ccdPtAddFace(pt, e[8],  e[9],  e[0]);
-    ccdPtAddFace(pt, e[9],  e[10], e[1]);
-    ccdPtAddFace(pt, e[10], e[11], e[2]);
-    ccdPtAddFace(pt, e[11], e[8],  e[3]);
+            || ccdPtAddFace(pt, e[8],  e[9],  e[0]) == NULL
+            || ccdPtAddFace(pt, e[9],  e[10], e[1]) == NULL
+            || ccdPtAddFace(pt, e[10], e[11], e[2]) == NULL
+            || ccdPtAddFace(pt, e[11], e[8],  e[3]) == NULL){
+        return -2;
+    }
 
     return 0;
 }
 
 /** Expands polytope's tri by new vertex v. Triangle tri is replaced by
  *  three triangles each with one vertex in v. */
-static void expandPolytope(ccd_pt_t *pt, ccd_pt_el_t *el,
-                           const ccd_support_t *newv)
+static int expandPolytope(ccd_pt_t *pt, ccd_pt_el_t *el,
+                          const ccd_support_t *newv)
 {
     ccd_pt_vertex_t *v[5];
     ccd_pt_edge_t *e[8];
@@ -867,13 +895,20 @@ static void expandPolytope(ccd_pt_t *pt, ccd_pt_el_t *el,
             if (f[1])
                 e[7] = ccdPtAddEdge(pt, v[4], v[3]);
 
-            ccdPtAddFace(pt, e[1], e[4], e[6]);
-            ccdPtAddFace(pt, e[0], e[6], e[5]);
+
+            if (ccdPtAddFace(pt, e[1], e[4], e[6]) == NULL
+                    || ccdPtAddFace(pt, e[0], e[6], e[5]) == NULL){
+                return -2;
+            }
+
             if (f[1]){
-                ccdPtAddFace(pt, e[3], e[5], e[7]);
-                ccdPtAddFace(pt, e[4], e[7], e[2]);
+                if (ccdPtAddFace(pt, e[3], e[5], e[7]) == NULL
+                        || ccdPtAddFace(pt, e[4], e[7], e[2]) == NULL){
+                    return -2;
+                }
             }else{
-                ccdPtAddFace(pt, e[4], e[5], (ccd_pt_edge_t *)el);
+                if (ccdPtAddFace(pt, e[4], e[5], (ccd_pt_edge_t *)el) == NULL)
+                    return -2;
             }
         }
     }else{ // el->type == CCD_PT_FACE
@@ -905,10 +940,14 @@ static void expandPolytope(ccd_pt_t *pt, ccd_pt_el_t *el,
         e[4] = ccdPtAddEdge(pt, v[3], v[1]);
         e[5] = ccdPtAddEdge(pt, v[3], v[2]);
 
-        ccdPtAddFace(pt, e[3], e[4], e[0]);
-        ccdPtAddFace(pt, e[4], e[5], e[1]);
-        ccdPtAddFace(pt, e[5], e[3], e[2]);
+        if (ccdPtAddFace(pt, e[3], e[4], e[0]) == NULL
+                || ccdPtAddFace(pt, e[4], e[5], e[1]) == NULL
+                || ccdPtAddFace(pt, e[5], e[3], e[2]) == NULL){
+            return -2;
+        }
     }
+
+    return 0;
 }
 
 /** Finds next support point (at stores it in out argument).

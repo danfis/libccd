@@ -98,6 +98,7 @@ int ccdGJKIntersect(const void *obj1, const void *obj2, const ccd_t *ccd);
  * (without intersection).
  * Returns 0 if obj1 and obj2 intersect and sep is filled with translation
  * vector. If obj1 and obj2 don't intersect -1 is returned.
+ * If memory allocation fails -2 is returned.
  */
 int ccdGJKSeparate(const void *obj1, const void *obj2, const ccd_t *ccd,
                    ccd_vec3_t *sep);
@@ -114,6 +115,7 @@ int ccdGJKSeparate(const void *obj1, const void *obj2, const ccd_t *ccd,
  * Returns 0 if obj1 and obj2 intersect and depth, dir and pos are filled
  * if given non-NULL pointers.
  * If obj1 and obj2 don't intersect -1 is returned.
+ * If memory allocation fails -2 is returned.
  */
 int ccdGJKPenetration(const void *obj1, const void *obj2, const ccd_t *ccd,
                       ccd_real_t *depth, ccd_vec3_t *dir, ccd_vec3_t *pos);

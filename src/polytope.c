@@ -99,6 +99,9 @@ ccd_pt_vertex_t *ccdPtAddVertex(ccd_pt_t *pt, const ccd_support_t *v)
     ccd_pt_vertex_t *vert;
 
     vert = CCD_ALLOC(ccd_pt_vertex_t);
+    if (vert == NULL)
+        return NULL;
+
     vert->type = CCD_PT_VERTEX;
     ccdSupportCopy(&vert->v, v);
 
@@ -122,7 +125,13 @@ ccd_pt_edge_t *ccdPtAddEdge(ccd_pt_t *pt, ccd_pt_vertex_t *v1,
     const ccd_vec3_t *a, *b;
     ccd_pt_edge_t *edge;
 
+    if (v1 == NULL || v2 == NULL)
+        return NULL;
+
     edge = CCD_ALLOC(ccd_pt_edge_t);
+    if (edge == NULL)
+        return NULL;
+
     edge->type = CCD_PT_EDGE;
     edge->vertex[0] = v1;
     edge->vertex[1] = v2;
@@ -152,7 +161,13 @@ ccd_pt_face_t *ccdPtAddFace(ccd_pt_t *pt, ccd_pt_edge_t *e1,
     ccd_pt_edge_t *e;
     size_t i;
 
+    if (e1 == NULL || e2 == NULL || e3 == NULL)
+        return NULL;
+
     face = CCD_ALLOC(ccd_pt_face_t);
+    if (face == NULL)
+        return NULL;
+
     face->type = CCD_PT_FACE;
     face->edge[0] = e1;
     face->edge[1] = e2;
