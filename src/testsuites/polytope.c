@@ -19,8 +19,7 @@ TEST(ptCreate1)
     ccd_pt_edge_t *e[3];
     ccd_pt_face_t *f;
     ccd_vec3_t u;
-    int res;
-    size_t i;
+    int res, i;
 
     DBG2("------");
 
@@ -100,8 +99,7 @@ TEST(ptCreate2)
     ccd_pt_edge_t *e[6];
     ccd_pt_face_t *f[4];
     ccd_vec3_t u;
-    int res;
-    size_t i;
+    int res, i;
 
     DBG2("------");
 

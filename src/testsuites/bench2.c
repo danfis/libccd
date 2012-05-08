@@ -16,13 +16,12 @@ static void runBench(const void *o1, const void *o2, const ccd_t *ccd)
 {
     ccd_real_t depth;
     ccd_vec3_t dir, pos;
-    int res;
     size_t i;
     const struct timespec *timer;
 
     cuTimerStart();
     for (i = 0; i < cycles; i++){
-        res = ccdMPRPenetration(o1, o2, ccd, &depth, &dir, &pos);
+        ccdMPRPenetration(o1, o2, ccd, &depth, &dir, &pos);
     }
     timer = cuTimerStop();
     fprintf(stdout, "%02d: %ld %ld\n", bench_num,
@@ -252,7 +251,7 @@ int main(int argc, char *argv[])
         cycles = atol(argv[1]);
     }
 
-    fprintf(stdout, "Cycles: %u\n", cycles);
+    fprintf(stdout, "Cycles: %u\n", (unsigned int)cycles);
     fprintf(stdout, "\n");
 
     boxbox();

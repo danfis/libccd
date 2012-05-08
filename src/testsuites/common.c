@@ -9,7 +9,7 @@ static void svtCyl(ccd_cyl_t *c, FILE *out, const char *color, const char *name)
     ccd_quat_t rot;
     ccd_vec3_t axis, vpos, vpos2;
     ccd_real_t angle, x, y;
-    size_t i;
+    int i;
 
     ccdVec3Set(&axis, 0., 0., 1.);
     ccdVec3Set(&vpos, 0., c->radius, 0.);
