@@ -29,7 +29,6 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/ccd/config.h.cmake.in" "${CMAKE_
 find_library(MATH m)
 
 set(SOURCE_FILES
-  src/alloc.c
   src/ccd.c
   src/mpr.c
   src/polytope.c

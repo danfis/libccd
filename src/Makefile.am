@@ -2,7 +2,7 @@ SUBDIRS = . testsuites
 
 lib_LTLIBRARIES = libccd.la
 
-libccd_la_SOURCES = alloc.c ccd/alloc.h \
+libccd_la_SOURCES = ccd/alloc.h \
 		ccd/compiler.h \
 		ccd/dbg.h \
 		ccd.c ccd/ccd.h \
