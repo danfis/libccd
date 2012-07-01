@@ -17,7 +17,7 @@ TEST_SUITE(TSMPRBoxBox) {
     TEST_ADD(mprBoxboxAlignedY),
     TEST_ADD(mprBoxboxAlignedZ),
     TEST_ADD(mprBoxboxRot),
-    //TEST_ADD(mprBoxboxSeparate),
+    TEST_ADD(mprBoxboxSeparate),
     TEST_ADD(mprBoxboxPenetration),
 
     TEST_SUITE_CLOSURE

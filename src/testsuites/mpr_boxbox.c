@@ -275,6 +275,8 @@ TEST(mprBoxboxSeparate)
     CCD_INIT(&ccd);
     ccd.support1 = ccdSupport;
     ccd.support2 = ccdSupport;
+    ccd.center1  = ccdObjCenter;
+    ccd.center2  = ccdObjCenter;
 
     ccdVec3Set(&box1.pos, -0.5, 0.5, 0.2);
     res = ccdMPRIntersect(&box1, &box2, &ccd);
