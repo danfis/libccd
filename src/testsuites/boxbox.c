@@ -465,3 +465,54 @@ TEST(boxboxPenetration)
     recPen(depth, &dir, &pos, stdout, "Pen 8");
     //TOSVT();
 }
+
+
+TEST(boxboxDist)
+{
+    ccd_t ccd;
+    CCD_BOX(box1);
+    CCD_BOX(box2);
+    ccd_real_t dist;
+    ccd_vec3_t axis;
+    ccd_quat_t rot;
+
+    fprintf(stderr, "\n\n\n---- boxboxDist ----\n\n\n");
+
+    box1.x = box1.y = box1.z = 1.;
+    box2.x = 0.5;
+    box2.y = 1.;
+    box2.z = 1.5;
+
+    CCD_INIT(&ccd);
+    ccd.support1 = ccdSupport;
+    ccd.support2 = ccdSupport;
+
+    ccdVec3Set(&box2.pos, 0.1, 0., 0.);
+
+    dist = ccdGJKDist(&box1, &box2, &ccd);
+    assertTrue(dist < 0.);
+
+    ccdVec3Set(&box2.pos, 0.76, 0., 0.);
+    dist = ccdGJKDist(&box1, &box2, &ccd);
+    assertTrue(ccdEq(dist, 0.01));
+
+    ccdVec3Set(&box2.pos, -0.76, 0., 0.);
+    dist = ccdGJKDist(&box1, &box2, &ccd);
+    assertTrue(ccdEq(dist, 0.01));
+
+    ccdVec3Set(&axis, 0., 0., 1.);
+    ccdQuatSetAngleAxis(&rot, M_PI / 4., &axis);
+    ccdQuatMul(&box1.quat, &rot);
+    ccdQuatMul(&box2.quat, &rot);
+    ccdVec3Set(&box2.pos, 0.55, 0.55, 0.);
+    dist = ccdGJKDist(&box1, &box2, &ccd);
+    assertTrue(dist > 0.f);
+
+    ccdVec3Set(&axis, 0., 0., 1.);
+    ccdQuatSetAngleAxis(&rot, M_PI / 4., &axis);
+    ccdQuatMul(&box1.quat, &rot);
+    ccdQuatMul(&box2.quat, &rot);
+    ccdVec3Set(&box2.pos, 0.4, 0.4, 0.);
+    dist = ccdGJKDist(&box1, &box2, &ccd);
+    assertFalse(dist > 0.f);
+}

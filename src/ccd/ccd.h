@@ -65,6 +65,7 @@ struct _ccd_t {
     unsigned long max_iterations; //!< Maximal number of iterations
     ccd_real_t epa_tolerance;
     ccd_real_t mpr_tolerance; //!< Boundary tolerance for MPR algorithm
+    ccd_real_t dist_tolerance;
 };
 typedef struct _ccd_t ccd_t;
 
@@ -84,6 +85,7 @@ void ccdFirstDirDefault(const void *o1, const void *o2, ccd_vec3_t *dir);
         (ccd)->max_iterations = (unsigned long)-1; \
         (ccd)->epa_tolerance = CCD_REAL(0.0001); \
         (ccd)->mpr_tolerance = CCD_REAL(0.0001); \
+        (ccd)->dist_tolerance = CCD_REAL(1E-6); \
     } while(0)
 
 
@@ -120,6 +122,16 @@ int ccdGJKSeparate(const void *obj1, const void *obj2, const ccd_t *ccd,
 int ccdGJKPenetration(const void *obj1, const void *obj2, const ccd_t *ccd,
                       ccd_real_t *depth, ccd_vec3_t *dir, ccd_vec3_t *pos);
 
+
+/**
+ * Computes a distance between given objects.
+ * The function uses .dist_tolerance parameter for convergence checking (the
+ * improvement in one step must be at least .dist_tolerance).
+ *
+ * Returns a distance between given objects or a negative number if
+ * objects intersect.
+ */
+ccd_real_t ccdGJKDist(const void *obj1, const void *obj2, const ccd_t *ccd);
 
 /**
  * Returns true if two given objects intersect - MPR algorithm is used.

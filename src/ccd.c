@@ -1,7 +1,7 @@
 /***
  * libccd
  * ---------------------------------
- * Copyright (c)2010 Daniel Fiser <danfis@danfis.cz>
+ * Copyright (c)2012 Daniel Fiser <danfis@danfis.cz>
  *
  *
  *  This file is part of libccd.
@@ -45,6 +45,20 @@ static int doSimplex(ccd_simplex_t *simplex, ccd_vec3_t *dir);
 static int doSimplex2(ccd_simplex_t *simplex, ccd_vec3_t *dir);
 static int doSimplex3(ccd_simplex_t *simplex, ccd_vec3_t *dir);
 static int doSimplex4(ccd_simplex_t *simplex, ccd_vec3_t *dir);
+
+/** Reduces the 4-point simplex to a triangle that is nearest to the
+ *  origin.
+ *  It is assumed that the last (fourth) point in the simplex was an
+ *  expansion towards the origin of the triangle formed by the first three
+ *  points. And the second arguemnt is a precomputed distance of the
+ *  triangle. So it is only checked whether the fourth point can improve
+ *  the previous triangle.
+ *  Returns a distance from the origin of the new triangle and via the
+ *  witness parameter the point nearest to the origin.
+ */
+static ccd_real_t simplexReduceToTriangle(ccd_simplex_t *simplex,
+                                          ccd_real_t dist,
+                                          ccd_vec3_t *witness);
 
 /** d = a x b x c */
 _ccd_inline void tripleCross(const ccd_vec3_t *a, const ccd_vec3_t *b,
@@ -205,6 +219,80 @@ int ccdGJKPenetration(const void *obj1, const void *obj2, const ccd_t *ccd,
 }
 
 
+ccd_real_t ccdGJKDist(const void *obj1, const void *obj2, const ccd_t *ccd)
+{
+    unsigned long iterations;
+    ccd_simplex_t simplex;
+    ccd_support_t last; // last support point
+    ccd_vec3_t dir; // direction vector
+    ccd_real_t dist, last_dist;
+
+    // first find an intersection
+    if (__ccdGJK(obj1, obj2, ccd, &simplex) == 0)
+        return -CCD_ONE;
+
+    last_dist = CCD_REAL_MAX;
+
+    for (iterations = 0UL; iterations < ccd->max_iterations; ++iterations) {
+        // get a next direction vector
+        // we are trying to find out a point on the minkowski difference
+        // that is nearest to the origin, so we obtain a point on the
+        // simplex that is nearest and try to exapand the simplex towards
+        // the origin
+        if (ccdSimplexSize(&simplex) == 1){
+            ccdVec3Copy(&dir, &ccdSimplexPoint(&simplex, 0)->v);
+            dist = ccdVec3Len2(&ccdSimplexPoint(&simplex, 0)->v);
+            dist = CCD_SQRT(dist);
+        }else if (ccdSimplexSize(&simplex) == 2){
+            dist = ccdVec3PointSegmentDist2(ccd_vec3_origin,
+                                            &ccdSimplexPoint(&simplex, 0)->v,
+                                            &ccdSimplexPoint(&simplex, 1)->v,
+                                            &dir);
+            dist = CCD_SQRT(dist);
+        }else if(ccdSimplexSize(&simplex) == 3){
+            dist = ccdVec3PointTriDist2(ccd_vec3_origin,
+                                        &ccdSimplexPoint(&simplex, 0)->v,
+                                        &ccdSimplexPoint(&simplex, 1)->v,
+                                        &ccdSimplexPoint(&simplex, 2)->v,
+                                        &dir);
+            dist = CCD_SQRT(dist);
+        }else{ // ccdSimplexSize(&simplex) == 4
+            dist = simplexReduceToTriangle(&simplex, last_dist, &dir);
+        }
+
+        // touching contact -- do we really need this?
+        // maybe __ccdGJK() solve this alredy.
+        if (ccdIsZero(dist))
+            return -CCD_ONE;
+
+        // check whether we improved for at least a minimum tolerance
+        if ((last_dist - dist) < ccd->dist_tolerance)
+            return dist;
+
+        // point direction towards the origin
+        ccdVec3Scale(&dir, -CCD_ONE);
+        ccdVec3Normalize(&dir);
+
+        // find out support point
+        __ccdSupport(obj1, obj2, &dir, ccd, &last);
+
+        // record last distance
+        last_dist = dist;
+
+        // check whether we improved for at least a minimum tolerance
+        // this is here probably only for a degenerate cases when we got a
+        // point that is already in the simplex
+        dist = ccdVec3Len2(&last.v);
+        dist = CCD_SQRT(dist);
+        if (CCD_FABS(last_dist - dist) < ccd->dist_tolerance)
+            return last_dist;
+
+        // add a point to simplex
+        ccdSimplexAdd(&simplex, &last);
+    }
+
+    return -CCD_REAL(1.);
+}
 
 
 static int __ccdGJK(const void *obj1, const void *obj2,
@@ -538,6 +626,40 @@ static int doSimplex(ccd_simplex_t *simplex, ccd_vec3_t *dir)
         // so doSimplex4() also contains test on it
         return doSimplex4(simplex, dir);
     }
+}
+
+static ccd_real_t simplexReduceToTriangle(ccd_simplex_t *simplex,
+                                          ccd_real_t dist,
+                                          ccd_vec3_t *best_witness)
+{
+    ccd_real_t newdist;
+    ccd_vec3_t witness;
+    int best = -1;
+    int i;
+
+    // try the fourth point in all three positions
+    for (i = 0; i < 3; i++){
+        newdist = ccdVec3PointTriDist2(ccd_vec3_origin,
+                        &ccdSimplexPoint(simplex, (i == 0 ? 3 : 0))->v,
+                        &ccdSimplexPoint(simplex, (i == 1 ? 3 : 1))->v,
+                        &ccdSimplexPoint(simplex, (i == 2 ? 3 : 2))->v,
+                        &witness);
+        newdist = CCD_SQRT(newdist);
+
+        // record the best triangle
+        if (newdist < dist){
+            dist = newdist;
+            best = i;
+            ccdVec3Copy(best_witness, &witness);
+        }
+    }
+
+    if (best >= 0){
+        ccdSimplexSet(simplex, best, ccdSimplexPoint(simplex, 3));
+    }
+    ccdSimplexSetSize(simplex, 3);
+
+    return dist;
 }
 
 _ccd_inline void tripleCross(const ccd_vec3_t *a, const ccd_vec3_t *b,
@@ -950,7 +1072,7 @@ static int expandPolytope(ccd_pt_t *pt, ccd_pt_el_t *el,
     return 0;
 }
 
-/** Finds next support point (at stores it in out argument).
+/** Finds next support point (and stores it in out argument).
  *  Returns 0 on success, -1 otherwise */
 static int nextSupport(const void *obj1, const void *obj2, const ccd_t *ccd,
                        const ccd_pt_el_t *el,
