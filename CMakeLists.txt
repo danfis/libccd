@@ -26,7 +26,11 @@ endif()
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/ccd/config.h.cmake.in" "${CMAKE_CURRENT_SOURCE_DIR}/src/ccd/config.h")
 
-find_library(MATH m)
+if(NOT WIN32)
+    find_library(MATH m)
+else()
+    set(MATH "")
+endif()
 
 set(SOURCE_FILES
   src/ccd.c
