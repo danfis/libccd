@@ -320,6 +320,7 @@ static int __ccdGJK(const void *obj1, const void *obj2,
     // start iterations
     for (iterations = 0UL; iterations < ccd->max_iterations; ++iterations) {
         // obtain support point
+        ccdVec3Normalize(&dir);
         __ccdSupport(obj1, obj2, &dir, ccd, &last);
 
         // check if farthest point in Minkowski difference in direction dir
