@@ -1090,6 +1090,14 @@ static int nextSupport(const void *obj1, const void *obj2, const ccd_t *ccd,
 
     __ccdSupport(obj1, obj2, &el->witness, ccd, out);
 
+    // Compute dist of support point along element witness point direction
+    // so we can determine whether we expanded a polytope surrounding the
+    // origin a bit.
+    dist = ccdVec3Dot(&out->v, &el->witness);
+
+    if (dist - el->dist < ccd->epa_tolerance)
+        return -1;
+
     if (el->type == CCD_PT_EDGE){
         // fetch end points of edge
         ccdPtEdgeVec3((ccd_pt_edge_t *)el, &a, &b);
