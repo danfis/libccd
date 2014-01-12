@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(libccd C)
 
-set(CCD_VERSION "1.4")
+set(CCD_VERSION "1.5")
 set(CCD_SOVERSION "2")
 set(PKG_DESC "Library for collision detection between convex shapes")
 set(LIB_SUFFIX "" CACHE STRING  "Library installation directory suffix")

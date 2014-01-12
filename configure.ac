@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 #AC_PREREQ([2.65])
-AC_INIT([libccd], [1.4], [danfis@danfis.cz])
+AC_INIT([libccd], [1.5], [danfis@danfis.cz])
 AC_CONFIG_SRCDIR([src/ccd.c])
 AC_CONFIG_HEADERS([src/ccd/config.h])
 AM_INIT_AUTOMAKE
