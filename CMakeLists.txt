@@ -4,7 +4,9 @@ project(libccd C)
 set(CCD_VERSION "1.5")
 set(CCD_SOVERSION "2")
 set(PKG_DESC "Library for collision detection between convex shapes")
-set(LIB_SUFFIX "" CACHE STRING  "Library installation directory suffix")
+
+# Include GNUInstallDirs to get canonical paths
+include(GNUInstallDirs)
 
 include_directories("src/")
 
@@ -51,7 +53,8 @@ target_link_libraries(ccd_static ${MATH})
 set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/ccd.pc")
 configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
 
-install(TARGETS ccd ccd_static ARCHIVE DESTINATION lib${LIB_SUFFIX}/ LIBRARY DESTINATION lib${LIB_SUFFIX}/)
-install(DIRECTORY src/ccd DESTINATION include FILES_MATCHING PATTERN "*.h")
-install(FILES "${pkg_conf_file}" DESTINATION lib${LIB_SUFFIX}/pkgconfig/ COMPONENT pkgconfig)
-
+install(TARGETS ccd ccd_static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+install(DIRECTORY src/ccd DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h")
+install(FILES "${pkg_conf_file}" DESTINATION
+  ${CMAKE_INSTALL_LIBDIR}/pkgconfig COMPONENT pkgconfig)
