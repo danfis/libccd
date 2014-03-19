@@ -2,15 +2,15 @@ SUBDIRS = . testsuites
 
 lib_LTLIBRARIES = libccd.la
 
-libccd_la_SOURCES = ccd/alloc.h \
+libccd_la_SOURCES = alloc.h \
 		ccd/compiler.h \
-		ccd/dbg.h \
+		dbg.h \
 		ccd.c ccd/ccd.h \
-		ccd/list.h \
-		polytope.c ccd/polytope.h \
+		list.h \
+		polytope.c polytope.h \
 		ccd/quat.h \
-		ccd/simplex.h \
-		support.c ccd/support.h \
+		simplex.h \
+		support.c support.h \
 		vec3.c ccd/vec3.h \
         mpr.c
 
