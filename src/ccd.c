@@ -19,10 +19,10 @@
 #include <float.h>
 #include <ccd/ccd.h>
 #include <ccd/vec3.h>
-#include <ccd/simplex.h>
-#include <ccd/polytope.h>
-#include <ccd/alloc.h>
-#include <ccd/dbg.h>
+#include "simplex.h"
+#include "polytope.h"
+#include "alloc.h"
+#include "dbg.h"
 
 
 /** Performs GJK algorithm. Returns 0 if intersection was found and simplex

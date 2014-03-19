@@ -1,7 +1,7 @@
 //#undef NDEBUG
 #include <cu/cu.h>
-#include <ccd/polytope.h>
-#include <ccd/dbg.h>
+#include "../polytope.h"
+#include "../dbg.h"
 
 TEST(ptSetUp)
 {

@@ -18,8 +18,6 @@
 #ifndef __CCD_SUPPORT_H__
 #define __CCD_SUPPORT_H__
 
-#include <ccd/compiler.h>
-#include <ccd/vec3.h>
 #include <ccd/ccd.h>
 
 #ifdef __cplusplus

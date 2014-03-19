@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <cu/cu.h>
-#include "support.h"
 #include <ccd/ccd.h>
+#include "support.h"
 
 TEST(spheresphereSetUp)
 {

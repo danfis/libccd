@@ -17,8 +17,8 @@
 
 #include <stdio.h>
 #include <float.h>
-#include <ccd/polytope.h>
-#include <ccd/alloc.h>
+#include "polytope.h"
+#include "alloc.h"
 
 _ccd_inline void _ccdPtNearestUpdate(ccd_pt_t *pt, ccd_pt_el_t *el)
 {

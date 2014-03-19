@@ -1,6 +1,6 @@
-#include "common.h"
 #include <ccd/vec3.h>
 #include <ccd/quat.h>
+#include "common.h"
 #include "support.h"
 
 static void svtCyl(ccd_cyl_t *c, FILE *out, const char *color, const char *name)

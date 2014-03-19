@@ -17,7 +17,6 @@
 
 #include <stdio.h>
 #include <ccd/ccd.h>
-#include <ccd/vec3.h>
 #include "support.h"
 
 void ccdSupport(const void *_obj, const ccd_vec3_t *_dir,

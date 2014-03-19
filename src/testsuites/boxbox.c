@@ -3,8 +3,7 @@
 
 #include <ccd/ccd.h>
 #include "support.h"
-#include <ccd/vec3.h>
-#include <ccd/dbg.h>
+#include "../dbg.h"
 #include "common.h"
 
 
