@@ -1,0 +1,9 @@
+language: c
+compiler:
+  - gcc
+  - clang
+
+env:
+  - USE_SINGLE=yes
+  - USE_DOUBLE=yes
+script: make -C src
