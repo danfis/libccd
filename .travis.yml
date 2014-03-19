@@ -3,4 +3,7 @@ compiler:
   - gcc
   - clang
 
-script: cd src && make
+env:
+  - USE_SINGLE=yes
+  - USE_DOUBLE=yes
+script: make -C src
