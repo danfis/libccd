@@ -50,6 +50,7 @@ add_library(ccd_static STATIC ${SOURCE_FILES})
 set_target_properties(ccd_static PROPERTIES OUTPUT_NAME ccd)
 target_link_libraries(ccd_static ${MATH})
 
+set(prefix ${CMAKE_INSTALL_PREFIX})
 set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/ccd.pc")
 configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
 
