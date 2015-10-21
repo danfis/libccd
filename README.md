@@ -1,5 +1,32 @@
 # libccd
 
+***libccd*** is library for a collision detection between two convex shapes.
+libccd implements variation on Gilbert–Johnson–Keerthi algorithm plus Expand
+Polytope Algorithm (EPA) and also implements algorithm Minkowski Portal
+Refinement (MPR, a.k.a. XenoCollide) as described in Game Programming Gems 7.
+
+For more info see home of libccd: http://libccd.danfis.cz.
+
+For implementation details on GJK algorithm, see
+http://www.win.tue.nl/~gino/solid/jgt98convex.pdf.
+
+
+## Dependencies
+
+This library is currently based only on standard libraries.
+The only exception are testsuites that are built on top of CU
+(https://github.com/danfis/cu) library licensed under LGPL, however only
+testing depends on it and libccd library itself can be distributed without it.
+
+
+##License
+
+libccd is licensed under OSI-approved 3-clause BSD License, text of license
+is distributed along with source code in BSD-LICENSE file.
+Each file should include license notice, the rest should be considered as
+licensed under 3-clause BSD License.
+
+
 ## Compile And Install
 
 libccd contains two mechanisms how to compile and install it. Using simple Makefile and using autotools.
@@ -32,17 +59,17 @@ Generate configure script etc.:
 
 Create new build/ directory:
 ```sh
-$ mkdir build && cd build
+  $ mkdir build && cd build
 ```
 
 Run configure script:
 ```sh
-$ ../configure
+  $ ../configure
 ```
 
 Run make and make install:
 ```sh
-$ make && make install
+  $ make && make install
 ```
 
 configure script can change the way libccd is compiled and installed, most significant option is *--enable-double-precision* which enables double precision (single is default in this case).
