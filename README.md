@@ -5,8 +5,6 @@ libccd implements variation on Gilbert–Johnson–Keerthi algorithm plus Expand
 Polytope Algorithm (EPA) and also implements algorithm Minkowski Portal
 Refinement (MPR, a.k.a. XenoCollide) as described in Game Programming Gems 7.
 
-For more info see home of libccd: http://libccd.danfis.cz.
-
 For implementation details on GJK algorithm, see
 http://www.win.tue.nl/~gino/solid/jgt98convex.pdf.
 
