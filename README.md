@@ -5,6 +5,17 @@ libccd implements variation on Gilbert–Johnson–Keerthi algorithm plus Expand
 Polytope Algorithm (EPA) and also implements algorithm Minkowski Portal
 Refinement (MPR, a.k.a. XenoCollide) as described in Game Programming Gems 7.
 
+libccd is the only available open source library of my knowledge that include
+MPR algorithm working in 3-D space.  However, there is a library called
+[mpr2d](http://code.google.com/p/mpr2d/), implemented in D programming
+language, that works in 2-D space.
+
+libccd is currently part of:
+
+1. [ODE](http://www.ode.org/) library (see ODE's *./configure --help* how to enable it),
+2. [FCL](http://www.ros.org/wiki/fcl) library from [Willow Garage](http://www.willowgarage.com/),
+3. [Bullet3](http://bulletphysics.org/) library (https://github.com/bulletphysics/bullet3).
+
 For implementation details on GJK algorithm, see
 http://www.win.tue.nl/~gino/solid/jgt98convex.pdf.
 
