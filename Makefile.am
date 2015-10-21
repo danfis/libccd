@@ -2,5 +2,5 @@ SUBDIRS = src
 
 EXTRA_DIST = doc \
 	BSD-LICENSE \
-	README \
+	README.md \
 	make-release.sh
