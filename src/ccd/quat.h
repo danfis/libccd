@@ -199,43 +199,29 @@ _ccd_inline int ccdQuatInvert2(ccd_quat_t *dest, const ccd_quat_t *src)
 
 _ccd_inline void ccdQuatRotVec(ccd_vec3_t *v, const ccd_quat_t *q)
 {
-    ccd_real_t w, x, y, z, ww, xx, yy, zz, wx, wy, wz, xy, xz, yz;
+    // original version: 31 mul + 21 add
+    // optimized version: 18 mul + 12 add
+    // formula: v = v + 2 * cross(q.xyz, cross(q.xyz, v) + q.w * v)
+    ccd_real_t cross1_x, cross1_y, cross1_z, cross2_x, cross2_y, cross2_z;
+    ccd_real_t x, y, z, w;
     ccd_real_t vx, vy, vz;
+
+    vx = ccdVec3X(v);
+    vy = ccdVec3Y(v);
+    vz = ccdVec3Z(v);
 
     w = q->q[3];
     x = q->q[0];
     y = q->q[1];
     z = q->q[2];
-    ww = w*w;
-    xx = x*x;
-    yy = y*y;
-    zz = z*z;
-    wx = w*x;
-    wy = w*y;
-    wz = w*z;
-    xy = x*y;
-    xz = x*z;
-    yz = y*z;
 
-    vx = ww * ccdVec3X(v)
-            + xx * ccdVec3X(v)
-            - yy * ccdVec3X(v)
-            - zz * ccdVec3X(v)
-            + 2 * ((xy - wz) * ccdVec3Y(v)
-            + (xz + wy) * ccdVec3Z(v));
-    vy = ww * ccdVec3Y(v)
-            - xx * ccdVec3Y(v)
-            + yy * ccdVec3Y(v)
-            - zz * ccdVec3Y(v)
-            + 2 * ((xy + wz) * ccdVec3X(v)
-            + (yz - wx) * ccdVec3Z(v));
-    vz = ww * ccdVec3Z(v)
-            - xx * ccdVec3Z(v)
-            - yy * ccdVec3Z(v)
-            + zz * ccdVec3Z(v)
-            + 2 * ((xz - wy) * ccdVec3X(v)
-            + (yz + wx) * ccdVec3Y(v));
-    ccdVec3Set(v, vx, vy, vz);
+    cross1_x = y * vz - z * vy + w * vx;
+    cross1_y = z * vx - x * vz + w * vy;
+    cross1_z = x * vy - y * vx + w * vz;
+    cross2_x = y * cross1_z - z * cross1_y;
+    cross2_y = z * cross1_x - x * cross1_z;
+    cross2_z = x * cross1_y - y * cross1_x;
+    ccdVec3Set(v, vx + 2 * cross2_x, vy + 2 * cross2_y, vz + 2 * cross2_z);
 }
 
 #ifdef __cplusplus
