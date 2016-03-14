@@ -167,7 +167,7 @@ Procedure is almost same as for previous case:
       ccd_real_t depth;
       ccd_vec3_t dir, pos;
       int intersect = ccdGJKPenetration(obj1, obj2, &ccd, &depth, &dir, &pos);
-      // now intersect holds true if obj1 and obj2 intersect, false otherwise
+      // now intersect holds 0 if obj1 and obj2 intersect, -1 otherwise
       // in depth, dir and pos is stored penetration depth, direction of
       // separation vector and position in global coordinate system
   }
@@ -236,7 +236,7 @@ Using MPR algorithm for obtaining penetration info about two intersection object
       ccd_real_t depth;
       ccd_vec3_t dir, pos;
       int intersect = ccdMPRPenetration(obj1, obj2, &ccd, &depth, &dir, &pos);
-      // now intersect holds true if obj1 and obj2 intersect, false otherwise
+      // now intersect holds 0 if obj1 and obj2 intersect, -1 otherwise
       // in depth, dir and pos is stored penetration depth, direction of
       // separation vector and position in global coordinate system
   }
