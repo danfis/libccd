@@ -1,4 +1,4 @@
-# libccd
+# libccd [![Build Status](https://travis-ci.org/danfis/libccd.svg?branch=master)](https://travis-ci.org/danfis/libccd)
 
 ***libccd*** is library for a collision detection between two convex shapes.
 libccd implements variation on Gilbert–Johnson–Keerthi algorithm plus Expand
