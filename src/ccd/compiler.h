@@ -27,6 +27,20 @@
 
 
 /**
+ * Marks exported function.
+ */
+#ifdef _WIN32
+# ifdef libccd_EXPORTS
+#   define _ccd_export __declspec(dllexport)
+# else /* libccd_EXPORTS */
+#   define _ccd_export __declspec(dllimport)
+# endif /* libccd_EXPORTS */
+#else /* _WIN32 */
+# define _ccd_export
+#endif /* _WIN32 */
+
+
+/**
  * Marks inline function.
  */
 #ifdef __GNUC__
@@ -55,6 +69,11 @@
 // disable annoying "operands are evaluated in unspecified order" warning
 # pragma warning(disable:981)
 #endif /* __ICC */
+
+#ifdef _MSC_VER
+// disable unsafe function warning
+# define _CRT_SECURE_NO_WARNINGS
+#endif /* _MSC_VER */
 
 #endif /* __CCD_COMPILER_H__ */
 

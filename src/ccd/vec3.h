@@ -184,19 +184,21 @@ _ccd_inline void ccdVec3Cross(ccd_vec3_t *d, const ccd_vec3_t *a, const ccd_vec3
  * If witness is non-NULL it is filled with coordinates of point from which
  * was computed distance to point P.
  */
-ccd_real_t ccdVec3PointSegmentDist2(const ccd_vec3_t *P,
-                                const ccd_vec3_t *a, const ccd_vec3_t *b,
-                                ccd_vec3_t *witness);
+_ccd_export ccd_real_t ccdVec3PointSegmentDist2(const ccd_vec3_t *P,
+                                                const ccd_vec3_t *a,
+                                                const ccd_vec3_t *b,
+                                                ccd_vec3_t *witness);
 
 /**
  * Returns distance^2 of point P from triangle formed by triplet a, b, c.
  * If witness vector is provided it is filled with coordinates of point
  * from which was computed distance to point P.
  */
-ccd_real_t ccdVec3PointTriDist2(const ccd_vec3_t *P,
-                            const ccd_vec3_t *a, const ccd_vec3_t *b,
-                            const ccd_vec3_t *c,
-                            ccd_vec3_t *witness);
+_ccd_export ccd_real_t ccdVec3PointTriDist2(const ccd_vec3_t *P,
+                                            const ccd_vec3_t *a,
+                                            const ccd_vec3_t *b,
+                                            const ccd_vec3_t *c,
+                                            ccd_vec3_t *witness);
 
 
 /**** INLINES ****/

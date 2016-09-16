@@ -72,7 +72,8 @@ typedef struct _ccd_t ccd_t;
 /**
  * Default first direction.
  */
-void ccdFirstDirDefault(const void *o1, const void *o2, ccd_vec3_t *dir);
+_ccd_export void ccdFirstDirDefault(const void *o1, const void *o2,
+                                    ccd_vec3_t *dir);
 
 #define CCD_INIT(ccd) \
     do { \
@@ -92,7 +93,8 @@ void ccdFirstDirDefault(const void *o1, const void *o2, ccd_vec3_t *dir);
 /**
  * Returns true if two given objects interest.
  */
-int ccdGJKIntersect(const void *obj1, const void *obj2, const ccd_t *ccd);
+_ccd_export int ccdGJKIntersect(const void *obj1, const void *obj2,
+                                const ccd_t *ccd);
 
 /**
  * This function computes separation vector of two objects. Separation
@@ -102,8 +104,8 @@ int ccdGJKIntersect(const void *obj1, const void *obj2, const ccd_t *ccd);
  * vector. If obj1 and obj2 don't intersect -1 is returned.
  * If memory allocation fails -2 is returned.
  */
-int ccdGJKSeparate(const void *obj1, const void *obj2, const ccd_t *ccd,
-                   ccd_vec3_t *sep);
+_ccd_export int ccdGJKSeparate(const void *obj1, const void *obj2,
+                               const ccd_t *ccd, ccd_vec3_t *sep);
 
 /**
  * Computes penetration of obj2 into obj1.
@@ -119,13 +121,15 @@ int ccdGJKSeparate(const void *obj1, const void *obj2, const ccd_t *ccd,
  * If obj1 and obj2 don't intersect -1 is returned.
  * If memory allocation fails -2 is returned.
  */
-int ccdGJKPenetration(const void *obj1, const void *obj2, const ccd_t *ccd,
-                      ccd_real_t *depth, ccd_vec3_t *dir, ccd_vec3_t *pos);
+_ccd_export int ccdGJKPenetration(const void *obj1, const void *obj2,
+                                  const ccd_t *ccd, ccd_real_t *depth,
+                                  ccd_vec3_t *dir, ccd_vec3_t *pos);
 
 /**
  * Returns true if two given objects intersect - MPR algorithm is used.
  */
-int ccdMPRIntersect(const void *obj1, const void *obj2, const ccd_t *ccd);
+_ccd_export int ccdMPRIntersect(const void *obj1, const void *obj2,
+                                const ccd_t *ccd);
 
 /**
  * Computes penetration of obj2 into obj1.
@@ -139,8 +143,9 @@ int ccdMPRIntersect(const void *obj1, const void *obj2, const ccd_t *ccd);
  *
  * Returns 0 if obj1 and obj2 intersect, otherwise -1 is returned.
  */
-int ccdMPRPenetration(const void *obj1, const void *obj2, const ccd_t *ccd,
-                      ccd_real_t *depth, ccd_vec3_t *dir, ccd_vec3_t *pos);
+_ccd_export int ccdMPRPenetration(const void *obj1, const void *obj2,
+                                  const ccd_t *ccd, ccd_real_t *depth,
+                                  ccd_vec3_t *dir, ccd_vec3_t *pos);
 
 #ifdef __cplusplus
 } /* extern "C" */
