@@ -83,6 +83,59 @@ Run make and make install:
 
 configure script can change the way libccd is compiled and installed, most significant option is *--enable-double-precision* which enables double precision (single is default in this case).
 
+### 3. Using CMake
+
+To build using `make`:
+```sh
+  $ mkdir build && cd build
+  $ cmake -G "Unix Makefiles" ..
+  $ make && make install
+```
+
+To build using `ninja`:
+```sh
+  $ mkdir build && cd build
+  $ cmake -G Ninja ..
+  $ ninja && ninja install
+```
+
+Other build tools may be using by specifying a different generator. For example:
+```sh
+  $ cmake -G Xcode ..
+```
+
+```bat
+  > cmake -G "Visual Studio 14 2015" ..
+```
+
+To compile using double precision, set the `ENABLE_DOUBLE_PRECISION` option:
+```sh
+  $ mkdir build && cd build
+  $ cmake -G "Unix Makefiles" -DENABLE_DOUBLE_PRECISION=ON ..
+  $ make && make install
+```
+
+To build libccd as a shared library, set the `BUILD_SHARED_LIBS` option:
+```sh
+  $ mkdir build && cd build
+  $ cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON ..
+  $ make && make install
+```
+
+To build the test suite, set the `BUILD_TESTING` option:
+```sh
+  $ mkdir build && cd build
+  $ cmake -G "Unix Makefiles" -DBUILD_TESTING=ON ..
+  $ make && make test
+```
+
+The installation directory may be changed using the `CMAKE_INSTALL_PREFIX` variable:
+```sh
+  $ mkdir build && cd build
+  $ cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/path/to/install ..
+  $ make && make install
+```
+
 ## GJK - Intersection Test
 
 This section describes how to use libccd for testing if two convex objects intersects (i.e., 'yes/no' test) using Gilbert-Johnson-Keerthi (GJK) algorithm.
