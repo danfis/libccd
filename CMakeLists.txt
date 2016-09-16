@@ -1,60 +1,42 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.11)
+
+if(POLICY CMP0042)
+  cmake_policy(SET CMP0042 NEW)
+endif()
+
 project(libccd C)
 
-set(CCD_VERSION "2.0")
-set(CCD_SOVERSION "2")
-set(PKG_DESC "Library for collision detection between convex shapes")
+set(CCD_VERSION_MAJOR 2)
+set(CCD_VERSION_MINOR 0)
+set(CCD_VERSION ${CCD_VERSION_MAJOR}.${CCD_VERSION_MINOR})
+
+set(CCD_SOVERSION 2)
 
 # Include GNUInstallDirs to get canonical paths
 include(GNUInstallDirs)
 
-include_directories("src/")
-
-# make sure only DOUBLE or SINGLE is set; default to SINGLE
-if (${CCD_SINGLE})
-  set(CCD_DOUBLE false)
-else()
-  set(CCD_SINGLE true)
-endif()
-
-if (${CCD_DOUBLE})
-  set(CCD_SINGLE false)
-endif()
+option(ENABLE_DOUBLE_PRECISION
+  "Enable double precision computations instead of single precision" OFF)
 
 # set the default build type
-if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING
+    "Choose the type of build; options are Debug Release RelWithDebInfo MinSizeRel"
+    FORCE)
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY
+    STRINGS
+      Debug
+      Release
+      RelWithDebInfo
+      MinSizeRel)
 endif()
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/ccd/config.h.cmake.in" "${CMAKE_CURRENT_SOURCE_DIR}/src/ccd/config.h")
+add_subdirectory(src)
 
-if(NOT WIN32)
-    find_library(MATH m)
-else()
-    set(MATH "")
-endif()
+set(CCD_PKGCONFIG_DESCRIPTION
+  "Library for collision detection between convex shapes")
+configure_file(ccd.pc.in ccd.pc @ONLY)
+install(FILES "${CMAKE_BINARY_DIR}/ccd.pc"
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
-set(SOURCE_FILES
-  src/ccd.c
-  src/mpr.c
-  src/polytope.c
-  src/support.c
-  src/vec3.c)
-
-add_library(ccd SHARED ${SOURCE_FILES})
-set_target_properties(ccd PROPERTIES VERSION ${CCD_VERSION} SOVERSION ${CCD_SOVERSION})
-
-target_link_libraries(ccd ${MATH})
-
-add_library(ccd_static STATIC ${SOURCE_FILES})
-set_target_properties(ccd_static PROPERTIES OUTPUT_NAME ccd)
-target_link_libraries(ccd_static ${MATH})
-
-set(pkg_conf_file "${CMAKE_CURRENT_SOURCE_DIR}/ccd.pc")
-configure_file("${pkg_conf_file}.in" "${pkg_conf_file}" @ONLY)
-
-install(TARGETS ccd ccd_static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-install(DIRECTORY src/ccd DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h")
-install(FILES "${pkg_conf_file}" DESTINATION
-  ${CMAKE_INSTALL_LIBDIR}/pkgconfig COMPONENT pkgconfig)
+install(FILES BSD-LICENSE DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/doc/ccd")
