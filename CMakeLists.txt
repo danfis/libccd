@@ -16,6 +16,8 @@ set(CCD_SOVERSION 2)
 include(GNUInstallDirs)
 include(CTest)
 
+option(BUILD_DOCUMENTATION "Build the documentation" OFF)
+
 option(BUILD_SHARED_LIBS "Build libccd as a shared library" ON)
 
 option(ENABLE_DOUBLE_PRECISION
@@ -35,6 +37,10 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 add_subdirectory(src)
+
+if(BUILD_DOCUMENTATION)
+  add_subdirectory(doc)
+endif()
 
 configure_file(ccd-config.cmake.in ccd-config.cmake @ONLY)
 configure_file(ccd-config-version.cmake.in ccd-config-version.cmake @ONLY)
