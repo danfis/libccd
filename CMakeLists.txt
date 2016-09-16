@@ -35,6 +35,13 @@ endif()
 
 add_subdirectory(src)
 
+configure_file(ccd-config.cmake.in ccd-config.cmake @ONLY)
+configure_file(ccd-config-version.cmake.in ccd-config-version.cmake @ONLY)
+install(FILES
+  "${CMAKE_BINARY_DIR}/ccd-config.cmake"
+  "${CMAKE_BINARY_DIR}/ccd-config-version.cmake"
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/ccd")
+
 set(CCD_PKGCONFIG_DESCRIPTION
   "Library for collision detection between convex shapes")
 configure_file(ccd.pc.in ccd.pc @ONLY)
