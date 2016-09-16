@@ -15,6 +15,8 @@ set(CCD_SOVERSION 2)
 # Include GNUInstallDirs to get canonical paths
 include(GNUInstallDirs)
 
+option(BUILD_SHARED_LIBS "Build libccd as a shared library" ON)
+
 option(ENABLE_DOUBLE_PRECISION
   "Enable double precision computations instead of single precision" OFF)
 

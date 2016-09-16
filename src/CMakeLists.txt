@@ -40,15 +40,10 @@ set(CCD_SOURCES
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(ccd SHARED ${CCD_INCLUDES} ${CCD_SOURCES})
+add_library(ccd ${CCD_INCLUDES} ${CCD_SOURCES})
 set_target_properties(ccd PROPERTIES
   PUBLIC_HEADER "${CCD_INCLUDES}"
   SOVERSION ${CCD_SOVERSION}
-  VERSION ${CCD_VERSION})
-
-add_library(ccd_static STATIC ${CCD_INCLUDES} ${CCD_SOURCES})
-set_target_properties(ccd_static PROPERTIES
-  OUTPUT_NAME ccd
   VERSION ${CCD_VERSION})
 
 if(NOT WIN32)
@@ -57,10 +52,12 @@ if(NOT WIN32)
     message(FATAL_ERROR "Could NOT find required library LibM")
   endif()
   target_link_libraries(ccd "${LIBM_LIBRARY}")
-  target_link_libraries(ccd_static "${LIBM_LIBRARY}")
+  if(BUILD_SHARED_LIBS)
+    set(CCD_PKGCONFIG_EXTRA_LIBS -lm PARENT_SCOPE)
+  endif()
 endif()
 
-install(TARGETS ccd ccd_static
+install(TARGETS ccd
   ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
   PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/ccd"
