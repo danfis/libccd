@@ -14,6 +14,7 @@ set(CCD_SOVERSION 2)
 
 # Include GNUInstallDirs to get canonical paths
 include(GNUInstallDirs)
+include(CTest)
 
 option(BUILD_SHARED_LIBS "Build libccd as a shared library" ON)
 
