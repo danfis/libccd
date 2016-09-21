@@ -1,8 +1,8 @@
 Compile And Install
 ====================
 
-libccd contains several mechanisms how to compile and install it.
-Using a simple Makefile, using autotools and using CMake.
+libccd contains several mechanisms for compiling and installing.
+Using a simple Makefile, using autotools, and using CMake.
 
 
 1. Using Makefile

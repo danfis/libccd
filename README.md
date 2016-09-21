@@ -38,7 +38,7 @@ licensed under 3-clause BSD License.
 
 ## Compile And Install
 
-libccd contains two mechanisms how to compile and install it. Using simple Makefile and using autotools.
+libccd contains several mechanisms for compiling and installing. Using a simple Makefile, using autotools, and using CMake.
 
 ### 1. Using Makefile
 
