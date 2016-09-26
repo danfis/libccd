@@ -42,8 +42,16 @@ if(BUILD_DOCUMENTATION)
   add_subdirectory(doc)
 endif()
 
-configure_file(ccd-config.cmake.in ccd-config.cmake @ONLY)
-configure_file(ccd-config-version.cmake.in ccd-config-version.cmake @ONLY)
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(ccd-config.cmake.in ccd-config.cmake
+  INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/ccd"
+  PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR
+  NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+
+write_basic_package_version_file(ccd-config-version.cmake
+  VERSION ${CCD_VERSION} COMPATIBILITY AnyNewerVersion)
+
 install(FILES
   "${CMAKE_BINARY_DIR}/ccd-config.cmake"
   "${CMAKE_BINARY_DIR}/ccd-config-version.cmake"
