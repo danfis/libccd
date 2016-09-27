@@ -1,8 +1,8 @@
 Compile And Install
 ====================
 
-libccd contains several mechanisms how to compile and install it.
-Using a simple Makefile, using autotools and using CMake.
+libccd contains several mechanisms for compiling and installing.
+Using a simple Makefile, using autotools, and using CMake.
 
 
 1. Using Makefile
@@ -61,4 +61,62 @@ precision (single is default in this case).
 
 3. Using CMake
 ---------------
-TODO
+
+To build using ``make``:
+
+.. code-block:: bash
+
+    $ mkdir build && cd build
+    $ cmake -G "Unix Makefiles" ..
+    $ make && make install
+
+To build using ``ninja``:
+
+.. code-block:: bash
+
+    $ mkdir build && cd build
+    $ cmake -G Ninja ..
+    $ ninja && ninja install
+
+Other build tools may be using by specifying a different generator. For example:
+
+.. code-block:: bash
+
+    $ cmake -G Xcode ..
+
+.. code-block:: batch
+
+    > cmake -G "Visual Studio 14 2015" ..
+
+To compile using double precision, set the ``ENABLE_DOUBLE_PRECISION`` option:
+
+.. code-block:: bash
+
+    $ mkdir build && cd build
+    $ cmake -G "Unix Makefiles" -DENABLE_DOUBLE_PRECISION=ON ..
+    $ make && make install
+
+To build libccd as a shared library, set the ``BUILD_SHARED_LIBS`` option:
+
+.. code-block:: bash
+
+    $ mkdir build && cd build
+    $ cmake -G "Unix Makefiles" -DBUILD_SHARED_LIBS=ON ..
+    $ make && make install
+
+To build the test suite, set the ``BUILD_TESTING`` option:
+
+.. code-block:: bash
+
+    $ mkdir build && cd build
+    $ cmake -G "Unix Makefiles" -DBUILD_TESTING=ON ..
+    $ make && make test
+
+
+The installation directory may be changed by specifying the ``CMAKE_INSTALL_PREFIX`` variable:
+
+.. code-block:: bash
+
+    $ mkdir build && cd build
+    $ cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/path/to/install ..
+    $ make && make install

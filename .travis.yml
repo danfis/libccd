@@ -1,9 +1,23 @@
+dist: trusty
+sudo: required
+
 language: c
 compiler:
   - gcc
   - clang
 
 env:
-  - USE_SINGLE=yes
-  - USE_DOUBLE=yes
-script: make -C src
+  global:
+    - PREFIX="$TRAVIS_BUILD_DIR/build/install"
+  matrix:
+    - USE_AUTOTOOLS=yes
+    - USE_CMAKE=yes
+    - USE_MAKEFILE=yes USE_DOUBLE=yes
+    - USE_MAKEFILE=yes USE_SINGLE=yes
+
+script:
+  - mkdir -p "$PREFIX"
+  - if [[ "$USE_AUTOTOOLS" == "yes" ]]; then ./bootstrap && cd build && ../configure --prefix "$PREFIX"; fi
+  - if [[ "$USE_CMAKE" == "yes" ]]; then cd build && cmake "-DCMAKE_INSTALL_PREFIX=$PREFIX" ..; fi
+  - if [[ "$USE_MAKEFILE" == "yes" ]]; then cd src; fi
+  - make && make install
