@@ -30,11 +30,11 @@
  * Marks exported function.
  */
 #ifdef _WIN32
-# ifdef libccd_EXPORTS
+# ifdef ccd_EXPORTS
 #   define _ccd_export __declspec(dllexport)
-# else /* libccd_EXPORTS */
+# else /* ccd_EXPORTS */
 #   define _ccd_export __declspec(dllimport)
-# endif /* libccd_EXPORTS */
+# endif /* ccd_EXPORTS */
 #else /* _WIN32 */
 # define _ccd_export
 #endif /* _WIN32 */
