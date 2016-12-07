@@ -14,6 +14,7 @@ TEST(boxboxRot);
 
 TEST(boxboxSeparate);
 TEST(boxboxPenetration);
+TEST(boxboxPenetration2);
 
 TEST_SUITE(TSBoxBox) {
     TEST_ADD(boxboxSetUp),
@@ -24,6 +25,7 @@ TEST_SUITE(TSBoxBox) {
     TEST_ADD(boxboxRot),
     TEST_ADD(boxboxSeparate),
     TEST_ADD(boxboxPenetration),
+	TEST_ADD(boxboxPenetration2),
 
     TEST_ADD(boxboxTearDown),
     TEST_SUITE_CLOSURE
