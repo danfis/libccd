@@ -31,23 +31,20 @@ add_executable(main ${MAIN_SOURCES})
 target_link_libraries(main ccd cu)
 add_test(NAME main COMMAND main)
 
+set(BENCH_SOURCES
+  bench.c
+  support.c
+  support.h)
 
-if(NOT APPLE)
-  set(BENCH_SOURCES
-    bench.c
-    support.c
-    support.h)
+add_executable(bench ${BENCH_SOURCES})
+target_link_libraries(bench ccd cu)
+add_test(NAME bench COMMAND bench)
 
-  add_executable(bench ${BENCH_SOURCES})
-  target_link_libraries(bench ccd cu)
-  add_test(NAME bench COMMAND bench)
+set(BENCH2_SOURCES
+  bench2.c
+  support.c
+  support.h)
 
-  set(BENCH2_SOURCES
-    bench2.c
-    support.c
-    support.h)
-
-  add_executable(bench2 ${BENCH2_SOURCES})
-  target_link_libraries(bench2 ccd cu)
-  add_test(NAME bench2 COMMAND bench2)
-endif()
+add_executable(bench2 ${BENCH2_SOURCES})
+target_link_libraries(bench2 ccd cu)
+add_test(NAME bench2 COMMAND bench2)
