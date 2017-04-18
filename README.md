@@ -28,7 +28,7 @@ The only exception are testsuites that are built on top of CU
 testing depends on it and libccd library itself can be distributed without it.
 
 
-##License
+## License
 
 libccd is licensed under OSI-approved 3-clause BSD License, text of license
 is distributed along with source code in BSD-LICENSE file.
