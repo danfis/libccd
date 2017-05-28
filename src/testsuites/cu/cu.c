@@ -355,9 +355,31 @@ static void close_out_err(void)
 
 
 #ifdef CU_ENABLE_TIMER
+
+#ifdef __MACH__
+#include <mach/clock.h>
+#include <mach/mach.h>
+#endif
+
 /* global variables for timer functions */
 struct timespec __cu_timer;
 static struct timespec __cu_timer_start, __cu_timer_stop;
+
+
+void cu_clock_gettime(struct timespec *tp)
+{
+#ifdef __MACH__
+    clock_serv_t cs;
+    mach_timespec_t mtp;
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cs);
+    clock_get_time(cs, &mtp);
+    mach_port_deallocate(mach_task_self(), cs);
+    tp->tv_sec = mtp.tv_sec;
+    tp->tv_nsec = mtp.tv_nsec;
+#else
+    clock_gettime(CLOCK_MONOTONIC, tp);
+#endif
+}
 
 const struct timespec *cuTimer(void)
 {
@@ -366,12 +388,12 @@ const struct timespec *cuTimer(void)
 
 void cuTimerStart(void)
 {
-    clock_gettime(CLOCK_MONOTONIC, &__cu_timer_start);
+    cu_clock_gettime(&__cu_timer_start);
 }
 
 const struct timespec *cuTimerStop(void)
 {
-    clock_gettime(CLOCK_MONOTONIC, &__cu_timer_stop);
+    cu_clock_gettime(&__cu_timer_stop);
 
     /* store into t difference between time_start and time_end */
     if (__cu_timer_stop.tv_nsec > __cu_timer_start.tv_nsec){

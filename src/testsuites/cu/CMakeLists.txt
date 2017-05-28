@@ -3,9 +3,9 @@ set(CU_SOURCES
   cu.h)
 
 add_library(cu STATIC ${CU_SOURCES})
+target_compile_definitions(cu PUBLIC CU_ENABLE_TIMER)
 
 if(NOT APPLE)
-  target_compile_definitions(cu PUBLIC CU_ENABLE_TIMER)
   find_library(LIBRT_LIBRARY NAMES rt)
   if(NOT LIBRT_LIBRARY)
     message(FATAL_ERROR "Could NOT find required library librt")

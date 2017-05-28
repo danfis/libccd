@@ -1,3 +1,4 @@
+#undef CU_ENABLE_TIMER
 #define CU_ENABLE_TIMER
 #include <cu/cu.h>
 #include <stdio.h>
