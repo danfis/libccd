@@ -101,8 +101,8 @@ struct _ccd_pt_t {
 typedef struct _ccd_pt_t ccd_pt_t;
 
 
-void ccdPtInit(ccd_pt_t *pt);
-void ccdPtDestroy(ccd_pt_t *pt);
+_ccd_export void ccdPtInit(ccd_pt_t *pt);
+_ccd_export void ccdPtDestroy(ccd_pt_t *pt);
 
 /**
  * Returns vertices surrounding given triangle face.
@@ -134,20 +134,20 @@ _ccd_inline void ccdPtEdgeFaces(const ccd_pt_edge_t *e,
 /**
  * Adds vertex to polytope and returns pointer to newly created vertex.
  */
-ccd_pt_vertex_t *ccdPtAddVertex(ccd_pt_t *pt, const ccd_support_t *v);
+_ccd_export ccd_pt_vertex_t *ccdPtAddVertex(ccd_pt_t *pt, const ccd_support_t *v);
 _ccd_inline ccd_pt_vertex_t *ccdPtAddVertexCoords(ccd_pt_t *pt,
                                                   ccd_real_t x, ccd_real_t y, ccd_real_t z);
 
 /**
  * Adds edge to polytope.
  */
-ccd_pt_edge_t *ccdPtAddEdge(ccd_pt_t *pt, ccd_pt_vertex_t *v1,
+_ccd_export ccd_pt_edge_t *ccdPtAddEdge(ccd_pt_t *pt, ccd_pt_vertex_t *v1,
                                           ccd_pt_vertex_t *v2);
 
 /**
  * Adds face to polytope.
  */
-ccd_pt_face_t *ccdPtAddFace(ccd_pt_t *pt, ccd_pt_edge_t *e1,
+_ccd_export ccd_pt_face_t *ccdPtAddFace(ccd_pt_t *pt, ccd_pt_edge_t *e1,
                                           ccd_pt_edge_t *e2,
                                           ccd_pt_edge_t *e3);
 
@@ -168,7 +168,7 @@ void ccdPtRecomputeDistances(ccd_pt_t *pt);
 /**
  * Returns nearest element to origin.
  */
-ccd_pt_el_t *ccdPtNearest(ccd_pt_t *pt);
+_ccd_export ccd_pt_el_t *ccdPtNearest(ccd_pt_t *pt);
 
 
 void ccdPtDumpSVT(ccd_pt_t *pt, const char *fn);
