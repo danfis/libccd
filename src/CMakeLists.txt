@@ -69,6 +69,25 @@ install(TARGETS ccd
   RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 install(EXPORT ccd-targets DESTINATION "${CMAKE_INSTALL_LIBDIR}/ccd")
 
+macro (check_compiler_visibility)
+  include (CheckCXXCompilerFlag)
+  check_cxx_compiler_flag(-fvisibility=hidden COMPILER_SUPPORTS_VISIBILITY)
+endmacro()
+
+if(UNIX)
+  check_compiler_visibility()
+  if (COMPILER_SUPPORTS_VISIBILITY)
+    set_target_properties(ccd
+         PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+  endif()
+endif()
+
 if(NOT WIN32 AND BUILD_TESTING)
   add_subdirectory(testsuites)
 endif()
+
+get_property(type TARGET ccd PROPERTY TYPE)
+
+generate_export_header(ccd)
+install(FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}_export.h
+   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

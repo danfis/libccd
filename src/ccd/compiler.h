@@ -25,21 +25,6 @@
 #define ccd_container_of(ptr, type, member) \
     (type *)( (char *)ptr - ccd_offsetof(type, member))
 
-
-/**
- * Marks exported function.
- */
-#ifdef _WIN32
-# ifdef ccd_EXPORTS
-#   define _ccd_export __declspec(dllexport)
-# else /* ccd_EXPORTS */
-#   define _ccd_export __declspec(dllimport)
-# endif /* ccd_EXPORTS */
-#else /* _WIN32 */
-# define _ccd_export
-#endif /* _WIN32 */
-
-
 /**
  * Marks inline function.
  */

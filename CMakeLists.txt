@@ -4,7 +4,9 @@ if(POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
 
-project(libccd C)
+# Can not explicitly declared the software as C in project command due to bug:
+# https://gitlab.kitware.com/cmake/cmake/issues/16967
+project(libccd)
 
 set(CCD_VERSION_MAJOR 2)
 set(CCD_VERSION_MINOR 0)
@@ -15,6 +17,7 @@ set(CCD_SOVERSION 2)
 # Include GNUInstallDirs to get canonical paths
 include(GNUInstallDirs)
 include(CTest)
+include(GenerateExportHeader)
 
 option(BUILD_DOCUMENTATION "Build the documentation" OFF)
 

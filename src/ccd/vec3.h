@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <ccd/compiler.h>
 #include <ccd/config.h>
+#include <ccd_export.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -184,7 +185,7 @@ _ccd_inline void ccdVec3Cross(ccd_vec3_t *d, const ccd_vec3_t *a, const ccd_vec3
  * If witness is non-NULL it is filled with coordinates of point from which
  * was computed distance to point P.
  */
-_ccd_export ccd_real_t ccdVec3PointSegmentDist2(const ccd_vec3_t *P,
+CCD_EXPORT ccd_real_t ccdVec3PointSegmentDist2(const ccd_vec3_t *P,
                                                 const ccd_vec3_t *a,
                                                 const ccd_vec3_t *b,
                                                 ccd_vec3_t *witness);
@@ -194,7 +195,7 @@ _ccd_export ccd_real_t ccdVec3PointSegmentDist2(const ccd_vec3_t *P,
  * If witness vector is provided it is filled with coordinates of point
  * from which was computed distance to point P.
  */
-_ccd_export ccd_real_t ccdVec3PointTriDist2(const ccd_vec3_t *P,
+CCD_EXPORT ccd_real_t ccdVec3PointTriDist2(const ccd_vec3_t *P,
                                             const ccd_vec3_t *a,
                                             const ccd_vec3_t *b,
                                             const ccd_vec3_t *c,

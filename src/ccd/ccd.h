@@ -19,6 +19,7 @@
 #define __CCD_H__
 
 #include <ccd/vec3.h>
+#include <ccd_export.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -72,7 +73,7 @@ typedef struct _ccd_t ccd_t;
 /**
  * Default first direction.
  */
-_ccd_export void ccdFirstDirDefault(const void *o1, const void *o2,
+CCD_EXPORT void ccdFirstDirDefault(const void *o1, const void *o2,
                                     ccd_vec3_t *dir);
 
 #define CCD_INIT(ccd) \
@@ -93,7 +94,7 @@ _ccd_export void ccdFirstDirDefault(const void *o1, const void *o2,
 /**
  * Returns true if two given objects interest.
  */
-_ccd_export int ccdGJKIntersect(const void *obj1, const void *obj2,
+CCD_EXPORT int ccdGJKIntersect(const void *obj1, const void *obj2,
                                 const ccd_t *ccd);
 
 /**
@@ -104,7 +105,7 @@ _ccd_export int ccdGJKIntersect(const void *obj1, const void *obj2,
  * vector. If obj1 and obj2 don't intersect -1 is returned.
  * If memory allocation fails -2 is returned.
  */
-_ccd_export int ccdGJKSeparate(const void *obj1, const void *obj2,
+CCD_EXPORT int ccdGJKSeparate(const void *obj1, const void *obj2,
                                const ccd_t *ccd, ccd_vec3_t *sep);
 
 /**
@@ -121,14 +122,14 @@ _ccd_export int ccdGJKSeparate(const void *obj1, const void *obj2,
  * If obj1 and obj2 don't intersect -1 is returned.
  * If memory allocation fails -2 is returned.
  */
-_ccd_export int ccdGJKPenetration(const void *obj1, const void *obj2,
+CCD_EXPORT int ccdGJKPenetration(const void *obj1, const void *obj2,
                                   const ccd_t *ccd, ccd_real_t *depth,
                                   ccd_vec3_t *dir, ccd_vec3_t *pos);
 
 /**
  * Returns true if two given objects intersect - MPR algorithm is used.
  */
-_ccd_export int ccdMPRIntersect(const void *obj1, const void *obj2,
+CCD_EXPORT int ccdMPRIntersect(const void *obj1, const void *obj2,
                                 const ccd_t *ccd);
 
 /**
@@ -143,7 +144,7 @@ _ccd_export int ccdMPRIntersect(const void *obj1, const void *obj2,
  *
  * Returns 0 if obj1 and obj2 intersect, otherwise -1 is returned.
  */
-_ccd_export int ccdMPRPenetration(const void *obj1, const void *obj2,
+CCD_EXPORT int ccdMPRPenetration(const void *obj1, const void *obj2,
                                   const ccd_t *ccd, ccd_real_t *depth,
                                   ccd_vec3_t *dir, ccd_vec3_t *pos);
 
