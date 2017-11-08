@@ -82,7 +82,7 @@ if(UNIX)
   endif()
 endif()
 
-if(NOT WIN32 AND BUILD_TESTING)
+if(NOT WIN32 AND BUILD_TESTING AND NOT CCD_HIDE_ALL_SYMBOLS)
   add_subdirectory(testsuites)
 endif()
 
