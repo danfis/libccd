@@ -19,7 +19,6 @@
 #define __CCD_H__
 
 #include <ccd/vec3.h>
-#include <ccd_export.h>
 
 #ifdef __cplusplus
 extern "C" {
