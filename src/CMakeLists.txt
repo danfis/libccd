@@ -88,9 +88,6 @@ endif()
 
 get_property(type TARGET ccd PROPERTY TYPE)
 
-# Need to include directory to find export file
-include_directories(${PROJECT_BINARY_DIR})
-
 generate_export_header(ccd)
-install(FILES ${PROJECT_BINARY_DIR}/${PROJECT_NAME}_export.h
+install(FILES ${PROJECT_BINARY_DIR}/src/ccd_export.h
    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
