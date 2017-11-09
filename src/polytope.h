@@ -135,7 +135,7 @@ _ccd_inline void ccdPtEdgeFaces(const ccd_pt_edge_t *e,
  * Adds vertex to polytope and returns pointer to newly created vertex.
  */
 CCD_EXPORT ccd_pt_vertex_t *ccdPtAddVertex(ccd_pt_t *pt, const ccd_support_t *v);
-CCD_EXPORT _ccd_inline ccd_pt_vertex_t *ccdPtAddVertexCoords(ccd_pt_t *pt,
+_ccd_inline ccd_pt_vertex_t *ccdPtAddVertexCoords(ccd_pt_t *pt,
                                                   ccd_real_t x, ccd_real_t y, ccd_real_t z);
 
 /**
@@ -155,9 +155,9 @@ CCD_EXPORT ccd_pt_face_t *ccdPtAddFace(ccd_pt_t *pt, ccd_pt_edge_t *e1,
  * Deletes vertex from polytope.
  * Returns 0 on success, -1 otherwise.
  */
-CCD_EXPORT _ccd_inline int ccdPtDelVertex(ccd_pt_t *pt, ccd_pt_vertex_t *);
-CCD_EXPORT _ccd_inline int ccdPtDelEdge(ccd_pt_t *pt, ccd_pt_edge_t *);
-CCD_EXPORT _ccd_inline int ccdPtDelFace(ccd_pt_t *pt, ccd_pt_face_t *);
+_ccd_inline int ccdPtDelVertex(ccd_pt_t *pt, ccd_pt_vertex_t *);
+_ccd_inline int ccdPtDelEdge(ccd_pt_t *pt, ccd_pt_edge_t *);
+_ccd_inline int ccdPtDelFace(ccd_pt_t *pt, ccd_pt_face_t *);
 
 
 /**
