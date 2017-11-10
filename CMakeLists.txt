@@ -17,7 +17,6 @@ set(CCD_SOVERSION 2)
 # Include GNUInstallDirs to get canonical paths
 include(GNUInstallDirs)
 include(CTest)
-include(GenerateExportHeader)
 
 option(BUILD_DOCUMENTATION "Build the documentation" OFF)
 

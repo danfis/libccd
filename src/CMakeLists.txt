@@ -21,6 +21,7 @@ configure_file(ccd/config.h.cmake.in ccd/config.h)
 set(CCD_INCLUDES
   ccd/ccd.h
   ccd/compiler.h
+  ccd/ccd_export.h
   ccd/quat.h
   ccd/vec3.h
   "${CMAKE_CURRENT_BINARY_DIR}/ccd/config.h")
@@ -85,9 +86,3 @@ endif()
 if(NOT WIN32 AND BUILD_TESTING AND NOT CCD_HIDE_ALL_SYMBOLS)
   add_subdirectory(testsuites)
 endif()
-
-get_property(type TARGET ccd PROPERTY TYPE)
-
-generate_export_header(ccd)
-install(FILES ${PROJECT_BINARY_DIR}/src/ccd_export.h
-   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

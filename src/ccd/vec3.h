@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <ccd/compiler.h>
 #include <ccd/config.h>
-#include "ccd_export.h"
+#include <ccd/ccd_export.h>
 
 #ifdef __cplusplus
 extern "C" {
