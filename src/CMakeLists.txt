@@ -21,6 +21,7 @@ configure_file(ccd/config.h.cmake.in ccd/config.h)
 set(CCD_INCLUDES
   ccd/ccd.h
   ccd/compiler.h
+  ccd/ccd_export.h
   ccd/quat.h
   ccd/vec3.h
   "${CMAKE_CURRENT_BINARY_DIR}/ccd/config.h")
@@ -69,6 +70,19 @@ install(TARGETS ccd
   RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 install(EXPORT ccd-targets DESTINATION "${CMAKE_INSTALL_LIBDIR}/ccd")
 
-if(NOT WIN32 AND BUILD_TESTING)
+macro (check_compiler_visibility)
+  include (CheckCXXCompilerFlag)
+  check_cxx_compiler_flag(-fvisibility=hidden COMPILER_SUPPORTS_VISIBILITY)
+endmacro()
+
+if(UNIX)
+  check_compiler_visibility()
+  if (COMPILER_SUPPORTS_VISIBILITY)
+    set_target_properties(ccd
+         PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
+  endif()
+endif()
+
+if(NOT WIN32 AND BUILD_TESTING AND NOT CCD_HIDE_ALL_SYMBOLS)
   add_subdirectory(testsuites)
 endif()

@@ -6,6 +6,7 @@ libccd_la_SOURCES = alloc.h \
 		ccd/compiler.h \
 		dbg.h \
 		ccd.c ccd/ccd.h \
+		ccd/ccd_export.h \
 		list.h \
 		polytope.c polytope.h \
 		ccd/quat.h \
@@ -14,3 +15,4 @@ libccd_la_SOURCES = alloc.h \
 		vec3.c ccd/vec3.h \
         mpr.c
 
+libccd_la_CFLAGS = -fvisibility=hidden

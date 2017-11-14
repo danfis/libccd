@@ -4,7 +4,9 @@ if(POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
 
-project(libccd C)
+# Can not explicitly declared the software as C in project command due to bug:
+# https://gitlab.kitware.com/cmake/cmake/issues/16967
+project(libccd)
 
 set(CCD_VERSION_MAJOR 2)
 set(CCD_VERSION_MINOR 0)
@@ -22,6 +24,13 @@ option(BUILD_SHARED_LIBS "Build libccd as a shared library" ON)
 
 option(ENABLE_DOUBLE_PRECISION
   "Enable double precision computations instead of single precision" OFF)
+
+# Option for some bundle-like build system in order not to expose
+# any FCL binary symbols in their public ABI
+option(CCD_HIDE_ALL_SYMBOLS "Hide all binary symbols" OFF)
+if (CCD_HIDE_ALL_SYMBOLS)
+  add_definitions("-DCCD_STATIC_DEFINE")
+endif()
 
 # set the default build type
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
