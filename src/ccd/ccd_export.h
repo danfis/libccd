@@ -6,9 +6,9 @@
 #else
 #  ifdef _MSC_VER
 #    ifdef ccd_EXPORTS
-#      define _ccd_export __declspec(dllexport)
+#      define CCD_EXPORT __declspec(dllexport)
 #   else /* ccd_EXPORTS */
-#     define _ccd_export __declspec(dllimport)
+#     define CCD_EXPORT  __declspec(dllimport)
 #   endif /* ccd_EXPORTS */
 #  else
 #    ifndef CCD_EXPORT
