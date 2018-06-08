@@ -141,8 +141,8 @@ ccd_pt_edge_t *ccdPtAddEdge(ccd_pt_t *pt, ccd_pt_vertex_t *v1,
     b = &edge->vertex[1]->v.v;
     edge->dist = ccdVec3PointSegmentDist2(ccd_vec3_origin, a, b, &edge->witness);
 
-    ccdListAppend(&edge->vertex[0]->edges, &edge->vertex_list[0]);
-    ccdListAppend(&edge->vertex[1]->edges, &edge->vertex_list[1]);
+    ccdListAppend(&edge->vertex[0]->edges, &edge->list);
+    ccdListAppend(&edge->vertex[1]->edges, &edge->list);
 
     ccdListAppend(&pt->edges, &edge->list);
 
