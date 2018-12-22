@@ -136,7 +136,7 @@ CCD_EXPORT int ccdMPRIntersect(const void *obj1, const void *obj2,
  * Depth of penetration, direction and position is returned, i.e. if obj2
  * is translated by computed depth in resulting direction obj1 and obj2
  * would have touching contact. Position is point in global coordinates
- * where force should be take a place.
+ * where force should take a place.
  *
  * Minkowski Portal Refinement algorithm is used (MPR, a.k.a. XenoCollide,
  * see Game Programming Gem 7).
