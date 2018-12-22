@@ -59,7 +59,7 @@ if(NOT WIN32)
   endif()
 endif()
 
-export(TARGETS ccd FILE "${CMAKE_BINARY_DIR}/ccd-targets.cmake")
+export(TARGETS ccd NAMESPACE ccd:: FILE "${CMAKE_BINARY_DIR}/ccd-targets.cmake")
 
 install(TARGETS ccd
   EXPORT ccd-targets
@@ -68,7 +68,7 @@ install(TARGETS ccd
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
   PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/ccd"
   RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
-install(EXPORT ccd-targets DESTINATION "${CMAKE_INSTALL_LIBDIR}/ccd")
+install(EXPORT ccd-targets DESTINATION "${CMAKE_INSTALL_LIBDIR}/ccd" NAMESPACE ccd::)
 
 macro (check_compiler_visibility)
   include (CheckCXXCompilerFlag)
