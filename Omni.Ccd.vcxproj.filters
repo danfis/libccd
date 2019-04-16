@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="src\alloc.h" />
+    <ClInclude Include="src\dbg.h" />
+    <ClInclude Include="src\list.h" />
+    <ClInclude Include="src\polytope.h" />
+    <ClInclude Include="src\simplex.h" />
+    <ClInclude Include="src\support.h" />
+    <ClInclude Include="src\ccd\ccd.h">
+      <Filter>ccd</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ccd\ccd_export.h">
+      <Filter>ccd</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ccd\compiler.h">
+      <Filter>ccd</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ccd\quat.h">
+      <Filter>ccd</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ccd\vec3.h">
+      <Filter>ccd</Filter>
+    </ClInclude>
+    <ClInclude Include="ccd\Config.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\ccd.c" />
+    <ClCompile Include="src\mpr.c" />
+    <ClCompile Include="src\polytope.c" />
+    <ClCompile Include="src\support.c" />
+    <ClCompile Include="src\vec3.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ccd">
+      <UniqueIdentifier>{5ce66193-71ad-4c4f-b1fa-19cbe1bb1a0c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>
