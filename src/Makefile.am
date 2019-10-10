@@ -10,8 +10,8 @@ libccd_la_SOURCES = alloc.h \
 		list.h \
 		polytope.c polytope.h \
 		ccd/quat.h \
-		simplex.h \
-		support.c support.h \
+		ccd/simplex.h \
+		support.c ccd/support.h \
 		vec3.c ccd/vec3.h \
         mpr.c
 

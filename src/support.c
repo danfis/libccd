@@ -15,7 +15,7 @@
  *  See the License for more information.
  */
 
-#include "support.h"
+#include <ccd/support.h>
 
 void __ccdSupport(const void *obj1, const void *obj2,
                   const ccd_vec3_t *_dir, const ccd_t *ccd,
