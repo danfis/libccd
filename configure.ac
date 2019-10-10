@@ -30,17 +30,23 @@ AC_FUNC_FORK
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([clock_gettime])
 
-use_double=no
 AC_ARG_ENABLE(double-precision,
-              AS_HELP_STRING([--enable-double-precision],
-                             [enable double precision computations instead of single precision]),
-              [use_double=yes])
-if test $use_double = no
-then
-        AC_DEFINE([CCD_SINGLE], [], [use single precision])
-else
-        AC_DEFINE([CCD_DOUBLE], [], [use double precision])
-fi
+              AS_HELP_STRING([--disable-double-precision],
+                             [use single precision instead of double preicision]))
+AS_IF([test "x$enable_double_precision" == "xno"],
+      [AC_DEFINE([CCD_SINGLE], [], [use single precision])],
+      [AC_DEFINE([CCD_DOUBLE], [], [use double precision])])
+#use_double=no
+#AC_ARG_ENABLE(double-precision,
+#              AS_HELP_STRING([--enable-double-precision],
+#                             [enable double precision computations instead of single precision]),
+#              [use_double=yes])
+#if test $use_double = no
+#then
+#        AC_DEFINE([CCD_SINGLE], [], [use single precision])
+#else
+#        AC_DEFINE([CCD_DOUBLE], [], [use double precision])
+#fi
 
 
 AC_CONFIG_FILES([Makefile
