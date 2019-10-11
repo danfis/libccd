@@ -19,7 +19,7 @@
 #define __CCD_SIMPLEX_H__
 
 #include <ccd/compiler.h>
-#include "support.h"
+#include <ccd/support.h>
 
 #ifdef __cplusplus
 extern "C" {

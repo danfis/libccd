@@ -20,7 +20,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "support.h"
+#include <ccd/support.h>
 #include "list.h"
 
 #ifdef __cplusplus

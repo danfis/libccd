@@ -19,7 +19,7 @@
 #include <float.h>
 #include <ccd/ccd.h>
 #include <ccd/vec3.h>
-#include "simplex.h"
+#include <ccd/simplex.h>
 #include "polytope.h"
 #include "alloc.h"
 #include "dbg.h"

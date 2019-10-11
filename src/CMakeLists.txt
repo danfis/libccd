@@ -23,6 +23,8 @@ set(CCD_INCLUDES
   ccd/compiler.h
   ccd/ccd_export.h
   ccd/quat.h
+  ccd/simplex.h
+  ccd/support.h
   ccd/vec3.h
   "${CMAKE_CURRENT_BINARY_DIR}/ccd/config.h")
 
@@ -34,9 +36,7 @@ set(CCD_SOURCES
   mpr.c
   polytope.c
   polytope.h
-  simplex.h
   support.c
-  support.h
   vec3.c)
 
 add_library(ccd ${CCD_INCLUDES} ${CCD_SOURCES})
