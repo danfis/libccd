@@ -23,7 +23,7 @@ option(BUILD_DOCUMENTATION "Build the documentation" OFF)
 option(BUILD_SHARED_LIBS "Build libccd as a shared library" ON)
 
 option(ENABLE_DOUBLE_PRECISION
-  "Enable double precision computations instead of single precision" OFF)
+  "Enable double precision computations instead of single precision" ON)
 
 # Option for some bundle-like build system in order not to expose
 # any FCL binary symbols in their public ABI
