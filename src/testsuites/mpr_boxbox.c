@@ -500,3 +500,36 @@ TEST(mprBoxboxPenetration)
     recPen(depth, &dir, &pos, stdout, "Pen 10");
     //TOSVT();
 }
+TEST(mprBoxboxPenetration2)
+{
+
+    ccd_t ccd;
+    CCD_BOX(box1);
+    CCD_BOX(box2);
+    int res;
+    ccd_real_t depth;
+    ccd_vec3_t dir, pos;
+
+    fprintf(stderr, "\n\n\n---- boxboxPenetration ----\n\n\n");
+
+    box1.x = 20;
+    box1.y = 0.1;
+    box1.z = 20;
+    box2.x = 0.2;
+    box2.y = 0.15;
+    box2.z = 0.2;
+
+    CCD_INIT(&ccd);
+    ccd.support1 = ccdSupport;
+    ccd.support2 = ccdSupport;
+    ccd.center1 = ccdObjCenter;
+    ccd.center2 = ccdObjCenter;
+
+    ccdVec3Set(&box2.pos, 0, 0.1, 0.);
+    res = ccdMPRPenetration(&box1, &box2, &ccd, &depth, &dir, &pos);
+    assertTrue(res == 0);
+    recPen(depth, &dir, &pos, stdout, "Pen largeBox mpr");
+    assertTrue(-0.2 < pos.v[0] && pos.v[0] <0.2);
+    //TOSVT();
+
+}
