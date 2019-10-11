@@ -1,16 +1,24 @@
 # libccddbl [![Build Status](https://travis-ci.org/danfis/libccddbl.svg?branch=master)](https://travis-ci.org/danfis/libccddbl)
 
+***libccddbl*** is a fork of the package
+(libccd)[https://github.com/danfis/libccd.git].  This package is intended to
+only allow double precision whereas ***libccd*** allows you to compile either
+with single or double precision.  The purpose of this library is to be able to
+install the double-precision version alongside the single-precision version.
+There may be instances when a user needs double-precision for some things and
+wants to use single precision for others.
+
 ***libccddbl*** is library for a collision detection between two convex shapes.
 libccddbl implements variation on Gilbert–Johnson–Keerthi algorithm plus Expand
 Polytope Algorithm (EPA) and also implements algorithm Minkowski Portal
 Refinement (MPR, a.k.a. XenoCollide) as described in Game Programming Gems 7.
 
-libccddbl is the only available open source library of my knowledge that include
-MPR algorithm working in 3-D space.  However, there is a library called
-[mpr2d](http://code.google.com/p/mpr2d/), implemented in D programming
-language, that works in 2-D space.
+libccd (and now libccddbl) are the only available open source library of my
+knowledge that include MPR algorithm working in 3-D space.  However, there is a
+library called [mpr2d](http://code.google.com/p/mpr2d/), implemented in D
+programming language, that works in 2-D space.
 
-libccddbl is currently part of:
+libccd is currently part of:
 
 1. [ODE](http://www.ode.org/) library (see ODE's *./configure --help* how to enable it),
 2. [FCL](http://www.ros.org/wiki/fcl) library from [Willow Garage](http://www.willowgarage.com/),
@@ -38,18 +46,21 @@ licensed under 3-clause BSD License.
 
 ## Compile And Install
 
-libccddbl contains several mechanisms for compiling and installing. Using a simple Makefile, using autotools, and using CMake.
+libccddbl contains several mechanisms for compiling and installing. Using a
+simple Makefile, using autotools, and using CMake.
 
 ### 1. Using Makefile
 
-Directory src/ contains Makefile that should contain everything needed for compilation and installation:
+Directory src/ contains Makefile that should contain everything needed for
+compilation and installation:
 ```sh
   $ cd src/
   $ make
   $ make install
 ```
 
-Library libccddbl is by default compiled in double precision of floating point numbers - you can change this by options *USE_SINGLE/USE_DOUBLE*, i.e.:
+Library libccddbl is by default compiled in double precision of floating point
+numbers - you can change this by options *USE_SINGLE/USE_DOUBLE*, i.e.:
 ```sh
   $ make USE_SINGLE=yes
 ```
@@ -81,7 +92,9 @@ Run make and make install:
   $ make && make install
 ```
 
-configure script can change the way libccddbl is compiled and installed, most significant option is *--enable-double-precision* which enables double precision (single is default in this case).
+configure script can change the way libccddbl is compiled and installed, most
+significant option is *--enable-double-precision* which enables double
+precision (single is default in this case).
 
 ### 3. Using CMake
 
@@ -138,12 +151,14 @@ The installation directory may be changed using the `CMAKE_INSTALL_PREFIX` varia
 
 ## GJK - Intersection Test
 
-This section describes how to use libccddbl for testing if two convex objects intersects (i.e., 'yes/no' test) using Gilbert-Johnson-Keerthi (GJK) algorithm.
+This section describes how to use libccddbl for testing if two convex objects
+intersects (i.e., 'yes/no' test) using Gilbert-Johnson-Keerthi (GJK) algorithm.
 
 Procedure is very simple (and is similar for usages of library):
 
 1. Include *<ccddbl/ccddbl.h>* file.
-2. Implement support function for specific shapes. Support function is function that returns furthest point from object (shape) in specified direction.
+2. Implement support function for specific shapes. Support function is function
+   that returns furthest point from object (shape) in specified direction.
 3. Set up *ccddbl_t* structure.
 4. Run ccddblGJKIntersect() function on desired objects.
 
@@ -196,7 +211,8 @@ Here is skeleton of simple program:
 
 ## GJK + EPA - Penetration Of Two Objects
 
-If you want to obtain also penetration info about two intersection objects ccddblGJKPenetration() function can be used.
+If you want to obtain also penetration info about two intersection objects
+ccddblGJKPenetration() function can be used.
 
 Procedure is almost same as for previous case:
 ```cpp
@@ -228,9 +244,12 @@ Procedure is almost same as for previous case:
 
 ## MPR - Intersection Test
 
-libccddbl also provides MPR - Minkowski Portal Refinement algorithm that can be used for testing if two objects intersects.
+libccddbl also provides MPR - Minkowski Portal Refinement algorithm that can be
+used for testing if two objects intersects.
 
-Procedure is similar to the one used for GJK algorithm. Support function is same but also function that returns center (or any point near center) of given object must be implemented:
+Procedure is similar to the one used for GJK algorithm. Support function is
+same but also function that returns center (or any point near center) of given
+object must be implemented:
 ```cpp
   #include <ccddbl/ccddbl.h>
   #include <ccddbl/quat.h> // for work with quaternions
@@ -265,7 +284,9 @@ Procedure is similar to the one used for GJK algorithm. Support function is same
 
 ## MPR - Penetration Of Two Objects
 
-Using MPR algorithm for obtaining penetration info about two intersection objects is equally easy as in previous case instead ccddblMPRPenetration() function is used:
+Using MPR algorithm for obtaining penetration info about two intersection
+objects is equally easy as in previous case instead ccddblMPRPenetration()
+function is used:
 ```cpp
   #include <ccddbl/ccddbl.h>
   #include <ccddbl/quat.h> // for work with quaternions
