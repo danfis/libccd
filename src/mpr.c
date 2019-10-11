@@ -17,7 +17,7 @@
 
 #include <stdlib.h>
 #include <ccd/ccd.h>
-#include "simplex.h"
+#include <ccd/simplex.h>
 #include "dbg.h"
 
 /** Finds origin (center) of Minkowski difference (actually it can be any
