@@ -56,8 +56,8 @@ Run make and make install:
     $ make && make install
 
 configure script can change the way libccd is compiled and installed, most
-significant option is ``--enable-double-precision`` which enables double
-precision (single is default in this case).
+significant option is ``--disable-double-precision`` which enables single
+precision (double is default in this case).
 
 3. Using CMake
 ---------------
@@ -88,12 +88,12 @@ Other build tools may be using by specifying a different generator. For example:
 
     > cmake -G "Visual Studio 14 2015" ..
 
-To compile using double precision, set the ``ENABLE_DOUBLE_PRECISION`` option:
+To compile using single precision, set the ``ENABLE_DOUBLE_PRECISION`` option to ``OFF``:
 
 .. code-block:: bash
 
     $ mkdir build && cd build
-    $ cmake -G "Unix Makefiles" -DENABLE_DOUBLE_PRECISION=ON ..
+    $ cmake -G "Unix Makefiles" -DENABLE_DOUBLE_PRECISION=OFF ..
     $ make && make install
 
 To build libccd as a shared library, set the ``BUILD_SHARED_LIBS`` option:
