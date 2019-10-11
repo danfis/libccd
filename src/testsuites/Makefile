@@ -3,7 +3,7 @@ DEBUG = yes
 
 -include ../Makefile.include
 CFLAGS += -I./ -I../ -Icu/
-LDFLAGS += -L./ -Lcu/ -lcu -lrt -lm -L../ -lccd
+LDFLAGS += -L./ -Lcu/ -lcu -lrt -lm -L../ -lccddbl
 
 CHECK_REG=cu/check-regressions
 CHECK_TS ?=

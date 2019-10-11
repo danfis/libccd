@@ -2,9 +2,9 @@
 # Process this file with autoconf to produce a configure script.
 
 #AC_PREREQ([2.65])
-AC_INIT([libccd], [2.2], [danfis@danfis.cz])
-AC_CONFIG_SRCDIR([src/ccd.c])
-AC_CONFIG_HEADERS([src/ccd/config.h])
+AC_INIT([libccddbl], [2.2], [danfis@danfis.cz])
+AC_CONFIG_SRCDIR([src/ccddbl.c])
+AC_CONFIG_HEADERS([src/ccddbl/config.h])
 AM_INIT_AUTOMAKE
 
 # Checks for programs.
@@ -34,8 +34,8 @@ AC_ARG_ENABLE(double-precision,
               AS_HELP_STRING([--disable-double-precision],
                              [use single precision instead of double preicision]))
 AS_IF([test "x$enable_double_precision" == "xno"],
-      [AC_DEFINE([CCD_SINGLE], [], [use single precision])],
-      [AC_DEFINE([CCD_DOUBLE], [], [use double precision])])
+      [AC_DEFINE([CCDDBL_SINGLE], [], [use single precision])],
+      [AC_DEFINE([CCDDBL_DOUBLE], [], [use double precision])])
 #use_double=no
 #AC_ARG_ENABLE(double-precision,
 #              AS_HELP_STRING([--enable-double-precision],
@@ -43,9 +43,9 @@ AS_IF([test "x$enable_double_precision" == "xno"],
 #              [use_double=yes])
 #if test $use_double = no
 #then
-#        AC_DEFINE([CCD_SINGLE], [], [use single precision])
+#        AC_DEFINE([CCDDBL_SINGLE], [], [use single precision])
 #else
-#        AC_DEFINE([CCD_DOUBLE], [], [use double precision])
+#        AC_DEFINE([CCDDBL_DOUBLE], [], [use double precision])
 #fi
 
 

@@ -2,7 +2,7 @@ SUBDIRS = cu
 
 AM_CPPFLAGS = -I $(srcdir)/.. -I $(builddir)/.. -I $(srcdir)/cu
 
-LDADD = $(builddir)/cu/libcu.la $(builddir)/../libccd.la
+LDADD = $(builddir)/cu/libcu.la $(builddir)/../libccddbl.la
 
 
 check_PROGRAMS = test bench bench2

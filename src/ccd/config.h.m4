@@ -1,7 +1,7 @@
-#ifndef __CCD_CONFIG_H__
-#define __CCD_CONFIG_H__
+#ifndef __CCDDBL_CONFIG_H__
+#define __CCDDBL_CONFIG_H__
 
-ifdef(`USE_SINGLE', `#define CCD_SINGLE')
-ifdef(`USE_DOUBLE', `#define CCD_DOUBLE')
+ifdef(`USE_SINGLE', `#define CCDDBL_SINGLE')
+ifdef(`USE_DOUBLE', `#define CCDDBL_DOUBLE')
 
-#endif /* __CCD_CONFIG_H__ */
+#endif /* __CCDDBL_CONFIG_H__ */

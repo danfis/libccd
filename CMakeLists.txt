@@ -6,13 +6,13 @@ endif()
 
 # Can not explicitly declared the software as C in project command due to bug:
 # https://gitlab.kitware.com/cmake/cmake/issues/16967
-project(libccd)
+project(libccddbl)
 
-set(CCD_VERSION_MAJOR 2)
-set(CCD_VERSION_MINOR 2)
-set(CCD_VERSION ${CCD_VERSION_MAJOR}.${CCD_VERSION_MINOR})
+set(CCDDBL_VERSION_MAJOR 2)
+set(CCDDBL_VERSION_MINOR 2)
+set(CCDDBL_VERSION ${CCDDBL_VERSION_MAJOR}.${CCDDBL_VERSION_MINOR})
 
-set(CCD_SOVERSION 2)
+set(CCDDBL_SOVERSION 2)
 
 # Include GNUInstallDirs to get canonical paths
 include(GNUInstallDirs)
@@ -20,16 +20,16 @@ include(CTest)
 
 option(BUILD_DOCUMENTATION "Build the documentation" OFF)
 
-option(BUILD_SHARED_LIBS "Build libccd as a shared library" ON)
+option(BUILD_SHARED_LIBS "Build libccddbl as a shared library" ON)
 
 option(ENABLE_DOUBLE_PRECISION
   "Enable double precision computations instead of single precision" ON)
 
 # Option for some bundle-like build system in order not to expose
 # any FCL binary symbols in their public ABI
-option(CCD_HIDE_ALL_SYMBOLS "Hide all binary symbols" OFF)
-if (CCD_HIDE_ALL_SYMBOLS)
-  add_definitions("-DCCD_STATIC_DEFINE")
+option(CCDDBL_HIDE_ALL_SYMBOLS "Hide all binary symbols" OFF)
+if (CCDDBL_HIDE_ALL_SYMBOLS)
+  add_definitions("-DCCDDBL_STATIC_DEFINE")
 endif()
 
 # set the default build type
@@ -53,23 +53,23 @@ endif()
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file(ccd-config.cmake.in ccd-config.cmake
-  INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/ccd"
+configure_package_config_file(ccddbl-config.cmake.in ccddbl-config.cmake
+  INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/ccddbl"
   PATH_VARS CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR
   NO_CHECK_REQUIRED_COMPONENTS_MACRO)
 
-write_basic_package_version_file(ccd-config-version.cmake
-  VERSION ${CCD_VERSION} COMPATIBILITY AnyNewerVersion)
+write_basic_package_version_file(ccddbl-config-version.cmake
+  VERSION ${CCDDBL_VERSION} COMPATIBILITY AnyNewerVersion)
 
 install(FILES
-  "${CMAKE_BINARY_DIR}/ccd-config.cmake"
-  "${CMAKE_BINARY_DIR}/ccd-config-version.cmake"
-  DESTINATION "${CMAKE_INSTALL_LIBDIR}/ccd")
+  "${CMAKE_BINARY_DIR}/ccddbl-config.cmake"
+  "${CMAKE_BINARY_DIR}/ccddbl-config-version.cmake"
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/ccddbl")
 
-set(CCD_PKGCONFIG_DESCRIPTION
+set(CCDDBL_PKGCONFIG_DESCRIPTION
   "Library for collision detection between convex shapes")
-configure_file(ccd.pc.in ccd.pc @ONLY)
-install(FILES "${CMAKE_BINARY_DIR}/ccd.pc"
+configure_file(ccddbl.pc.in ccddbl.pc @ONLY)
+install(FILES "${CMAKE_BINARY_DIR}/ccddbl.pc"
   DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
-install(FILES BSD-LICENSE DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/doc/ccd")
+install(FILES BSD-LICENSE DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/doc/ccddbl")

@@ -1,10 +1,10 @@
-.. libccd documentation master file, created by
+.. libccddbl documentation master file, created by
    sphinx-quickstart2 on Thu May 23 13:49:12 2013.
 
-libccd's documentation
+libccddbl's documentation
 =======================
 
-See homepage: http://libccd.danfis.cz
+See homepage: http://libccddbl.danfis.cz
 
 Contents:
 

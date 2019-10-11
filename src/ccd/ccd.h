@@ -1,10 +1,10 @@
 /***
- * libccd
+ * libccddbl
  * ---------------------------------
  * Copyright (c)2010,2011 Daniel Fiser <danfis@danfis.cz>
  *
  *
- *  This file is part of libccd.
+ *  This file is part of libccddbl.
  *
  *  Distributed under the OSI-approved BSD License (the "License");
  *  see accompanying file BDS-LICENSE for details or see
@@ -15,10 +15,10 @@
  *  See the License for more information.
  */
 
-#ifndef __CCD_H__
-#define __CCD_H__
+#ifndef __CCDDBL_H__
+#define __CCDDBL_H__
 
-#include <ccd/vec3.h>
+#include <ccddbl/vec3.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,72 +29,72 @@ extern "C" {
  * and returns (via vec argument) furthest point from object in specified
  * direction.
  */
-typedef void (*ccd_support_fn)(const void *obj, const ccd_vec3_t *dir,
-                               ccd_vec3_t *vec);
+typedef void (*ccddbl_support_fn)(const void *obj, const ccddbl_vec3_t *dir,
+                               ccddbl_vec3_t *vec);
 
 /**
  * Returns (via dir argument) first direction vector that will be used in
  * initialization of algorithm.
  */
-typedef void (*ccd_first_dir_fn)(const void *obj1, const void *obj2,
-                                 ccd_vec3_t *dir);
+typedef void (*ccddbl_first_dir_fn)(const void *obj1, const void *obj2,
+                                 ccddbl_vec3_t *dir);
 
 
 /**
  * Returns (via center argument) geometric center (some point near center)
  * of given object.
  */
-typedef void (*ccd_center_fn)(const void *obj1, ccd_vec3_t *center);
+typedef void (*ccddbl_center_fn)(const void *obj1, ccddbl_vec3_t *center);
 
 /**
- * Main structure of CCD algorithm.
+ * Main structure of CCDDBL algorithm.
  */
-struct _ccd_t {
-    ccd_first_dir_fn first_dir; //!< Returns initial direction where first
+struct _ccddbl_t {
+    ccddbl_first_dir_fn first_dir; //!< Returns initial direction where first
                                 //!< support point will be searched
-    ccd_support_fn support1; //!< Function that returns support point of
+    ccddbl_support_fn support1; //!< Function that returns support point of
                              //!< first object
-    ccd_support_fn support2; //!< Function that returns support point of
+    ccddbl_support_fn support2; //!< Function that returns support point of
                              //!< second object
 
-    ccd_center_fn center1; //!< Function that returns geometric center of
+    ccddbl_center_fn center1; //!< Function that returns geometric center of
                            //!< first object
-    ccd_center_fn center2; //!< Function that returns geometric center of
+    ccddbl_center_fn center2; //!< Function that returns geometric center of
                            //!< second object
 
     unsigned long max_iterations; //!< Maximal number of iterations
-    ccd_real_t epa_tolerance;
-    ccd_real_t mpr_tolerance; //!< Boundary tolerance for MPR algorithm
-    ccd_real_t dist_tolerance;
+    ccddbl_real_t epa_tolerance;
+    ccddbl_real_t mpr_tolerance; //!< Boundary tolerance for MPR algorithm
+    ccddbl_real_t dist_tolerance;
 };
-typedef struct _ccd_t ccd_t;
+typedef struct _ccddbl_t ccddbl_t;
 
 /**
  * Default first direction.
  */
-CCD_EXPORT void ccdFirstDirDefault(const void *o1, const void *o2,
-                                    ccd_vec3_t *dir);
+CCDDBL_EXPORT void ccddblFirstDirDefault(const void *o1, const void *o2,
+                                    ccddbl_vec3_t *dir);
 
-#define CCD_INIT(ccd) \
+#define CCDDBL_INIT(ccddbl) \
     do { \
-        (ccd)->first_dir = ccdFirstDirDefault; \
-        (ccd)->support1 = NULL; \
-        (ccd)->support2 = NULL; \
-        (ccd)->center1  = NULL; \
-        (ccd)->center2  = NULL; \
+        (ccddbl)->first_dir = ccddblFirstDirDefault; \
+        (ccddbl)->support1 = NULL; \
+        (ccddbl)->support2 = NULL; \
+        (ccddbl)->center1  = NULL; \
+        (ccddbl)->center2  = NULL; \
         \
-        (ccd)->max_iterations = (unsigned long)-1; \
-        (ccd)->epa_tolerance = CCD_REAL(0.0001); \
-        (ccd)->mpr_tolerance = CCD_REAL(0.0001); \
-        (ccd)->dist_tolerance = CCD_REAL(1E-6); \
+        (ccddbl)->max_iterations = (unsigned long)-1; \
+        (ccddbl)->epa_tolerance = CCDDBL_REAL(0.0001); \
+        (ccddbl)->mpr_tolerance = CCDDBL_REAL(0.0001); \
+        (ccddbl)->dist_tolerance = CCDDBL_REAL(1E-6); \
     } while(0)
 
 
 /**
  * Returns true if two given objects interest.
  */
-CCD_EXPORT int ccdGJKIntersect(const void *obj1, const void *obj2,
-                                const ccd_t *ccd);
+CCDDBL_EXPORT int ccddblGJKIntersect(const void *obj1, const void *obj2,
+                                const ccddbl_t *ccddbl);
 
 /**
  * This function computes separation vector of two objects. Separation
@@ -104,8 +104,8 @@ CCD_EXPORT int ccdGJKIntersect(const void *obj1, const void *obj2,
  * vector. If obj1 and obj2 don't intersect -1 is returned.
  * If memory allocation fails -2 is returned.
  */
-CCD_EXPORT int ccdGJKSeparate(const void *obj1, const void *obj2,
-                               const ccd_t *ccd, ccd_vec3_t *sep);
+CCDDBL_EXPORT int ccddblGJKSeparate(const void *obj1, const void *obj2,
+                               const ccddbl_t *ccddbl, ccddbl_vec3_t *sep);
 
 /**
  * Computes penetration of obj2 into obj1.
@@ -114,22 +114,22 @@ CCD_EXPORT int ccdGJKSeparate(const void *obj1, const void *obj2,
  * have touching contact, pos should be position in global coordinates
  * where force should take a place.
  *
- * CCD+EPA algorithm is used.
+ * CCDDBL+EPA algorithm is used.
  *
  * Returns 0 if obj1 and obj2 intersect and depth, dir and pos are filled
  * if given non-NULL pointers.
  * If obj1 and obj2 don't intersect -1 is returned.
  * If memory allocation fails -2 is returned.
  */
-CCD_EXPORT int ccdGJKPenetration(const void *obj1, const void *obj2,
-                                  const ccd_t *ccd, ccd_real_t *depth,
-                                  ccd_vec3_t *dir, ccd_vec3_t *pos);
+CCDDBL_EXPORT int ccddblGJKPenetration(const void *obj1, const void *obj2,
+                                  const ccddbl_t *ccddbl, ccddbl_real_t *depth,
+                                  ccddbl_vec3_t *dir, ccddbl_vec3_t *pos);
 
 /**
  * Returns true if two given objects intersect - MPR algorithm is used.
  */
-CCD_EXPORT int ccdMPRIntersect(const void *obj1, const void *obj2,
-                                const ccd_t *ccd);
+CCDDBL_EXPORT int ccddblMPRIntersect(const void *obj1, const void *obj2,
+                                const ccddbl_t *ccddbl);
 
 /**
  * Computes penetration of obj2 into obj1.
@@ -143,12 +143,12 @@ CCD_EXPORT int ccdMPRIntersect(const void *obj1, const void *obj2,
  *
  * Returns 0 if obj1 and obj2 intersect, otherwise -1 is returned.
  */
-CCD_EXPORT int ccdMPRPenetration(const void *obj1, const void *obj2,
-                                  const ccd_t *ccd, ccd_real_t *depth,
-                                  ccd_vec3_t *dir, ccd_vec3_t *pos);
+CCDDBL_EXPORT int ccddblMPRPenetration(const void *obj1, const void *obj2,
+                                  const ccddbl_t *ccddbl, ccddbl_real_t *depth,
+                                  ccddbl_vec3_t *dir, ccddbl_vec3_t *pos);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* __CCD_H__ */
+#endif /* __CCDDBL_H__ */

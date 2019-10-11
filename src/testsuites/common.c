@@ -1,35 +1,35 @@
-#include <ccd/vec3.h>
-#include <ccd/quat.h>
+#include <ccddbl/vec3.h>
+#include <ccddbl/quat.h>
 #include "common.h"
 #include "support.h"
 
-static void svtCyl(ccd_cyl_t *c, FILE *out, const char *color, const char *name)
+static void svtCyl(ccddbl_cyl_t *c, FILE *out, const char *color, const char *name)
 {
-    ccd_vec3_t v[32];
-    ccd_quat_t rot;
-    ccd_vec3_t axis, vpos, vpos2;
-    ccd_real_t angle, x, y;
+    ccddbl_vec3_t v[32];
+    ccddbl_quat_t rot;
+    ccddbl_vec3_t axis, vpos, vpos2;
+    ccddbl_real_t angle, x, y;
     int i;
 
-    ccdVec3Set(&axis, 0., 0., 1.);
-    ccdVec3Set(&vpos, 0., c->radius, 0.);
+    ccddblVec3Set(&axis, 0., 0., 1.);
+    ccddblVec3Set(&vpos, 0., c->radius, 0.);
     angle = 0.;
     for (i = 0; i < 16; i++){
-        angle = (ccd_real_t)i * (2. * M_PI / 16.);
+        angle = (ccddbl_real_t)i * (2. * M_PI / 16.);
 
-        ccdQuatSetAngleAxis(&rot, angle, &axis);
-        ccdVec3Copy(&vpos2, &vpos);
-        ccdQuatRotVec(&vpos2, &rot);
-        x = ccdVec3X(&vpos2);
-        y = ccdVec3Y(&vpos2);
+        ccddblQuatSetAngleAxis(&rot, angle, &axis);
+        ccddblVec3Copy(&vpos2, &vpos);
+        ccddblQuatRotVec(&vpos2, &rot);
+        x = ccddblVec3X(&vpos2);
+        y = ccddblVec3Y(&vpos2);
 
-        ccdVec3Set(&v[i], x, y, c->height / 2.);
-        ccdVec3Set(&v[i + 16], x, y, -c->height / 2.);
+        ccddblVec3Set(&v[i], x, y, c->height / 2.);
+        ccddblVec3Set(&v[i + 16], x, y, -c->height / 2.);
     }
 
     for (i = 0; i < 32; i++){
-        ccdQuatRotVec(&v[i], &c->quat);
-        ccdVec3Add(&v[i], &c->pos);
+        ccddblQuatRotVec(&v[i], &c->quat);
+        ccddblVec3Add(&v[i], &c->pos);
     }
 
     fprintf(out, "-----\n");
@@ -41,7 +41,7 @@ static void svtCyl(ccd_cyl_t *c, FILE *out, const char *color, const char *name)
     fprintf(out, "Point color: %s\n", color);
     fprintf(out, "Points:\n");
     for (i = 0; i < 32; i++){
-        fprintf(out, "%lf %lf %lf\n", ccdVec3X(&v[i]), ccdVec3Y(&v[i]), ccdVec3Z(&v[i]));
+        fprintf(out, "%lf %lf %lf\n", ccddblVec3X(&v[i]), ccddblVec3Y(&v[i]), ccddblVec3Z(&v[i]));
     }
 
     fprintf(out, "Edges:\n");
@@ -74,23 +74,23 @@ static void svtCyl(ccd_cyl_t *c, FILE *out, const char *color, const char *name)
     fprintf(out, "-----\n");
 }
 
-static void svtBox(ccd_box_t *b, FILE *out, const char *color, const char *name)
+static void svtBox(ccddbl_box_t *b, FILE *out, const char *color, const char *name)
 {
-    ccd_vec3_t v[8];
+    ccddbl_vec3_t v[8];
     size_t i;
 
-    ccdVec3Set(&v[0], b->x * 0.5, b->y * 0.5, b->z * 0.5);
-    ccdVec3Set(&v[1], b->x * 0.5, b->y * -0.5, b->z * 0.5);
-    ccdVec3Set(&v[2], b->x * 0.5, b->y * 0.5, b->z * -0.5);
-    ccdVec3Set(&v[3], b->x * 0.5, b->y * -0.5, b->z * -0.5);
-    ccdVec3Set(&v[4], b->x * -0.5, b->y * 0.5, b->z * 0.5);
-    ccdVec3Set(&v[5], b->x * -0.5, b->y * -0.5, b->z * 0.5);
-    ccdVec3Set(&v[6], b->x * -0.5, b->y * 0.5, b->z * -0.5);
-    ccdVec3Set(&v[7], b->x * -0.5, b->y * -0.5, b->z * -0.5);
+    ccddblVec3Set(&v[0], b->x * 0.5, b->y * 0.5, b->z * 0.5);
+    ccddblVec3Set(&v[1], b->x * 0.5, b->y * -0.5, b->z * 0.5);
+    ccddblVec3Set(&v[2], b->x * 0.5, b->y * 0.5, b->z * -0.5);
+    ccddblVec3Set(&v[3], b->x * 0.5, b->y * -0.5, b->z * -0.5);
+    ccddblVec3Set(&v[4], b->x * -0.5, b->y * 0.5, b->z * 0.5);
+    ccddblVec3Set(&v[5], b->x * -0.5, b->y * -0.5, b->z * 0.5);
+    ccddblVec3Set(&v[6], b->x * -0.5, b->y * 0.5, b->z * -0.5);
+    ccddblVec3Set(&v[7], b->x * -0.5, b->y * -0.5, b->z * -0.5);
 
     for (i = 0; i < 8; i++){
-        ccdQuatRotVec(&v[i], &b->quat);
-        ccdVec3Add(&v[i], &b->pos);
+        ccddblQuatRotVec(&v[i], &b->quat);
+        ccddblVec3Add(&v[i], &b->pos);
     }
 
     fprintf(out, "-----\n");
@@ -101,7 +101,7 @@ static void svtBox(ccd_box_t *b, FILE *out, const char *color, const char *name)
     fprintf(out, "Point color: %s\n", color);
     fprintf(out, "Points:\n");
     for (i = 0; i < 8; i++){
-        fprintf(out, "%lf %lf %lf\n", ccdVec3X(&v[i]), ccdVec3Y(&v[i]), ccdVec3Z(&v[i]));
+        fprintf(out, "%lf %lf %lf\n", ccddblVec3X(&v[i]), ccddblVec3Y(&v[i]), ccddblVec3Z(&v[i]));
     }
 
     fprintf(out, "Edges:\n");
@@ -117,36 +117,36 @@ static void svtBox(ccd_box_t *b, FILE *out, const char *color, const char *name)
 
 void svtObj(void *_o, FILE *out, const char *color, const char *name)
 {
-    ccd_obj_t *o = (ccd_obj_t *)_o;
+    ccddbl_obj_t *o = (ccddbl_obj_t *)_o;
 
-    if (o->type == CCD_OBJ_CYL){
-        svtCyl((ccd_cyl_t *)o, out, color, name);
-    }else if (o->type == CCD_OBJ_BOX){
-        svtBox((ccd_box_t *)o, out, color, name);
+    if (o->type == CCDDBL_OBJ_CYL){
+        svtCyl((ccddbl_cyl_t *)o, out, color, name);
+    }else if (o->type == CCDDBL_OBJ_BOX){
+        svtBox((ccddbl_box_t *)o, out, color, name);
     }
 }
 
 void svtObjPen(void *o1, void *o2,
                FILE *out, const char *name,
-               ccd_real_t depth, const ccd_vec3_t *dir, const ccd_vec3_t *pos)
+               ccddbl_real_t depth, const ccddbl_vec3_t *dir, const ccddbl_vec3_t *pos)
 {
-    ccd_vec3_t sep;
+    ccddbl_vec3_t sep;
     char oname[500];
 
-    ccdVec3Copy(&sep, dir);
-    ccdVec3Scale(&sep, depth);
-    ccdVec3Add(&sep, pos);
+    ccddblVec3Copy(&sep, dir);
+    ccddblVec3Scale(&sep, depth);
+    ccddblVec3Add(&sep, pos);
 
     fprintf(out, "------\n");
     if (name)
         fprintf(out, "Name: %s\n", name);
     fprintf(out, "Point color: 0.1 0.1 0.9\n");
-    fprintf(out, "Points:\n%lf %lf %lf\n", ccdVec3X(pos), ccdVec3Y(pos), ccdVec3Z(pos));
+    fprintf(out, "Points:\n%lf %lf %lf\n", ccddblVec3X(pos), ccddblVec3Y(pos), ccddblVec3Z(pos));
     fprintf(out, "------\n");
     fprintf(out, "Point color: 0.1 0.9 0.9\n");
     fprintf(out, "Edge color: 0.1 0.9 0.9\n");
-    fprintf(out, "Points:\n%lf %lf %lf\n", ccdVec3X(pos), ccdVec3Y(pos), ccdVec3Z(pos));
-    fprintf(out, "%lf %lf %lf\n", ccdVec3X(&sep), ccdVec3Y(&sep), ccdVec3Z(&sep));
+    fprintf(out, "Points:\n%lf %lf %lf\n", ccddblVec3X(pos), ccddblVec3Y(pos), ccddblVec3Z(pos));
+    fprintf(out, "%lf %lf %lf\n", ccddblVec3X(&sep), ccddblVec3Y(&sep), ccddblVec3Z(&sep));
     fprintf(out, "Edges: 0 1\n");
 
     oname[0] = 0x0;
@@ -161,14 +161,14 @@ void svtObjPen(void *o1, void *o2,
 }
 
 
-void recPen(ccd_real_t depth, const ccd_vec3_t *dir, const ccd_vec3_t *pos,
+void recPen(ccddbl_real_t depth, const ccddbl_vec3_t *dir, const ccddbl_vec3_t *pos,
             FILE *out, const char *note)
 {
     if (!note)
         note = "";
 
     fprintf(out, "# %s: depth: %lf\n", note, depth);
-    fprintf(out, "# %s: dir:   [%lf %lf %lf]\n", note, ccdVec3X(dir), ccdVec3Y(dir), ccdVec3Z(dir));
-    fprintf(out, "# %s: pos:   [%lf %lf %lf]\n", note, ccdVec3X(pos), ccdVec3Y(pos), ccdVec3Z(pos));
+    fprintf(out, "# %s: dir:   [%lf %lf %lf]\n", note, ccddblVec3X(dir), ccddblVec3Y(dir), ccddblVec3Z(dir));
+    fprintf(out, "# %s: pos:   [%lf %lf %lf]\n", note, ccddblVec3X(pos), ccddblVec3Y(pos), ccddblVec3Z(pos));
     fprintf(out, "#\n");
 }

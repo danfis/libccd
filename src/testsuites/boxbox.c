@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <cu/cu.h>
 
-#include <ccd/ccd.h>
+#include <ccddbl/ccddbl.h>
 #include "support.h"
 #include "../dbg.h"
 #include "common.h"
@@ -18,15 +18,15 @@ TEST(boxboxTearDown)
 TEST(boxboxAlignedX)
 {
     size_t i;
-    ccd_t ccd;
-    CCD_BOX(box1);
-    CCD_BOX(box2);
+    ccddbl_t ccddbl;
+    CCDDBL_BOX(box1);
+    CCDDBL_BOX(box2);
     int res;
 
-    CCD_INIT(&ccd);
-    ccd.support1 = ccdSupport;
-    ccd.support2 = ccdSupport;
-    //ccd.max_iterations = 20;
+    CCDDBL_INIT(&ccddbl);
+    ccddbl.support1 = ccddblSupport;
+    ccddbl.support2 = ccddblSupport;
+    //ccddbl.max_iterations = 20;
 
     box1.x = 1;
     box1.y = 2;
@@ -35,12 +35,12 @@ TEST(boxboxAlignedX)
     box2.y = 1;
     box2.z = 2;
 
-    ccdVec3Set(&box1.pos, -5., 0., 0.);
-    ccdVec3Set(&box2.pos, 0., 0., 0.);
-    ccdQuatSet(&box1.quat, 0., 0., 0., 1.);
-    ccdQuatSet(&box2.quat, 0., 0., 0., 1.);
+    ccddblVec3Set(&box1.pos, -5., 0., 0.);
+    ccddblVec3Set(&box2.pos, 0., 0., 0.);
+    ccddblQuatSet(&box1.quat, 0., 0., 0., 1.);
+    ccddblQuatSet(&box2.quat, 0., 0., 0., 1.);
     for (i = 0; i < 100; i++){
-        res = ccdGJKIntersect(&box1, &box2, &ccd);
+        res = ccddblGJKIntersect(&box1, &box2, &ccddbl);
         if (i < 35 || i > 65){
             assertFalse(res);
         }else if (i != 35 && i != 65){
@@ -58,12 +58,12 @@ TEST(boxboxAlignedX)
     box2.y = 0.1;
     box2.z = 0.2;
 
-    ccdVec3Set(&box1.pos, -0.5, 0., 0.);
-    ccdVec3Set(&box2.pos, 0., 0., 0.);
-    ccdQuatSet(&box1.quat, 0., 0., 0., 1.);
-    ccdQuatSet(&box2.quat, 0., 0., 0., 1.);
+    ccddblVec3Set(&box1.pos, -0.5, 0., 0.);
+    ccddblVec3Set(&box2.pos, 0., 0., 0.);
+    ccddblQuatSet(&box1.quat, 0., 0., 0., 1.);
+    ccddblQuatSet(&box2.quat, 0., 0., 0., 1.);
     for (i = 0; i < 100; i++){
-        res = ccdGJKIntersect(&box1, &box2, &ccd);
+        res = ccddblGJKIntersect(&box1, &box2, &ccddbl);
 
         if (i < 35 || i > 65){
             assertFalse(res);
@@ -82,12 +82,12 @@ TEST(boxboxAlignedX)
     box2.y = 1;
     box2.z = 2;
 
-    ccdVec3Set(&box1.pos, -5., -0.1, 0.);
-    ccdVec3Set(&box2.pos, 0., 0., 0.);
-    ccdQuatSet(&box1.quat, 0., 0., 0., 1.);
-    ccdQuatSet(&box2.quat, 0., 0., 0., 1.);
+    ccddblVec3Set(&box1.pos, -5., -0.1, 0.);
+    ccddblVec3Set(&box2.pos, 0., 0., 0.);
+    ccddblQuatSet(&box1.quat, 0., 0., 0., 1.);
+    ccddblQuatSet(&box2.quat, 0., 0., 0., 1.);
     for (i = 0; i < 100; i++){
-        res = ccdGJKIntersect(&box1, &box2, &ccd);
+        res = ccddblGJKIntersect(&box1, &box2, &ccddbl);
 
         if (i < 35 || i > 65){
             assertFalse(res);
@@ -102,14 +102,14 @@ TEST(boxboxAlignedX)
 TEST(boxboxAlignedY)
 {
     size_t i;
-    ccd_t ccd;
-    CCD_BOX(box1);
-    CCD_BOX(box2);
+    ccddbl_t ccddbl;
+    CCDDBL_BOX(box1);
+    CCDDBL_BOX(box2);
     int res;
 
-    CCD_INIT(&ccd);
-    ccd.support1 = ccdSupport;
-    ccd.support2 = ccdSupport;
+    CCDDBL_INIT(&ccddbl);
+    ccddbl.support1 = ccddblSupport;
+    ccddbl.support2 = ccddblSupport;
 
     box1.x = 1;
     box1.y = 2;
@@ -118,12 +118,12 @@ TEST(boxboxAlignedY)
     box2.y = 1;
     box2.z = 2;
 
-    ccdVec3Set(&box1.pos, 0., -5., 0.);
-    ccdVec3Set(&box2.pos, 0., 0., 0.);
-    ccdQuatSet(&box1.quat, 0., 0., 0., 1.);
-    ccdQuatSet(&box2.quat, 0., 0., 0., 1.);
+    ccddblVec3Set(&box1.pos, 0., -5., 0.);
+    ccddblVec3Set(&box2.pos, 0., 0., 0.);
+    ccddblQuatSet(&box1.quat, 0., 0., 0., 1.);
+    ccddblQuatSet(&box2.quat, 0., 0., 0., 1.);
     for (i = 0; i < 100; i++){
-        res = ccdGJKIntersect(&box1, &box2, &ccd);
+        res = ccddblGJKIntersect(&box1, &box2, &ccddbl);
 
         if (i < 35 || i > 65){
             assertFalse(res);
@@ -138,14 +138,14 @@ TEST(boxboxAlignedY)
 TEST(boxboxAlignedZ)
 {
     size_t i;
-    ccd_t ccd;
-    CCD_BOX(box1);
-    CCD_BOX(box2);
+    ccddbl_t ccddbl;
+    CCDDBL_BOX(box1);
+    CCDDBL_BOX(box2);
     int res;
 
-    CCD_INIT(&ccd);
-    ccd.support1 = ccdSupport;
-    ccd.support2 = ccdSupport;
+    CCDDBL_INIT(&ccddbl);
+    ccddbl.support1 = ccddblSupport;
+    ccddbl.support2 = ccddblSupport;
 
     box1.x = 1;
     box1.y = 2;
@@ -154,12 +154,12 @@ TEST(boxboxAlignedZ)
     box2.y = 1;
     box2.z = 2;
 
-    ccdVec3Set(&box1.pos, 0., 0., -5.);
-    ccdVec3Set(&box2.pos, 0., 0., 0.);
-    ccdQuatSet(&box1.quat, 0., 0., 0., 1.);
-    ccdQuatSet(&box2.quat, 0., 0., 0., 1.);
+    ccddblVec3Set(&box1.pos, 0., 0., -5.);
+    ccddblVec3Set(&box2.pos, 0., 0., 0.);
+    ccddblQuatSet(&box1.quat, 0., 0., 0., 1.);
+    ccddblQuatSet(&box2.quat, 0., 0., 0., 1.);
     for (i = 0; i < 100; i++){
-        res = ccdGJKIntersect(&box1, &box2, &ccd);
+        res = ccddblGJKIntersect(&box1, &box2, &ccddbl);
 
         if (i < 35 || i > 65){
             assertFalse(res);
@@ -175,16 +175,16 @@ TEST(boxboxAlignedZ)
 TEST(boxboxRot)
 {
     size_t i;
-    ccd_t ccd;
-    CCD_BOX(box1);
-    CCD_BOX(box2);
+    ccddbl_t ccddbl;
+    CCDDBL_BOX(box1);
+    CCDDBL_BOX(box2);
     int res;
-    ccd_vec3_t axis;
-    ccd_real_t angle;
+    ccddbl_vec3_t axis;
+    ccddbl_real_t angle;
 
-    CCD_INIT(&ccd);
-    ccd.support1 = ccdSupport;
-    ccd.support2 = ccdSupport;
+    CCDDBL_INIT(&ccddbl);
+    ccddbl.support1 = ccddblSupport;
+    ccddbl.support2 = ccddblSupport;
 
     box1.x = 1;
     box1.y = 2;
@@ -193,14 +193,14 @@ TEST(boxboxRot)
     box2.y = 1;
     box2.z = 2;
 
-    ccdVec3Set(&box1.pos, -5., 0.5, 0.);
-    ccdVec3Set(&box2.pos, 0., 0., 0.);
-    ccdQuatSet(&box2.quat, 0., 0., 0., 1.);
-    ccdVec3Set(&axis, 0., 1., 0.);
-    ccdQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    ccddblVec3Set(&box1.pos, -5., 0.5, 0.);
+    ccddblVec3Set(&box2.pos, 0., 0., 0.);
+    ccddblQuatSet(&box2.quat, 0., 0., 0., 1.);
+    ccddblVec3Set(&axis, 0., 1., 0.);
+    ccddblQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
 
     for (i = 0; i < 100; i++){
-        res = ccdGJKIntersect(&box1, &box2, &ccd);
+        res = ccddblGJKIntersect(&box1, &box2, &ccddbl);
 
         if (i < 33 || i > 67){
             assertFalse(res);
@@ -218,15 +218,15 @@ TEST(boxboxRot)
     box2.y = 1;
     box2.z = 1;
 
-    ccdVec3Set(&box1.pos, -1.01, 0., 0.);
-    ccdVec3Set(&box2.pos, 0., 0., 0.);
-    ccdQuatSet(&box1.quat, 0., 0., 0., 1.);
-    ccdQuatSet(&box2.quat, 0., 0., 0., 1.);
+    ccddblVec3Set(&box1.pos, -1.01, 0., 0.);
+    ccddblVec3Set(&box2.pos, 0., 0., 0.);
+    ccddblQuatSet(&box1.quat, 0., 0., 0., 1.);
+    ccddblQuatSet(&box2.quat, 0., 0., 0., 1.);
 
-    ccdVec3Set(&axis, 0., 1., 0.);
+    ccddblVec3Set(&axis, 0., 1., 0.);
     angle = 0.;
     for (i = 0; i < 30; i++){
-        res = ccdGJKIntersect(&box1, &box2, &ccd);
+        res = ccddblGJKIntersect(&box1, &box2, &ccddbl);
 
         if (i != 0 && i != 10 && i != 20){
             assertTrue(res);
@@ -235,35 +235,35 @@ TEST(boxboxRot)
         }
 
         angle += M_PI / 20.;
-        ccdQuatSetAngleAxis(&box1.quat, angle, &axis);
+        ccddblQuatSetAngleAxis(&box1.quat, angle, &axis);
     }
 
 }
 
 
 
-static void pConf(ccd_box_t *box1, ccd_box_t *box2, const ccd_vec3_t *v)
+static void pConf(ccddbl_box_t *box1, ccddbl_box_t *box2, const ccddbl_vec3_t *v)
 {
     fprintf(stdout, "# box1.pos: [%lf %lf %lf]\n",
-            ccdVec3X(&box1->pos), ccdVec3Y(&box1->pos), ccdVec3Z(&box1->pos));
+            ccddblVec3X(&box1->pos), ccddblVec3Y(&box1->pos), ccddblVec3Z(&box1->pos));
     fprintf(stdout, "# box1->quat: [%lf %lf %lf %lf]\n",
             box1->quat.q[0], box1->quat.q[1], box1->quat.q[2], box1->quat.q[3]);
     fprintf(stdout, "# box2->pos: [%lf %lf %lf]\n",
-            ccdVec3X(&box2->pos), ccdVec3Y(&box2->pos), ccdVec3Z(&box2->pos));
+            ccddblVec3X(&box2->pos), ccddblVec3Y(&box2->pos), ccddblVec3Z(&box2->pos));
     fprintf(stdout, "# box2->quat: [%lf %lf %lf %lf]\n",
             box2->quat.q[0], box2->quat.q[1], box2->quat.q[2], box2->quat.q[3]);
     fprintf(stdout, "# sep: [%lf %lf %lf]\n",
-            ccdVec3X(v), ccdVec3Y(v), ccdVec3Z(v));
+            ccddblVec3X(v), ccddblVec3Y(v), ccddblVec3Z(v));
     fprintf(stdout, "#\n");
 }
 
 TEST(boxboxSeparate)
 {
-    ccd_t ccd;
-    CCD_BOX(box1);
-    CCD_BOX(box2);
+    ccddbl_t ccddbl;
+    CCDDBL_BOX(box1);
+    CCDDBL_BOX(box2);
     int res;
-    ccd_vec3_t sep, expsep, expsep2, axis;
+    ccddbl_vec3_t sep, expsep, expsep2, axis;
 
     fprintf(stderr, "\n\n\n---- boxboxSeparate ----\n\n\n");
 
@@ -273,66 +273,66 @@ TEST(boxboxSeparate)
     box2.z = 1.5;
 
 
-    CCD_INIT(&ccd);
-    ccd.support1 = ccdSupport;
-    ccd.support2 = ccdSupport;
+    CCDDBL_INIT(&ccddbl);
+    ccddbl.support1 = ccddblSupport;
+    ccddbl.support2 = ccddblSupport;
 
-    ccdVec3Set(&box1.pos, -0.5, 0.5, 0.2);
-    res = ccdGJKIntersect(&box1, &box2, &ccd);
+    ccddblVec3Set(&box1.pos, -0.5, 0.5, 0.2);
+    res = ccddblGJKIntersect(&box1, &box2, &ccddbl);
     assertTrue(res);
 
-    res = ccdGJKSeparate(&box1, &box2, &ccd, &sep);
+    res = ccddblGJKSeparate(&box1, &box2, &ccddbl, &sep);
     assertTrue(res == 0);
-    ccdVec3Set(&expsep, 0.25, 0., 0.);
-    assertTrue(ccdVec3Eq(&sep, &expsep));
+    ccddblVec3Set(&expsep, 0.25, 0., 0.);
+    assertTrue(ccddblVec3Eq(&sep, &expsep));
 
-    ccdVec3Scale(&sep, -1.);
-    ccdVec3Add(&box1.pos, &sep);
-    res = ccdGJKSeparate(&box1, &box2, &ccd, &sep);
+    ccddblVec3Scale(&sep, -1.);
+    ccddblVec3Add(&box1.pos, &sep);
+    res = ccddblGJKSeparate(&box1, &box2, &ccddbl, &sep);
     assertTrue(res == 0);
-    ccdVec3Set(&expsep, 0., 0., 0.);
-    assertTrue(ccdVec3Eq(&sep, &expsep));
+    ccddblVec3Set(&expsep, 0., 0., 0.);
+    assertTrue(ccddblVec3Eq(&sep, &expsep));
 
 
-    ccdVec3Set(&box1.pos, -0.3, 0.5, 1.);
-    res = ccdGJKSeparate(&box1, &box2, &ccd, &sep);
+    ccddblVec3Set(&box1.pos, -0.3, 0.5, 1.);
+    res = ccddblGJKSeparate(&box1, &box2, &ccddbl, &sep);
     assertTrue(res == 0);
-    ccdVec3Set(&expsep, 0., 0., -0.25);
-    assertTrue(ccdVec3Eq(&sep, &expsep));
+    ccddblVec3Set(&expsep, 0., 0., -0.25);
+    assertTrue(ccddblVec3Eq(&sep, &expsep));
 
 
 
     box1.x = box1.y = box1.z = 1.;
     box2.x = box2.y = box2.z = 1.;
-    ccdVec3Set(&axis, 0., 0., 1.);
-    ccdQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
-    ccdVec3Set(&box1.pos, 0., 0., 0.);
+    ccddblVec3Set(&axis, 0., 0., 1.);
+    ccddblQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    ccddblVec3Set(&box1.pos, 0., 0., 0.);
 
-    res = ccdGJKSeparate(&box1, &box2, &ccd, &sep);
+    res = ccddblGJKSeparate(&box1, &box2, &ccddbl, &sep);
     assertTrue(res == 0);
-    ccdVec3Set(&expsep, 0., 0., 1.);
-    ccdVec3Set(&expsep2, 0., 0., -1.);
-    assertTrue(ccdVec3Eq(&sep, &expsep) || ccdVec3Eq(&sep, &expsep2));
+    ccddblVec3Set(&expsep, 0., 0., 1.);
+    ccddblVec3Set(&expsep2, 0., 0., -1.);
+    assertTrue(ccddblVec3Eq(&sep, &expsep) || ccddblVec3Eq(&sep, &expsep2));
 
 
 
     box1.x = box1.y = box1.z = 1.;
-    ccdVec3Set(&axis, 0., 0., 1.);
-    ccdQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
-    ccdVec3Set(&box1.pos, -0.5, 0., 0.);
+    ccddblVec3Set(&axis, 0., 0., 1.);
+    ccddblQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    ccddblVec3Set(&box1.pos, -0.5, 0., 0.);
 
-    res = ccdGJKSeparate(&box1, &box2, &ccd, &sep);
+    res = ccddblGJKSeparate(&box1, &box2, &ccddbl, &sep);
     assertTrue(res == 0);
     pConf(&box1, &box2, &sep);
 
 
 
     box1.x = box1.y = box1.z = 1.;
-    ccdVec3Set(&axis, 0., 1., 1.);
-    ccdQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
-    ccdVec3Set(&box1.pos, -0.5, 0.1, 0.4);
+    ccddblVec3Set(&axis, 0., 1., 1.);
+    ccddblQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    ccddblVec3Set(&box1.pos, -0.5, 0.1, 0.4);
 
-    res = ccdGJKSeparate(&box1, &box2, &ccd, &sep);
+    res = ccddblGJKSeparate(&box1, &box2, &ccddbl, &sep);
     assertTrue(res == 0);
     pConf(&box1, &box2, &sep);
 }
@@ -340,20 +340,20 @@ TEST(boxboxSeparate)
 
 #define TOSVT() \
     svtObjPen(&box1, &box2, stdout, "Pen 1", depth, &dir, &pos); \
-    ccdVec3Scale(&dir, depth); \
-    ccdVec3Add(&box2.pos, &dir); \
+    ccddblVec3Scale(&dir, depth); \
+    ccddblVec3Add(&box2.pos, &dir); \
     svtObjPen(&box1, &box2, stdout, "Pen 1", depth, &dir, &pos)
 
 TEST(boxboxPenetration)
 {
-    ccd_t ccd;
-    CCD_BOX(box1);
-    CCD_BOX(box2);
+    ccddbl_t ccddbl;
+    CCDDBL_BOX(box1);
+    CCDDBL_BOX(box2);
     int res;
-    ccd_vec3_t axis;
-    ccd_quat_t rot;
-    ccd_real_t depth;
-    ccd_vec3_t dir, pos;
+    ccddbl_vec3_t axis;
+    ccddbl_quat_t rot;
+    ccddbl_real_t depth;
+    ccddbl_vec3_t dir, pos;
 
     fprintf(stderr, "\n\n\n---- boxboxPenetration ----\n\n\n");
 
@@ -363,19 +363,19 @@ TEST(boxboxPenetration)
     box2.z = 1.5;
 
 
-    CCD_INIT(&ccd);
-    ccd.support1 = ccdSupport;
-    ccd.support2 = ccdSupport;
+    CCDDBL_INIT(&ccddbl);
+    ccddbl.support1 = ccddblSupport;
+    ccddbl.support2 = ccddblSupport;
 
-    ccdVec3Set(&box2.pos, 0.1, 0., 0.);
-    res = ccdGJKPenetration(&box1, &box2, &ccd, &depth, &dir, &pos);
+    ccddblVec3Set(&box2.pos, 0.1, 0., 0.);
+    res = ccddblGJKPenetration(&box1, &box2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 1");
     //TOSVT();
 
 
-    ccdVec3Set(&box1.pos, -0.3, 0.5, 1.);
-    res = ccdGJKPenetration(&box1, &box2, &ccd, &depth, &dir, &pos);
+    ccddblVec3Set(&box1.pos, -0.3, 0.5, 1.);
+    res = ccddblGJKPenetration(&box1, &box2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 2");
     //TOSVT(); <<<
@@ -383,11 +383,11 @@ TEST(boxboxPenetration)
 
     box1.x = box1.y = box1.z = 1.;
     box2.x = box2.y = box2.z = 1.;
-    ccdVec3Set(&axis, 0., 0., 1.);
-    ccdQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
-    ccdVec3Set(&box1.pos, 0.1, 0., 0.1);
+    ccddblVec3Set(&axis, 0., 0., 1.);
+    ccddblQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    ccddblVec3Set(&box1.pos, 0.1, 0., 0.1);
 
-    res = ccdGJKPenetration(&box1, &box2, &ccd, &depth, &dir, &pos);
+    res = ccddblGJKPenetration(&box1, &box2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 3");
     //TOSVT();
@@ -395,11 +395,11 @@ TEST(boxboxPenetration)
 
     box1.x = box1.y = box1.z = 1.;
     box2.x = box2.y = box2.z = 1.;
-    ccdVec3Set(&axis, 0., 0., 1.);
-    ccdQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
-    ccdVec3Set(&box1.pos, -0.5, 0., 0.);
+    ccddblVec3Set(&axis, 0., 0., 1.);
+    ccddblQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    ccddblVec3Set(&box1.pos, -0.5, 0., 0.);
 
-    res = ccdGJKPenetration(&box1, &box2, &ccd, &depth, &dir, &pos);
+    res = ccddblGJKPenetration(&box1, &box2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 4");
     //TOSVT();
@@ -407,11 +407,11 @@ TEST(boxboxPenetration)
 
     box1.x = box1.y = box1.z = 1.;
     box2.x = box2.y = box2.z = 1.;
-    ccdVec3Set(&axis, 0., 0., 1.);
-    ccdQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
-    ccdVec3Set(&box1.pos, -0.5, 0.5, 0.);
+    ccddblVec3Set(&axis, 0., 0., 1.);
+    ccddblQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    ccddblVec3Set(&box1.pos, -0.5, 0.5, 0.);
 
-    res = ccdGJKPenetration(&box1, &box2, &ccd, &depth, &dir, &pos);
+    res = ccddblGJKPenetration(&box1, &box2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 5");
     //TOSVT();
@@ -419,28 +419,28 @@ TEST(boxboxPenetration)
 
     box1.x = box1.y = box1.z = 1.;
     box2.x = box2.y = box2.z = 1.;
-    ccdVec3Set(&box2.pos, 0.1, 0., 0.);
+    ccddblVec3Set(&box2.pos, 0.1, 0., 0.);
 
     box1.x = box1.y = box1.z = 1.;
-    ccdVec3Set(&axis, 0., 1., 1.);
-    ccdQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
-    ccdVec3Set(&box1.pos, -0.5, 0.1, 0.4);
+    ccddblVec3Set(&axis, 0., 1., 1.);
+    ccddblQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    ccddblVec3Set(&box1.pos, -0.5, 0.1, 0.4);
 
-    res = ccdGJKPenetration(&box1, &box2, &ccd, &depth, &dir, &pos);
+    res = ccddblGJKPenetration(&box1, &box2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 6");
     //TOSVT();
 
 
     box1.x = box1.y = box1.z = 1.;
-    ccdVec3Set(&axis, 0., 1., 1.);
-    ccdQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
-    ccdVec3Set(&axis, 1., 1., 1.);
-    ccdQuatSetAngleAxis(&rot, M_PI / 4., &axis);
-    ccdQuatMul(&box1.quat, &rot);
-    ccdVec3Set(&box1.pos, -0.5, 0.1, 0.4);
+    ccddblVec3Set(&axis, 0., 1., 1.);
+    ccddblQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    ccddblVec3Set(&axis, 1., 1., 1.);
+    ccddblQuatSetAngleAxis(&rot, M_PI / 4., &axis);
+    ccddblQuatMul(&box1.quat, &rot);
+    ccddblVec3Set(&box1.pos, -0.5, 0.1, 0.4);
 
-    res = ccdGJKPenetration(&box1, &box2, &ccd, &depth, &dir, &pos);
+    res = ccddblGJKPenetration(&box1, &box2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 7");
     //TOSVT(); <<<
@@ -450,16 +450,16 @@ TEST(boxboxPenetration)
     box2.x = 0.2; box2.y = 0.5; box2.z = 1.;
     box2.x = box2.y = box2.z = 1.;
 
-    ccdVec3Set(&axis, 0., 0., 1.);
-    ccdQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
-    ccdVec3Set(&axis, 1., 0., 0.);
-    ccdQuatSetAngleAxis(&rot, M_PI / 4., &axis);
-    ccdQuatMul(&box1.quat, &rot);
-    ccdVec3Set(&box1.pos, -1.3, 0., 0.);
+    ccddblVec3Set(&axis, 0., 0., 1.);
+    ccddblQuatSetAngleAxis(&box1.quat, M_PI / 4., &axis);
+    ccddblVec3Set(&axis, 1., 0., 0.);
+    ccddblQuatSetAngleAxis(&rot, M_PI / 4., &axis);
+    ccddblQuatMul(&box1.quat, &rot);
+    ccddblVec3Set(&box1.pos, -1.3, 0., 0.);
 
-    ccdVec3Set(&box2.pos, 0., 0., 0.);
+    ccddblVec3Set(&box2.pos, 0., 0., 0.);
 
-    res = ccdGJKPenetration(&box1, &box2, &ccd, &depth, &dir, &pos);
+    res = ccddblGJKPenetration(&box1, &box2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 8");
     //TOSVT();
@@ -468,12 +468,12 @@ TEST(boxboxPenetration)
 TEST(boxboxPenetration2)
 {
 
-    ccd_t ccd;
-    CCD_BOX(box1);
-    CCD_BOX(box2);
+    ccddbl_t ccddbl;
+    CCDDBL_BOX(box1);
+    CCDDBL_BOX(box2);
     int res;
-    ccd_real_t depth;
-    ccd_vec3_t dir, pos;
+    ccddbl_real_t depth;
+    ccddbl_vec3_t dir, pos;
 
     fprintf(stderr, "\n\n\n---- boxboxPenetration ----\n\n\n");
 
@@ -484,12 +484,12 @@ TEST(boxboxPenetration2)
     box2.y = 0.15;
     box2.z = 0.2;
 
-    CCD_INIT(&ccd);
-    ccd.support1 = ccdSupport;
-    ccd.support2 = ccdSupport;
+    CCDDBL_INIT(&ccddbl);
+    ccddbl.support1 = ccddblSupport;
+    ccddbl.support2 = ccddblSupport;
 
-    ccdVec3Set(&box2.pos, 0, 0.1, 0.);
-    res = ccdGJKPenetration(&box1, &box2, &ccd, &depth, &dir, &pos);
+    ccddblVec3Set(&box2.pos, 0, 0.1, 0.);
+    res = ccddblGJKPenetration(&box1, &box2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen largeBox");
     assertTrue(-0.2 < pos.v[0] && pos.v[0] <0.2);

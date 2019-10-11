@@ -1,7 +1,7 @@
 Compile And Install
 ====================
 
-libccd contains several mechanisms for compiling and installing.
+libccddbl contains several mechanisms for compiling and installing.
 Using a simple Makefile, using autotools, and using CMake.
 
 
@@ -15,7 +15,7 @@ Directory ``src/`` contains Makefile that should contain everything needed for c
     $ make
     $ make install
 
-Library libccd is by default compiled in double precision of floating point
+Library libccddbl is by default compiled in double precision of floating point
 numbers - you can change this by options ``USE_SINGLE``/``USE_DOUBLE``, i.e.:
 
 .. code-block:: bash
@@ -30,7 +30,7 @@ For more info type '``make help``'.
 
 2. Using Autotools
 -------------------
-libccd also contains support for autotools:
+libccddbl also contains support for autotools:
 Generate configure script etc.:
 
 .. code-block:: bash
@@ -55,7 +55,7 @@ Run make and make install:
 
     $ make && make install
 
-configure script can change the way libccd is compiled and installed, most
+configure script can change the way libccddbl is compiled and installed, most
 significant option is ``--disable-double-precision`` which enables single
 precision (double is default in this case).
 
@@ -96,7 +96,7 @@ To compile using single precision, set the ``ENABLE_DOUBLE_PRECISION`` option to
     $ cmake -G "Unix Makefiles" -DENABLE_DOUBLE_PRECISION=OFF ..
     $ make && make install
 
-To build libccd as a shared library, set the ``BUILD_SHARED_LIBS`` option:
+To build libccddbl as a shared library, set the ``BUILD_SHARED_LIBS`` option:
 
 .. code-block:: bash
 

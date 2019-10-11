@@ -1,36 +1,36 @@
-if(DEFINED CCD_SINGLE OR DEFINED CCD_DOUBLE)
+if(DEFINED CCDDBL_SINGLE OR DEFINED CCDDBL_DOUBLE)
   # make sure only DOUBLE or SINGLE is set; default to SINGLE
-  if(CCD_SINGLE)
-    set(CCD_DOUBLE OFF)
+  if(CCDDBL_SINGLE)
+    set(CCDDBL_DOUBLE OFF)
   else()
-    set(CCD_SINGLE ON)
+    set(CCDDBL_SINGLE ON)
   endif()
-  if(CCD_DOUBLE)
-    set(CCD_SINGLE OFF)
+  if(CCDDBL_DOUBLE)
+    set(CCDDBL_SINGLE OFF)
   endif()
 elseif(ENABLE_DOUBLE_PRECISION)
-    set(CCD_DOUBLE ON)
-    set(CCD_SINGLE OFF)
+    set(CCDDBL_DOUBLE ON)
+    set(CCDDBL_SINGLE OFF)
 else()
-    set(CCD_DOUBLE OFF)
-    set(CCD_SINGLE ON)
+    set(CCDDBL_DOUBLE OFF)
+    set(CCDDBL_SINGLE ON)
 endif()
 
-configure_file(ccd/config.h.cmake.in ccd/config.h)
+configure_file(ccddbl/config.h.cmake.in ccddbl/config.h)
 
-set(CCD_INCLUDES
-  ccd/ccd.h
-  ccd/compiler.h
-  ccd/ccd_export.h
-  ccd/quat.h
-  ccd/simplex.h
-  ccd/support.h
-  ccd/vec3.h
-  "${CMAKE_CURRENT_BINARY_DIR}/ccd/config.h")
+set(CCDDBL_INCLUDES
+  ccddbl/ccddbl.h
+  ccddbl/compiler.h
+  ccddbl/ccddbl_export.h
+  ccddbl/quat.h
+  ccddbl/simplex.h
+  ccddbl/support.h
+  ccddbl/vec3.h
+  "${CMAKE_CURRENT_BINARY_DIR}/ccddbl/config.h")
 
-set(CCD_SOURCES
+set(CCDDBL_SOURCES
   alloc.h
-  ccd.c
+  ccddbl.c
   dbg.h
   list.h
   mpr.c
@@ -39,12 +39,12 @@ set(CCD_SOURCES
   support.c
   vec3.c)
 
-add_library(ccd ${CCD_INCLUDES} ${CCD_SOURCES})
-set_target_properties(ccd PROPERTIES
-  PUBLIC_HEADER "${CCD_INCLUDES}"
-  SOVERSION ${CCD_SOVERSION}
-  VERSION ${CCD_VERSION})
-target_include_directories(ccd PUBLIC
+add_library(ccddbl ${CCDDBL_INCLUDES} ${CCDDBL_SOURCES})
+set_target_properties(ccddbl PROPERTIES
+  PUBLIC_HEADER "${CCDDBL_INCLUDES}"
+  SOVERSION ${CCDDBL_SOVERSION}
+  VERSION ${CCDDBL_VERSION})
+target_include_directories(ccddbl PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 
@@ -53,22 +53,22 @@ if(NOT WIN32)
   if(NOT LIBM_LIBRARY)
     message(FATAL_ERROR "Could NOT find required library LibM")
   endif()
-  target_link_libraries(ccd "${LIBM_LIBRARY}")
+  target_link_libraries(ccddbl "${LIBM_LIBRARY}")
   if(BUILD_SHARED_LIBS)
-    set(CCD_PKGCONFIG_EXTRA_LIBS -lm PARENT_SCOPE)
+    set(CCDDBL_PKGCONFIG_EXTRA_LIBS -lm PARENT_SCOPE)
   endif()
 endif()
 
-export(TARGETS ccd FILE "${CMAKE_BINARY_DIR}/ccd-targets.cmake")
+export(TARGETS ccddbl FILE "${CMAKE_BINARY_DIR}/ccddbl-targets.cmake")
 
-install(TARGETS ccd
-  EXPORT ccd-targets
+install(TARGETS ccddbl
+  EXPORT ccddbl-targets
   ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
   INCLUDES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
   LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-  PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/ccd"
+  PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/ccddbl"
   RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
-install(EXPORT ccd-targets DESTINATION "${CMAKE_INSTALL_LIBDIR}/ccd")
+install(EXPORT ccddbl-targets DESTINATION "${CMAKE_INSTALL_LIBDIR}/ccddbl")
 
 macro (check_compiler_visibility)
   include (CheckCXXCompilerFlag)
@@ -78,11 +78,11 @@ endmacro()
 if(UNIX)
   check_compiler_visibility()
   if (COMPILER_SUPPORTS_VISIBILITY)
-    set_target_properties(ccd
+    set_target_properties(ccddbl
          PROPERTIES COMPILE_FLAGS "-fvisibility=hidden")
   endif()
 endif()
 
-if(NOT WIN32 AND BUILD_TESTING AND NOT CCD_HIDE_ALL_SYMBOLS)
+if(NOT WIN32 AND BUILD_TESTING AND NOT CCDDBL_HIDE_ALL_SYMBOLS)
   add_subdirectory(testsuites)
 endif()

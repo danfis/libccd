@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <cu/cu.h>
-#include <ccd/ccd.h>
+#include <ccddbl/ccddbl.h>
 #include "support.h"
 #include "common.h"
 
@@ -16,24 +16,24 @@ TEST(cylcylTearDown)
 
 TEST(cylcylAlignedX)
 {
-    ccd_t ccd;
-    CCD_CYL(c1);
-    CCD_CYL(c2);
+    ccddbl_t ccddbl;
+    CCDDBL_CYL(c1);
+    CCDDBL_CYL(c2);
     size_t i;
     int res;
 
-    CCD_INIT(&ccd);
-    ccd.support1 = ccdSupport;
-    ccd.support2 = ccdSupport;
+    CCDDBL_INIT(&ccddbl);
+    ccddbl.support1 = ccddblSupport;
+    ccddbl.support2 = ccddblSupport;
 
     c1.radius = 0.35;
     c1.height = 0.5;
     c2.radius = 0.5;
     c2.height = 1.;
 
-    ccdVec3Set(&c1.pos, -5., 0., 0.);
+    ccddblVec3Set(&c1.pos, -5., 0., 0.);
     for (i = 0; i < 100; i++){
-        res = ccdGJKIntersect(&c1, &c2, &ccd);
+        res = ccddblGJKIntersect(&c1, &c2, &ccddbl);
 
         if (i < 42 || i > 58){
             assertFalse(res);
@@ -47,24 +47,24 @@ TEST(cylcylAlignedX)
 
 TEST(cylcylAlignedY)
 {
-    ccd_t ccd;
-    CCD_CYL(c1);
-    CCD_CYL(c2);
+    ccddbl_t ccddbl;
+    CCDDBL_CYL(c1);
+    CCDDBL_CYL(c2);
     size_t i;
     int res;
 
-    CCD_INIT(&ccd);
-    ccd.support1 = ccdSupport;
-    ccd.support2 = ccdSupport;
+    CCDDBL_INIT(&ccddbl);
+    ccddbl.support1 = ccddblSupport;
+    ccddbl.support2 = ccddblSupport;
 
     c1.radius = 0.35;
     c1.height = 0.5;
     c2.radius = 0.5;
     c2.height = 1.;
 
-    ccdVec3Set(&c1.pos, 0., -5., 0.);
+    ccddblVec3Set(&c1.pos, 0., -5., 0.);
     for (i = 0; i < 100; i++){
-        res = ccdGJKIntersect(&c1, &c2, &ccd);
+        res = ccddblGJKIntersect(&c1, &c2, &ccddbl);
 
         if (i < 42 || i > 58){
             assertFalse(res);
@@ -78,24 +78,24 @@ TEST(cylcylAlignedY)
 
 TEST(cylcylAlignedZ)
 {
-    ccd_t ccd;
-    CCD_CYL(c1);
-    CCD_CYL(c2);
+    ccddbl_t ccddbl;
+    CCDDBL_CYL(c1);
+    CCDDBL_CYL(c2);
     size_t i;
     int res;
 
-    CCD_INIT(&ccd);
-    ccd.support1 = ccdSupport;
-    ccd.support2 = ccdSupport;
+    CCDDBL_INIT(&ccddbl);
+    ccddbl.support1 = ccddblSupport;
+    ccddbl.support2 = ccddblSupport;
 
     c1.radius = 0.35;
     c1.height = 0.5;
     c2.radius = 0.5;
     c2.height = 1.;
 
-    ccdVec3Set(&c1.pos, 0., 0., -5.);
+    ccddblVec3Set(&c1.pos, 0., 0., -5.);
     for (i = 0; i < 100; i++){
-        res = ccdGJKIntersect(&c1, &c2, &ccd);
+        res = ccddblGJKIntersect(&c1, &c2, &ccddbl);
 
         if (i < 43 || i > 57){
             assertFalse(res);
@@ -109,19 +109,19 @@ TEST(cylcylAlignedZ)
 
 #define TOSVT() \
     svtObjPen(&cyl1, &cyl2, stdout, "Pen 1", depth, &dir, &pos); \
-    ccdVec3Scale(&dir, depth); \
-    ccdVec3Add(&cyl2.pos, &dir); \
+    ccddblVec3Scale(&dir, depth); \
+    ccddblVec3Add(&cyl2.pos, &dir); \
     svtObjPen(&cyl1, &cyl2, stdout, "Pen 1", depth, &dir, &pos)
 
 TEST(cylcylPenetrationEPA)
 {
-    ccd_t ccd;
-    CCD_CYL(cyl1);
-    CCD_CYL(cyl2);
+    ccddbl_t ccddbl;
+    CCDDBL_CYL(cyl1);
+    CCDDBL_CYL(cyl2);
     int res;
-    ccd_vec3_t axis;
-    ccd_real_t depth;
-    ccd_vec3_t dir, pos;
+    ccddbl_vec3_t axis;
+    ccddbl_real_t depth;
+    ccddbl_vec3_t dir, pos;
 
     fprintf(stderr, "\n\n\n---- cylcylPenetration ----\n\n\n");
 
@@ -130,50 +130,50 @@ TEST(cylcylPenetrationEPA)
     cyl2.radius = 0.5;
     cyl2.height = 1.;
 
-    CCD_INIT(&ccd);
-    ccd.support1 = ccdSupport;
-    ccd.support2 = ccdSupport;
+    CCDDBL_INIT(&ccddbl);
+    ccddbl.support1 = ccddblSupport;
+    ccddbl.support2 = ccddblSupport;
 
-    ccdVec3Set(&cyl2.pos, 0., 0., 0.3);
-    res = ccdGJKPenetration(&cyl1, &cyl2, &ccd, &depth, &dir, &pos);
+    ccddblVec3Set(&cyl2.pos, 0., 0., 0.3);
+    res = ccddblGJKPenetration(&cyl1, &cyl2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 1");
     //TOSVT();
 
-    ccdVec3Set(&cyl1.pos, 0.3, 0.1, 0.1);
-    res = ccdGJKPenetration(&cyl1, &cyl2, &ccd, &depth, &dir, &pos);
+    ccddblVec3Set(&cyl1.pos, 0.3, 0.1, 0.1);
+    res = ccddblGJKPenetration(&cyl1, &cyl2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 2");
     //TOSVT(); <<<
 
-    ccdVec3Set(&axis, 0., 1., 1.);
-    ccdQuatSetAngleAxis(&cyl2.quat, M_PI / 4., &axis);
-    ccdVec3Set(&cyl2.pos, 0., 0., 0.);
-    res = ccdGJKPenetration(&cyl1, &cyl2, &ccd, &depth, &dir, &pos);
+    ccddblVec3Set(&axis, 0., 1., 1.);
+    ccddblQuatSetAngleAxis(&cyl2.quat, M_PI / 4., &axis);
+    ccddblVec3Set(&cyl2.pos, 0., 0., 0.);
+    res = ccddblGJKPenetration(&cyl1, &cyl2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 3");
     //TOSVT();
 
-    ccdVec3Set(&axis, 0., 1., 1.);
-    ccdQuatSetAngleAxis(&cyl2.quat, M_PI / 4., &axis);
-    ccdVec3Set(&cyl2.pos, -0.2, 0.7, 0.2);
-    res = ccdGJKPenetration(&cyl1, &cyl2, &ccd, &depth, &dir, &pos);
+    ccddblVec3Set(&axis, 0., 1., 1.);
+    ccddblQuatSetAngleAxis(&cyl2.quat, M_PI / 4., &axis);
+    ccddblVec3Set(&cyl2.pos, -0.2, 0.7, 0.2);
+    res = ccddblGJKPenetration(&cyl1, &cyl2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 4");
     //TOSVT();
 
-    ccdVec3Set(&axis, 0.567, 1.2, 1.);
-    ccdQuatSetAngleAxis(&cyl2.quat, M_PI / 4., &axis);
-    ccdVec3Set(&cyl2.pos, 0.6, -0.7, 0.2);
-    res = ccdGJKPenetration(&cyl1, &cyl2, &ccd, &depth, &dir, &pos);
+    ccddblVec3Set(&axis, 0.567, 1.2, 1.);
+    ccddblQuatSetAngleAxis(&cyl2.quat, M_PI / 4., &axis);
+    ccddblVec3Set(&cyl2.pos, 0.6, -0.7, 0.2);
+    res = ccddblGJKPenetration(&cyl1, &cyl2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 5");
     //TOSVT();
 
-    ccdVec3Set(&axis, -4.567, 1.2, 0.);
-    ccdQuatSetAngleAxis(&cyl2.quat, M_PI / 3., &axis);
-    ccdVec3Set(&cyl2.pos, 0.6, -0.7, 0.2);
-    res = ccdGJKPenetration(&cyl1, &cyl2, &ccd, &depth, &dir, &pos);
+    ccddblVec3Set(&axis, -4.567, 1.2, 0.);
+    ccddblQuatSetAngleAxis(&cyl2.quat, M_PI / 3., &axis);
+    ccddblVec3Set(&cyl2.pos, 0.6, -0.7, 0.2);
+    res = ccddblGJKPenetration(&cyl1, &cyl2, &ccddbl, &depth, &dir, &pos);
     assertTrue(res == 0);
     recPen(depth, &dir, &pos, stdout, "Pen 6");
     //TOSVT();

@@ -1,10 +1,10 @@
 ###
-# libccd
+# libccddbl
 # ---------------------------------
 # Copyright (c)2010 Daniel Fiser <danfis@danfis.cz>
 #
 #
-#  This file is part of libccd.
+#  This file is part of libccddbl.
 #
 #  Distributed under the OSI-approved BSD License (the "License");
 #  see accompanying file BDS-LICENSE for details or see
@@ -19,35 +19,35 @@
 
 CFLAGS += -I. -fvisibility=hidden
 
-TARGETS = libccd.a
-OBJS = ccd.o mpr.o support.o vec3.o polytope.o
+TARGETS = libccddbl.a
+OBJS = ccddbl.o mpr.o support.o vec3.o polytope.o
 
 all: $(TARGETS)
 
-libccd.a: $(OBJS)
+libccddbl.a: $(OBJS)
 	ar cr $@ $(OBJS)
 	ranlib $@
 
-ccd/config.h: ccd/config.h.m4
+ccddbl/config.h: ccddbl/config.h.m4
 	$(M4) $(CONFIG_FLAGS) $< >$@
 
-%.o: %.c %.h ccd/config.h
+%.o: %.c %.h ccddbl/config.h
 	$(CC) $(CFLAGS) $(DEFS) -c -o $@ $<
-%.o: %.c ccd/config.h
+%.o: %.c ccddbl/config.h
 	$(CC) $(CFLAGS) $(DEFS) -c -o $@ $<
-%.h: ccd/config.h
-%.c: ccd/config.h
+%.h: ccddbl/config.h
+%.c: ccddbl/config.h
 
 install:
-	mkdir -p $(PREFIX)/$(INCLUDEDIR)/ccd
+	mkdir -p $(PREFIX)/$(INCLUDEDIR)/ccddbl
 	mkdir -p $(PREFIX)/$(LIBDIR)
-	cp ccd/*.h $(PREFIX)/$(INCLUDEDIR)/ccd/
-	cp libccd.a $(PREFIX)/$(LIBDIR)
+	cp ccddbl/*.h $(PREFIX)/$(INCLUDEDIR)/ccddbl/
+	cp libccddbl.a $(PREFIX)/$(LIBDIR)
 
 clean:
 	rm -f $(OBJS)
 	rm -f $(TARGETS)
-	rm -f ccd/config.h
+	rm -f ccddbl/config.h
 	if [ -d testsuites ]; then $(MAKE) -C testsuites clean; fi;
 	
 check:

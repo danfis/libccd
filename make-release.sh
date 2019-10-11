@@ -3,7 +3,7 @@
 # Creates .tar.gz package of specified version.
 # Takes one argument - identification of commit
 
-NAME=libccd
+NAME=libccddbl
 COMMIT=""
 CMD="git archive"
 

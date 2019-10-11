@@ -1,18 +1,18 @@
 SUBDIRS = . testsuites
 
-lib_LTLIBRARIES = libccd.la
+lib_LTLIBRARIES = libccddbl.la
 
-libccd_la_SOURCES = alloc.h \
-		ccd/compiler.h \
+libccddbl_la_SOURCES = alloc.h \
+		ccddbl/compiler.h \
 		dbg.h \
-		ccd.c ccd/ccd.h \
-		ccd/ccd_export.h \
+		ccddbl.c ccddbl/ccddbl.h \
+		ccddbl/ccddbl_export.h \
 		list.h \
 		polytope.c polytope.h \
-		ccd/quat.h \
-		ccd/simplex.h \
-		support.c ccd/support.h \
-		vec3.c ccd/vec3.h \
+		ccddbl/quat.h \
+		ccddbl/simplex.h \
+		support.c ccddbl/support.h \
+		vec3.c ccddbl/vec3.h \
         mpr.c
 
-libccd_la_CFLAGS = -fvisibility=hidden
+libccddbl_la_CFLAGS = -fvisibility=hidden

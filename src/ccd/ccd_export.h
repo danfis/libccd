@@ -1,23 +1,23 @@
-#ifndef CCD_EXPORT_H
-#define CCD_EXPORT_H
+#ifndef CCDDBL_EXPORT_H
+#define CCDDBL_EXPORT_H
 
-#ifdef CCD_STATIC_DEFINE
-#  define CCD_EXPORT
+#ifdef CCDDBL_STATIC_DEFINE
+#  define CCDDBL_EXPORT
 #else
 #  ifdef _MSC_VER
-#    ifdef ccd_EXPORTS
-#      define CCD_EXPORT __declspec(dllexport)
-#   else /* ccd_EXPORTS */
-#     define CCD_EXPORT  __declspec(dllimport)
-#   endif /* ccd_EXPORTS */
+#    ifdef ccddbl_EXPORTS
+#      define CCDDBL_EXPORT __declspec(dllexport)
+#   else /* ccddbl_EXPORTS */
+#     define CCDDBL_EXPORT  __declspec(dllimport)
+#   endif /* ccddbl_EXPORTS */
 #  else
-#    ifndef CCD_EXPORT
-#      ifdef ccd_EXPORTS
+#    ifndef CCDDBL_EXPORT
+#      ifdef ccddbl_EXPORTS
           /* We are building this library */
-#        define CCD_EXPORT __attribute__((visibility("default")))
+#        define CCDDBL_EXPORT __attribute__((visibility("default")))
 #      else
           /* We are using this library */
-#        define CCD_EXPORT __attribute__((visibility("default")))
+#        define CCDDBL_EXPORT __attribute__((visibility("default")))
 #      endif
 #    endif
 #  endif

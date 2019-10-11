@@ -1,7 +1,7 @@
-#ifndef __CCD_CONFIG_H__
-#define __CCD_CONFIG_H__
+#ifndef __CCDDBL_CONFIG_H__
+#define __CCDDBL_CONFIG_H__
 
-#cmakedefine CCD_SINGLE
-#cmakedefine CCD_DOUBLE
+#cmakedefine CCDDBL_SINGLE
+#cmakedefine CCDDBL_DOUBLE
 
-#endif /* __CCD_CONFIG_H__ */
+#endif /* __CCDDBL_CONFIG_H__ */

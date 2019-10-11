@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <cu/cu.h>
-#include <ccd/ccd.h>
+#include <ccddbl/ccddbl.h>
 #include "support.h"
 
 TEST(spheresphereSetUp)
@@ -13,22 +13,22 @@ TEST(spheresphereTearDown)
 
 TEST(spheresphereAlignedX)
 {
-    ccd_t ccd;
-    CCD_SPHERE(s1);
-    CCD_SPHERE(s2);
+    ccddbl_t ccddbl;
+    CCDDBL_SPHERE(s1);
+    CCDDBL_SPHERE(s2);
     size_t i;
     int res;
 
-    CCD_INIT(&ccd);
-    ccd.support1 = ccdSupport;
-    ccd.support2 = ccdSupport;
+    CCDDBL_INIT(&ccddbl);
+    ccddbl.support1 = ccddblSupport;
+    ccddbl.support2 = ccddblSupport;
 
     s1.radius = 0.35;
     s2.radius = .5;
 
-    ccdVec3Set(&s1.pos, -5., 0., 0.);
+    ccddblVec3Set(&s1.pos, -5., 0., 0.);
     for (i = 0; i < 100; i++){
-        res = ccdGJKIntersect(&s1, &s2, &ccd);
+        res = ccddblGJKIntersect(&s1, &s2, &ccddbl);
 
         if (i < 42 || i > 58){
             assertFalse(res);
@@ -42,22 +42,22 @@ TEST(spheresphereAlignedX)
 
 TEST(spheresphereAlignedY)
 {
-    ccd_t ccd;
-    CCD_SPHERE(s1);
-    CCD_SPHERE(s2);
+    ccddbl_t ccddbl;
+    CCDDBL_SPHERE(s1);
+    CCDDBL_SPHERE(s2);
     size_t i;
     int res;
 
-    CCD_INIT(&ccd);
-    ccd.support1 = ccdSupport;
-    ccd.support2 = ccdSupport;
+    CCDDBL_INIT(&ccddbl);
+    ccddbl.support1 = ccddblSupport;
+    ccddbl.support2 = ccddblSupport;
 
     s1.radius = 0.35;
     s2.radius = .5;
 
-    ccdVec3Set(&s1.pos, 0., -5., 0.);
+    ccddblVec3Set(&s1.pos, 0., -5., 0.);
     for (i = 0; i < 100; i++){
-        res = ccdGJKIntersect(&s1, &s2, &ccd);
+        res = ccddblGJKIntersect(&s1, &s2, &ccddbl);
 
         if (i < 42 || i > 58){
             assertFalse(res);
@@ -71,22 +71,22 @@ TEST(spheresphereAlignedY)
 
 TEST(spheresphereAlignedZ)
 {
-    ccd_t ccd;
-    CCD_SPHERE(s1);
-    CCD_SPHERE(s2);
+    ccddbl_t ccddbl;
+    CCDDBL_SPHERE(s1);
+    CCDDBL_SPHERE(s2);
     size_t i;
     int res;
 
-    CCD_INIT(&ccd);
-    ccd.support1 = ccdSupport;
-    ccd.support2 = ccdSupport;
+    CCDDBL_INIT(&ccddbl);
+    ccddbl.support1 = ccddblSupport;
+    ccddbl.support2 = ccddblSupport;
 
     s1.radius = 0.35;
     s2.radius = .5;
 
-    ccdVec3Set(&s1.pos, 0., 0., -5.);
+    ccddblVec3Set(&s1.pos, 0., 0., -5.);
     for (i = 0; i < 100; i++){
-        res = ccdGJKIntersect(&s1, &s2, &ccd);
+        res = ccddblGJKIntersect(&s1, &s2, &ccddbl);
 
         if (i < 42 || i > 58){
             assertFalse(res);
