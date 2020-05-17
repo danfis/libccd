@@ -48,7 +48,7 @@ target_include_directories(ccd PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
 
-if(NOT WIN32)
+if(NOT WIN32 AND NOT (CMAKE_SYSTEM_NAME STREQUAL "Emscripten"))
   find_library(LIBM_LIBRARY NAMES m)
   if(NOT LIBM_LIBRARY)
     message(FATAL_ERROR "Could NOT find required library LibM")
