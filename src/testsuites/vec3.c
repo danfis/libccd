@@ -270,4 +270,11 @@ TEST(vec3PointTriDist)
     ccdVec3Set(&P0, -.5, .5, 0.);
     assertTrue(ccdVec3Eq(&w, &P0));
     //fprintf(stderr, "dist: %lf\n", dist);
+
+    ccdVec3Set(&a, -0.36715889, 0.288464308, 0.000100158155);
+    ccdVec3Set(&b, -0.0222680569, 0.0171524286, -2.88337469e-06);
+    ccdVec3Set(&c, 3.0792e-01, -2.4249e-01, 3.8363e-05);
+    ccdVec3Set(&P, 0., 0., 0.);
+    dist = ccdVec3PointTriDist2(&P, &a, &b, &c, &w);
+    assertTrue(dist < 0.0000001);
 }

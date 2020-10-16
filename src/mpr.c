@@ -328,10 +328,16 @@ static void findPenetr(const void *obj1, const void *obj2, const ccd_t *ccd,
                                           &ccdSimplexPoint(portal, 3)->v,
                                           pdir);
             *depth = CCD_SQRT(*depth);
-            if ( *depth > - FLT_EPSILON && *depth < FLT_EPSILON )
-                ccdVec3Set( pdir, 1,0,0 );
-            else
+            if (ccdIsZero(*depth)){
+                // If depth is zero, then we have a touching contact.
+                // So following findPenetrTouch(), we assign zero to
+                // the direction vector (it can actually be anything
+                // according to the decription of ccdMPRPenetration
+                // function).
+                ccdVec3Copy(pdir, ccd_vec3_origin);
+            }else{
                 ccdVec3Normalize(pdir);
+            }
 
             // barycentric coordinates:
             findPos(obj1, obj2, ccd, portal, pos);
