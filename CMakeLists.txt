@@ -14,9 +14,12 @@ set(CCD_VERSION ${CCD_VERSION_MAJOR}.${CCD_VERSION_MINOR})
 
 set(CCD_SOVERSION 2)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 # Include GNUInstallDirs to get canonical paths
 include(GNUInstallDirs)
 include(CTest)
+include(JoinPaths)
 
 option(BUILD_DOCUMENTATION "Build the documentation" OFF)
 
@@ -68,6 +71,8 @@ install(FILES
 
 set(CCD_PKGCONFIG_DESCRIPTION
   "Library for collision detection between convex shapes")
+join_paths(CCD_PKGCONFIG_LIBDIR "\${prefix}" "${CMAKE_INSTALL_LIBDIR}")
+join_paths(CCD_PKGCONFIG_INCLUDEDIR "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
 configure_file(ccd.pc.in ccd.pc @ONLY)
 install(FILES "${CMAKE_BINARY_DIR}/ccd.pc"
   DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
