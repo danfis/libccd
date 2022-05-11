@@ -55,10 +55,10 @@
 # pragma warning(disable:981)
 #endif /* __ICC */
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
 // disable unsafe function warning
 # define _CRT_SECURE_NO_WARNINGS
-#endif /* _MSC_VER */
+#endif /* defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS) */
 
 #endif /* __CCD_COMPILER_H__ */
 
