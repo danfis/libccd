@@ -47,7 +47,9 @@ set_target_properties(ccd PROPERTIES
 target_include_directories(ccd PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>)
-
+if(NOT BUILD_SHARED_LIBS)
+  target_compile_definitions(ccd PUBLIC CCD_STATIC_DEFINE)
+endif()
 if(NOT WIN32)
   find_library(LIBM_LIBRARY NAMES m)
   if(NOT LIBM_LIBRARY)
