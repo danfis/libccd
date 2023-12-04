@@ -1,12 +1,10 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.12.0)
 
 if(POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
 
-# Can not explicitly declared the software as C in project command due to bug:
-# https://gitlab.kitware.com/cmake/cmake/issues/16967
-project(libccd)
+project(libccd C)
 
 set(CCD_VERSION_MAJOR 2)
 set(CCD_VERSION_MINOR 0)
