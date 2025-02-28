@@ -165,9 +165,12 @@ ccd_real_t ccdVec3PointTriDist2(const ccd_vec3_t *P,
     r = ccdVec3Dot(&d1, &d2);
 
     d = w * v - r * r;
-    if (ccdIsZero(d)){
-        // To avoid division by zero for zero (or near zero) area triangles
-        s = t = -1.;
+    if (ccdIsZero(d / (w * v))){
+      // To avoid division by zero for zero (or near zero) area triangles. The
+      // numerical error can be caused by subtracting two large numbers, and the
+      // ratio (d/ (w * v) in this case) between their difference to one of the
+      // large number is smaller than numerical epsilon.
+      s = t = -1.;
     }else{
         s = (q * r - w * p) / d;
         t = (-s * r - q) / w;
